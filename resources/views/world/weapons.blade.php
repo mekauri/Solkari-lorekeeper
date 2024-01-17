@@ -1,13 +1,15 @@
 @extends('world.layout')
 
-@section('title') Weapons @endsection
+@section('title')
+    Weapons
+@endsection
 
 @section('content')
-{!! breadcrumbs(['World' => 'world', 'Weapons' => 'world/weapons']) !!}
-<h1>Weapons</h1>
+    {!! breadcrumbs(['World' => 'world', 'Weapons' => 'world/weapons']) !!}
+    <h1>Weapons</h1>
 
-<div>
-    {!! Form::open(['method' => 'GET', 'class' => '']) !!}
+    <div>
+        {!! Form::open(['method' => 'GET', 'class' => '']) !!}
         <div class="form-inline justify-content-end">
             <div class="form-group ml-3 mb-3">
                 {!! Form::text('name', Request::get('name'), ['class' => 'form-control', 'placeholder' => 'Name']) !!}
@@ -18,31 +20,42 @@
         </div>
         <div class="form-inline justify-content-end">
             <div class="form-group ml-3 mb-3">
-                {!! Form::select('sort', [
-                    'alpha'          => 'Sort Alphabetically (A-Z)',
-                    'alpha-reverse'  => 'Sort Alphabetically (Z-A)',
-                    'category'       => 'Sort by Category',
-                    'newest'         => 'Newest First',
-                    'oldest'         => 'Oldest First'
-                ], Request::get('sort') ? : 'category', ['class' => 'form-control']) !!}
+                {!! Form::select(
+                    'sort',
+                    [
+                        'alpha' => 'Sort Alphabetically (A-Z)',
+                        'alpha-reverse' => 'Sort Alphabetically (Z-A)',
+                        'category' => 'Sort by Category',
+                        'newest' => 'Newest First',
+                        'oldest' => 'Oldest First',
+                    ],
+                    Request::get('sort') ?: 'category',
+                    ['class' => 'form-control'],
+                ) !!}
             </div>
             <div class="form-group ml-3 mb-3">
                 {!! Form::submit('Search', ['class' => 'btn btn-primary']) !!}
             </div>
         </div>
-    {!! Form::close() !!}
-</div>
-
-{!! $weapons->render() !!}
-@foreach($weapons as $weapon)
-    <div class="card mb-3">
-        <div class="card-body">
-        @include('world._claymore_entry', ['item' => $weapon, 'imageUrl' => $weapon->imageUrl, 'name' => $weapon->displayName, 'description' => $weapon->description, 'idUrl' => $weapon->idUrl])
-        </div>
+        {!! Form::close() !!}
     </div>
-@endforeach
-{!! $weapons->render() !!}
 
-<div class="text-center mt-4 small text-muted">{{ $weapons->total() }} result{{ $weapons->total() == 1 ? '' : 's' }} found.</div>
+    {!! $weapons->render() !!}
+    @foreach ($weapons as $weapon)
+        <div class="card mb-3">
+            <div class="card-body">
+                @include('world._claymore_entry', [
+                    'edit' => ['object' => $weapon, 'title' => 'Weapon'],
+                    'item' => $weapon,
+                    'imageUrl' => $weapon->imageUrl,
+                    'name' => $weapon->displayName,
+                    'description' => $weapon->description,
+                    'searchUrl' => $weapon->searchUrl,
+                ])
+            </div>
+        </div>
+    @endforeach
+    {!! $weapons->render() !!}
 
+    <div class="text-center mt-4 small text-muted">{{ $weapons->total() }} result{{ $weapons->total() == 1 ? '' : 's' }} found.</div>
 @endsection

@@ -1,5 +1,5 @@
-@if($stat)
-    {!! Form::open(['url' => 'admin/stats/delete/'.$stat->id]) !!}
+@if ($stat)
+    {!! Form::open(['url' => 'admin/stats/delete/' . $stat->id]) !!}
 
     <p>You are about to delete the stat <strong>{{ $stat->name }}</strong>. This is not reversible. Any character info with this stat will not be retrievable.</p>
     <p>Are you sure you want to delete <strong>{{ $stat->name }}</strong>?</p>
@@ -9,6 +9,6 @@
     </div>
 
     {!! Form::close() !!}
-@else 
+@else
     Invalid stat selected.
 @endif

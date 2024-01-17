@@ -1,5 +1,5 @@
-@if($weapon)
-    {!! Form::open(['url' => 'admin/weapon/delete/'.$weapon->id]) !!}
+@if ($weapon)
+    {!! Form::open(['url' => 'admin/weapons/delete/' . $weapon->id]) !!}
 
     <p>You are about to delete the weapon <strong>{{ $weapon->name }}</strong>. This is not reversible. If this weapon exists in at least one user's possession, you will not be able to delete this weapon.</p>
     <p>Are you sure you want to delete <strong>{{ $weapon->name }}</strong>?</p>
@@ -9,6 +9,6 @@
     </div>
 
     {!! Form::close() !!}
-@else 
+@else
     Invalid weapon selected.
 @endif

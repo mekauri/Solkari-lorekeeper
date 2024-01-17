@@ -2,18 +2,16 @@
 
 namespace App\Models\Stat;
 
-use Config;
 use App\Models\Model;
 
-class Stat extends Model
-{
+class Stat extends Model {
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'abbreviation', 'base', 'step', 'multiplier', 'max_level', 'species_ids'
+        'name', 'abbreviation', 'base', 'step', 'multiplier', 'max_level', 'species_ids',
     ];
 
     /**
@@ -48,10 +46,9 @@ class Stat extends Model
     **********************************************************************************************/
 
     /**
-     * get the species limits for the stat
+     * get the species limits for the stat.
      */
-    public function species()
-    {
+    public function species() {
         return $this->hasMany('App\Models\Species\SpeciesLimit', 'type_id')->where('type', 'stat');
     }
 }

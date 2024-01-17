@@ -2,38 +2,24 @@
 
 namespace App\Models\Character;
 
-use Config;
-use DB;
-use Carbon\Carbon;
-use Notifications;
-use App\Models\Model;
-
-use App\Models\User\User;
-use App\Models\User\UserCharacterLog;
-
-use App\Models\Character\CharacterCategory;
-use App\Models\Character\CharacterTransfer;
-use App\Models\Character\CharacterBookmark;
-
-use App\Models\Character\CharacterCurrency;
 use App\Models\Currency\Currency;
 use App\Models\Currency\CurrencyLog;
-
-use App\Models\Character\CharacterItem;
 use App\Models\Item\Item;
 use App\Models\Item\ItemLog;
-
+use App\Models\Level\LevelLog;
+use App\Models\Model;
+use App\Models\Stat\CountLog;
 use App\Models\Stat\ExpLog;
 use App\Models\Stat\StatTransferLog;
-use App\Models\Level\LevelLog;
-use App\Models\Stat\CountLog;
-
 use App\Models\Submission\Submission;
 use App\Models\Submission\SubmissionCharacter;
+use App\Models\User\User;
+use App\Models\User\UserCharacterLog;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Notifications;
 
-class Character extends Model
-{
+class Character extends Model {
     use SoftDeletes;
 
     /**
@@ -47,7 +33,7 @@ class Character extends Model
         'is_sellable', 'is_tradeable', 'is_giftable',
         'sale_value', 'transferrable_at', 'is_visible',
         'is_gift_art_allowed', 'is_gift_writing_allowed', 'is_trading', 'sort',
-        'is_myo_slot', 'name', 'trade_id', 'owner_url', 'class_id'
+        'is_myo_slot', 'name', 'trade_id', 'owner_url', 'class_id',
     ];
 
     /**
@@ -85,15 +71,15 @@ class Character extends Model
      */
     public static $createRules = [
         'character_category_id' => 'required',
-        'rarity_id' => 'required',
-        'user_id' => 'nullable',
-        'number' => 'required',
-        'slug' => 'required|alpha_dash',
-        'description' => 'nullable',
-        'sale_value' => 'nullable',
-        'image' => 'required|mimes:jpeg,jpg,gif,png|max:20000',
-        'thumbnail' => 'nullable|mimes:jpeg,jpg,gif,png|max:20000',
-        'owner_url' => 'url|nullable',
+        'rarity_id'             => 'required',
+        'user_id'               => 'nullable',
+        'number'                => 'required',
+        'slug'                  => 'required|alpha_dash',
+        'description'           => 'nullable',
+        'sale_value'            => 'nullable',
+        'image'                 => 'required|mimes:jpeg,jpg,gif,png|max:20000',
+        'thumbnail'             => 'nullable|mimes:jpeg,jpg,gif,png|max:20000',
+        'owner_url'             => 'url|nullable',
     ];
 
     /**
@@ -103,10 +89,10 @@ class Character extends Model
      */
     public static $updateRules = [
         'character_category_id' => 'required',
-        'number' => 'required',
-        'slug' => 'required',
-        'description' => 'nullable',
-        'sale_value' => 'nullable',
+        'number'                => 'required',
+        'slug'                  => 'required',
+        'description'           => 'nullable',
+        'sale_value'            => 'nullable',
     ];
 
     /**
@@ -115,15 +101,15 @@ class Character extends Model
      * @var array
      */
     public static $myoRules = [
-        'rarity_id' => 'nullable',
-        'user_id' => 'nullable',
-        'number' => 'nullable',
-        'slug' => 'nullable',
+        'rarity_id'   => 'nullable',
+        'user_id'     => 'nullable',
+        'number'      => 'nullable',
+        'slug'        => 'nullable',
         'description' => 'nullable',
-        'sale_value' => 'nullable',
-        'name' => 'required',
-        'image' => 'nullable|mimes:jpeg,gif,png|max:20000',
-        'thumbnail' => 'nullable|mimes:jpeg,gif,png|max:20000',
+        'sale_value'  => 'nullable',
+        'name'        => 'required',
+        'image'       => 'nullable|mimes:jpeg,gif,png|max:20000',
+        'thumbnail'   => 'nullable|mimes:jpeg,gif,png|max:20000',
     ];
 
     /**********************************************************************************************
@@ -135,127 +121,112 @@ class Character extends Model
     /**
      * Get the user who owns the character.
      */
-    public function user()
-    {
+    public function user() {
         return $this->belongsTo('App\Models\User\User', 'user_id');
     }
 
     /**
      * Get the category the character belongs to.
      */
-    public function category()
-    {
+    public function category() {
         return $this->belongsTo('App\Models\Character\CharacterCategory', 'character_category_id');
     }
 
     /**
      * Get the masterlist image of the character.
      */
-    public function image()
-    {
+    public function image() {
         return $this->belongsTo('App\Models\Character\CharacterImage', 'character_image_id');
     }
 
     /**
      * Get all images associated with the character.
+     *
+     * @param mixed|null $user
      */
-    public function images($user = null)
-    {
+    public function images($user = null) {
         return $this->hasMany('App\Models\Character\CharacterImage', 'character_id')->images($user);
     }
 
     /**
      * Get the user-editable profile data of the character.
      */
-    public function profile()
-    {
+    public function profile() {
         return $this->hasOne('App\Models\Character\CharacterProfile', 'character_id');
     }
 
     /**
      * Get character level.
      */
-    public function level() 
-    {
+    public function level() {
         return $this->hasOne('App\Models\Level\CharacterLevel');
     }
 
     /**
      * Get characters stats.
      */
-    public function stats() 
-    {
+    public function stats() {
         return $this->hasMany('App\Models\Stat\CharacterStat');
     }
 
     /**
      * Get the character's active design update.
      */
-    public function designUpdate()
-    {
+    public function designUpdate() {
         return $this->hasMany('App\Models\Character\CharacterDesignUpdate', 'character_id');
     }
 
     /**
      * Get the trade this character is attached to.
      */
-    public function trade()
-    {
+    public function trade() {
         return $this->belongsTo('App\Models\Trade', 'trade_id');
     }
 
     /**
      * Get the rarity of this character.
      */
-    public function rarity()
-    {
+    public function rarity() {
         return $this->belongsTo('App\Models\Rarity', 'rarity_id');
     }
 
-    public function pets()
-    {
+    public function pets() {
         return $this->hasMany('App\Models\User\UserPet', 'chara_id');
     }
-    
-    public function gear()
-    {
+
+    public function gear() {
         return $this->hasMany('App\Models\User\UserGear', 'character_id');
     }
 
-    public function weapons()
-    {
+    public function weapons() {
         return $this->hasMany('App\Models\User\UserWeapon', 'character_id');
     }
 
     /**
      * Get the character's associated gallery submissions.
      */
-    public function gallerySubmissions()
-    {
+    public function gallerySubmissions() {
         return $this->hasMany('App\Models\Gallery\GalleryCharacter', 'character_id');
     }
 
     /**
      * Get the character's items.
      */
-    public function items()
-    {
+    public function items() {
         return $this->belongsToMany('App\Models\Item\Item', 'character_items')->withPivot('count', 'data', 'updated_at', 'id')->whereNull('character_items.deleted_at');
     }
 
     /**
-     * Get the character's class
+     * Get the character's class.
      */
-    public function class()
-    {
+    public function class() {
         return $this->belongsTo('App\Models\Character\CharacterClass', 'class_id');
     }
 
-    /** 
+    /**
      * Get the character's skills.
      */
-    public function skills()
-    {
+    public function skills() {
         return $this->hasMany('App\Models\Character\CharacterSkill', 'character_id');
     }
 
@@ -268,49 +239,49 @@ class Character extends Model
     /**
      * Scope a query to only include either characters of MYO slots.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  bool                                   $isMyo
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param bool                                  $isMyo
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeMyo($query, $isMyo = false)
-    {
+    public function scopeMyo($query, $isMyo = false) {
         return $query->where('is_myo_slot', $isMyo);
     }
 
     /**
      * Scope a query to only include visible characters.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeVisible($query)
-    {
+    public function scopeVisible($query) {
         return $query->where('is_visible', 1);
     }
 
     /**
      * Scope a query to only include characters that the owners are interested in trading.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeTrading($query)
-    {
+    public function scopeTrading($query) {
         return $query->where('is_trading', 1);
     }
 
     /**
      * Scope a query to only include characters that can be traded.
      *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeTradable($query)
-    {
-        return $query->where(function($query) {
+    public function scopeTradable($query) {
+        return $query->where(function ($query) {
             $query->whereNull('transferrable_at')->orWhere('transferrable_at', '<', Carbon::now());
-        })->where(function($query) {
-          $query->where('is_sellable', 1)->orWhere('is_tradeable', 1)->orWhere('is_giftable', 1);
+        })->where(function ($query) {
+            $query->where('is_sellable', 1)->orWhere('is_tradeable', 1)->orWhere('is_giftable', 1);
         });
     }
 
@@ -325,11 +296,17 @@ class Character extends Model
      *
      * @return bool
      */
-    public function getIsAvailableAttribute()
-    {
-        if($this->designUpdate()->active()->exists()) return false;
-        if($this->trade_id) return false;
-        if(CharacterTransfer::active()->where('character_id', $this->id)->exists()) return false;
+    public function getIsAvailableAttribute() {
+        if ($this->designUpdate()->active()->exists()) {
+            return false;
+        }
+        if ($this->trade_id) {
+            return false;
+        }
+        if (CharacterTransfer::active()->where('character_id', $this->id)->exists()) {
+            return false;
+        }
+
         return true;
     }
 
@@ -339,10 +316,12 @@ class Character extends Model
      *
      * @return string
      */
-    public function getDisplayOwnerAttribute()
-    {
-        if($this->user_id) return $this->user->displayName;
-        else return prettyProfileLink($this->owner_url);
+    public function getDisplayOwnerAttribute() {
+        if ($this->user_id) {
+            return $this->user->displayName;
+        } else {
+            return prettyProfileLink($this->owner_url);
+        }
     }
 
     /**
@@ -351,10 +330,12 @@ class Character extends Model
      *
      * @return string
      */
-    public function getSlugAttribute()
-    {
-        if($this->is_myo_slot) return $this->name;
-        else return $this->attributes['slug'];
+    public function getSlugAttribute() {
+        if ($this->is_myo_slot) {
+            return $this->name;
+        } else {
+            return $this->attributes['slug'];
+        }
     }
 
     /**
@@ -362,8 +343,7 @@ class Character extends Model
      *
      * @return string
      */
-    public function getDisplayNameAttribute()
-    {
+    public function getDisplayNameAttribute() {
         return '<a href="'.$this->url.'" class="display-character">'.$this->fullName.'</a>';
     }
 
@@ -373,10 +353,12 @@ class Character extends Model
      *
      * @return string
      */
-    public function getFullNameAttribute()
-    {
-        if($this->is_myo_slot) return $this->name;
-        else return $this->slug . ($this->name ? ': '.$this->name : '');
+    public function getFullNameAttribute() {
+        if ($this->is_myo_slot) {
+            return $this->name;
+        } else {
+            return $this->slug.($this->name ? ': '.$this->name : '');
+        }
     }
 
     /**
@@ -384,10 +366,12 @@ class Character extends Model
      *
      * @return string
      */
-    public function getUrlAttribute()
-    {
-        if($this->is_myo_slot) return url('myo/'.$this->id);
-        else return url('character/'.$this->slug);
+    public function getUrlAttribute() {
+        if ($this->is_myo_slot) {
+            return url('myo/'.$this->id);
+        } else {
+            return url('character/'.$this->slug);
+        }
     }
 
     /**
@@ -395,8 +379,7 @@ class Character extends Model
      *
      * @return string
      */
-    public function getAssetTypeAttribute()
-    {
+    public function getAssetTypeAttribute() {
         return 'characters';
     }
 
@@ -405,8 +388,7 @@ class Character extends Model
      *
      * @return string
      */
-    public function getLogTypeAttribute()
-    {
+    public function getLogTypeAttribute() {
         return 'Character';
     }
 
@@ -419,14 +401,15 @@ class Character extends Model
     /**
      * Checks if the character's owner has registered on the site and updates ownership accordingly.
      */
-    public function updateOwner()
-    {
+    public function updateOwner() {
         // Return if the character has an owner on the site already.
-        if($this->user_id) return;
+        if ($this->user_id) {
+            return;
+        }
 
         // Check if the owner has an account and update the character's user ID for them.
         $owner = checkAlias($this->owner_url);
-        if(is_object($owner)) {
+        if (is_object($owner)) {
             $this->user_id = $owner->id;
             $this->owner_url = null;
             $this->save();
@@ -439,11 +422,11 @@ class Character extends Model
     /**
      * Get the character's held currencies.
      *
-     * @param  bool  $displayedOnly
+     * @param bool $showAll
+     *
      * @return \Illuminate\Support\Collection
      */
-    public function getCurrencies($displayedOnly = false)
-    {
+    public function getCurrencies($showAll = false) {
         // Get a list of currencies that need to be displayed
         // On profile: only ones marked is_displayed
         // In bank: ones marked is_displayed + the ones the user has
@@ -451,15 +434,18 @@ class Character extends Model
         $owned = CharacterCurrency::where('character_id', $this->id)->pluck('quantity', 'currency_id')->toArray();
 
         $currencies = Currency::where('is_character_owned', 1);
-        if($displayedOnly) $currencies->where(function($query) use($owned) {
-            $query->where('is_displayed', 1)->orWhereIn('id', array_keys($owned));
-        });
-        else $currencies = $currencies->where('is_displayed', 1);
+        if ($showAll) {
+            $currencies->where(function ($query) use ($owned) {
+                $query->where('is_displayed', 1)->orWhereIn('id', array_keys($owned));
+            });
+        } else {
+            $currencies = $currencies->where('is_displayed', 1);
+        }
 
         $currencies = $currencies->orderBy('sort_character', 'DESC')->get();
 
-        foreach($currencies as $currency) {
-            $currency->quantity = isset($owned[$currency->id]) ? $owned[$currency->id] : 0;
+        foreach ($currencies as $currency) {
+            $currency->quantity = $owned[$currency->id] ?? 0;
         }
 
         return $currencies;
@@ -468,71 +454,83 @@ class Character extends Model
     /**
      * Get the character's exp logs.
      *
-     * @param  int  $limit
-     * @return \Illuminate\Support\Collection|\Illuminate\Pagination\LengthAwarePaginator
+     * @param int $limit
+     *
+     * @return \Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Support\Collection
      */
-    public function getExpLogs($limit = 10)
-    {
+    public function getExpLogs($limit = 10) {
         $character = $this;
-        $query = ExpLog::where(function($query) use ($character) {
+        $query = ExpLog::where(function ($query) use ($character) {
             $query->with('sender')->where('sender_type', 'Character')->where('sender_id', $character->id)->whereNotIn('log_type', ['Staff Grant', 'Prompt Rewards', 'Claim Rewards']);
-        })->orWhere(function($query) use ($character) {
+        })->orWhere(function ($query) use ($character) {
             $query->with('recipient')->where('recipient_type', 'Character')->where('recipient_id', $character->id)->where('log_type', '!=', 'Staff Removal');
         })->orderBy('id', 'DESC');
-        if($limit) return $query->take($limit)->get();
-        else return $query->paginate(30);
+        if ($limit) {
+            return $query->take($limit)->get();
+        } else {
+            return $query->paginate(30);
+        }
     }
 
     /**
      * Get the character's stat logs.
      *
-     * @param  int  $limit
-     * @return \Illuminate\Support\Collection|\Illuminate\Pagination\LengthAwarePaginator
+     * @param int $limit
+     *
+     * @return \Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Support\Collection
      */
-    public function getStatLogs($limit = 10)
-    {
+    public function getStatLogs($limit = 10) {
         $character = $this;
-        $query = StatTransferLog::where(function($query) use ($character) {
+        $query = StatTransferLog::where(function ($query) use ($character) {
             $query->with('sender')->where('sender_type', 'Character')->where('sender_id', $character->id)->whereNotIn('log_type', ['Staff Grant', 'Prompt Rewards', 'Claim Rewards']);
-        })->orWhere(function($query) use ($character) {
+        })->orWhere(function ($query) use ($character) {
             $query->with('recipient')->where('recipient_type', 'Character')->where('recipient_id', $character->id)->where('log_type', '!=', 'Staff Removal');
         })->orderBy('id', 'DESC');
-        if($limit) return $query->take($limit)->get();
-        else return $query->paginate(30);
+        if ($limit) {
+            return $query->take($limit)->get();
+        } else {
+            return $query->paginate(30);
+        }
     }
 
     /**
      * Get the character's level logs.
      *
-     * @param  int  $limit
-     * @return \Illuminate\Support\Collection|\Illuminate\Pagination\LengthAwarePaginator
+     * @param int $limit
+     *
+     * @return \Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Support\Collection
      */
-    public function getLevelLogs($limit = 10)
-    {
+    public function getLevelLogs($limit = 10) {
         $character = $this;
-        $query = LevelLog::where(function($query) use ($character) {
+        $query = LevelLog::where(function ($query) use ($character) {
             $query->with('recipient')->where('leveller_type', 'Character')->where('recipient_id', $character->id);
         })->orderBy('id', 'DESC');
-        if($limit) return $query->take($limit)->get();
-        else return $query->paginate(30);
+        if ($limit) {
+            return $query->take($limit)->get();
+        } else {
+            return $query->paginate(30);
+        }
     }
 
     /**
-     * Get the character's stat count logs
+     * Get the character's stat count logs.
      *
-     * @param  int  $limit
-     * @return \Illuminate\Support\Collection|\Illuminate\Pagination\LengthAwarePaginator
+     * @param int $limit
+     *
+     * @return \Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Support\Collection
      */
-    public function getCountLogs($limit = 10)
-    {
+    public function getCountLogs($limit = 10) {
         $character = $this;
-        $query = CountLog::where(function($query) use ($character) {
+        $query = CountLog::where(function ($query) use ($character) {
             $query->with('sender')->where('sender_type', 'Character')->where('sender_id', $character->id)->whereNotIn('log_type', ['Staff Grant', 'Prompt Rewards', 'Claim Rewards']);
-        })->orWhere(function($query) use ($character) {
+        })->orWhere(function ($query) use ($character) {
             $query->where('character_id', $character->id)->where('log_type', '!=', 'Staff Removal');
         })->orderBy('id', 'DESC');
-        if($limit) return $query->take($limit)->get();
-        else return $query->paginate(30);
+        if ($limit) {
+            return $query->take($limit)->get();
+        } else {
+            return $query->paginate(30);
+        }
     }
 
     /**
@@ -540,47 +538,52 @@ class Character extends Model
      *
      * @return array
      */
-    public function getCurrencySelect()
-    {
+    public function getCurrencySelect() {
         return CharacterCurrency::where('character_id', $this->id)->leftJoin('currencies', 'character_currencies.currency_id', '=', 'currencies.id')->orderBy('currencies.sort_character', 'DESC')->get()->pluck('name_with_quantity', 'currency_id')->toArray();
     }
 
     /**
      * Get the character's currency logs.
      *
-     * @param  int  $limit
-     * @return \Illuminate\Support\Collection|\Illuminate\Pagination\LengthAwarePaginator
+     * @param int $limit
+     *
+     * @return \Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Support\Collection
      */
-    public function getCurrencyLogs($limit = 10)
-    {
+    public function getCurrencyLogs($limit = 10) {
         $character = $this;
-        $query = CurrencyLog::with('currency')->where(function($query) use ($character) {
+        $query = CurrencyLog::with('currency')->where(function ($query) use ($character) {
             $query->with('sender.rank')->where('sender_type', 'Character')->where('sender_id', $character->id)->where('log_type', '!=', 'Staff Grant');
-        })->orWhere(function($query) use ($character) {
+        })->orWhere(function ($query) use ($character) {
             $query->with('recipient.rank')->where('recipient_type', 'Character')->where('recipient_id', $character->id)->where('log_type', '!=', 'Staff Removal');
         })->orderBy('id', 'DESC');
-        if($limit) return $query->take($limit)->get();
-        else return $query->paginate(30);
+        if ($limit) {
+            return $query->take($limit)->get();
+        } else {
+            return $query->paginate(30);
+        }
     }
 
     /**
      * Get the character's item logs.
      *
-     * @param  int  $limit
-     * @return \Illuminate\Support\Collection|\Illuminate\Pagination\LengthAwarePaginator
+     * @param int $limit
+     *
+     * @return \Illuminate\Pagination\LengthAwarePaginator|\Illuminate\Support\Collection
      */
-    public function getItemLogs($limit = 10)
-    {
+    public function getItemLogs($limit = 10) {
         $character = $this;
 
-        $query = ItemLog::with('item')->where(function($query) use ($character) {
+        $query = ItemLog::with('item')->where(function ($query) use ($character) {
             $query->with('sender.rank')->where('sender_type', 'Character')->where('sender_id', $character->id)->where('log_type', '!=', 'Staff Grant');
-        })->orWhere(function($query) use ($character) {
+        })->orWhere(function ($query) use ($character) {
             $query->with('recipient.rank')->where('recipient_type', 'Character')->where('recipient_id', $character->id)->where('log_type', '!=', 'Staff Removal');
         })->orderBy('id', 'DESC');
 
-        if($limit) return $query->take($limit)->get();
-        else return $query->paginate(30);
+        if ($limit) {
+            return $query->take($limit)->get();
+        } else {
+            return $query->paginate(30);
+        }
     }
 
     /**
@@ -588,9 +591,9 @@ class Character extends Model
      *
      * @return \Illuminate\Pagination\LengthAwarePaginator
      */
-    public function getOwnershipLogs()
-    {
+    public function getOwnershipLogs() {
         $query = UserCharacterLog::with('sender.rank')->with('recipient.rank')->where('character_id', $this->id)->orderBy('id', 'DESC');
+
         return $query->paginate(30);
     }
 
@@ -599,9 +602,9 @@ class Character extends Model
      *
      * @return \Illuminate\Pagination\LengthAwarePaginator
      */
-    public function getCharacterLogs()
-    {
+    public function getCharacterLogs() {
         $query = CharacterLog::with('sender.rank')->where('character_id', $this->id)->where('log_type', '!=', 'Skill Awarded')->orderBy('id', 'DESC');
+
         return $query->paginate(30);
     }
 
@@ -610,9 +613,9 @@ class Character extends Model
      *
      * @return \Illuminate\Pagination\LengthAwarePaginator
      */
-    public function getCharacterSkillLogs()
-    {
+    public function getCharacterSkillLogs() {
         $query = CharacterLog::with('sender.rank')->where('character_id', $this->id)->where('log_type', 'Skill Awarded')->orderBy('id', 'DESC');
+
         return $query->paginate(30);
     }
 
@@ -621,8 +624,7 @@ class Character extends Model
      *
      * @return \Illuminate\Pagination\LengthAwarePaginator
      */
-    public function getSubmissions()
-    {
+    public function getSubmissions() {
         return Submission::with('user.rank')->with('prompt')->where('status', 'Approved')->whereIn('id', SubmissionCharacter::where('character_id', $this->id)->pluck('submission_id')->toArray())->paginate(30);
 
         // Untested
@@ -638,13 +640,14 @@ class Character extends Model
 
     /**
      * Notifies character's bookmarkers in case of a change.
+     *
+     * @param mixed $type
      */
-    public function notifyBookmarkers($type)
-    {
+    public function notifyBookmarkers($type) {
         // Bookmarkers will not be notified if the character is set to not visible
-        if($this->is_visible) {
+        if ($this->is_visible) {
             $column = null;
-            switch($type) {
+            switch ($type) {
                 case 'BOOKMARK_TRADING':
                     $column = 'notify_on_trade_status';
                     break;
@@ -665,17 +668,94 @@ class Character extends Model
             // The owner of the character themselves will not be notified, in the case that
             // they still have a bookmark on the character after it was transferred to them
             $bookmarkers = CharacterBookmark::where('character_id', $this->id)->where('user_id', '!=', $this->user_id);
-            if($column) $bookmarkers = $bookmarkers->where($column, 1);
+            if ($column) {
+                $bookmarkers = $bookmarkers->where($column, 1);
+            }
 
             $bookmarkers = User::whereIn('id', $bookmarkers->pluck('user_id')->toArray())->get();
 
             // This may have to be redone more efficiently in the case of large numbers of bookmarkers,
             // but since we're not expecting many users on the site to begin with it should be fine
-            foreach($bookmarkers as $bookmarker)
+            foreach ($bookmarkers as $bookmarker) {
                 Notifications::create($type, $bookmarker, [
-                    'character_url' => $this->url,
-                    'character_name' => $this->fullName
+                    'character_url'  => $this->url,
+                    'character_name' => $this->fullName,
                 ]);
+            }
         }
+    }
+
+    /**
+     * Propagates stats.
+     */
+    public function propagateStats() {
+        $stats = \App\Models\Stat\Stat::all();
+        // prevents running it when unneeded. if there's an error idk lol
+        if ($this->stats->count() != $stats->count()) {
+            // we need to do this each time in case a new stat is made. It slows it down but -\(-v-)/-
+            foreach ($stats as $stat) {
+                if (!$this->stats->where('stat_id', $stat->id)->first()) {
+                    $this->stats()->create([
+                        'character_id'  => $this->id,
+                        'stat_id'       => $stat->id,
+                        'count'         => $stat->base,
+                        'current_count' => $stat->base,
+                    ]);
+                }
+            }
+
+            // Refresh the model instance so that newly created stats are immediately available
+            $this->refresh();
+        }
+    }
+
+    /**
+     * Gets total stat count including bonuses etc., without acknowledging current count.
+     *
+     * @param mixed $stat_id
+     */
+    public function totalStatCount($stat_id) {
+        $stat = $this->stats->where('stat_id', $stat_id)->first();
+        $total = $stat->count;
+        $total += $this->bonusStatCount($stat_id);
+
+        return $total;
+    }
+
+    /**
+     * gets the total stat count with current count acknowledgment.
+     *
+     * @param mixed $stat_id
+     */
+    public function currentStatCount($stat_id) {
+        $stat = $this->stats->where('stat_id', $stat_id)->first();
+        $total = $stat->current_count ? $stat->current_count : $stat->count;
+        if ($total < 1) {
+            return 0; // prevents, for example, hp bonuses from being applied to a character with 0 hp
+        }
+        $total += $this->bonusStatCount($stat_id);
+
+        return $total;
+    }
+
+    /**
+     * gets bonus stat count.
+     *
+     * @param mixed $stat_id
+     */
+    public function bonusStatCount($stat_id) {
+        $total = 0;
+        foreach ($this->gear as $gear) {
+            if ($gear->gear->stats()->where('stat_id', $stat_id)->first()) {
+                $total += $gear->gear->stats()->where('stat_id', $stat_id)->first()->count;
+            }
+        }
+        foreach ($this->weapons as $weapon) {
+            if ($weapon->weapon->stats()->where('stat_id', $stat_id)->first()) {
+                $total += $weapon->weapon->stats()->where('stat_id', $stat_id)->first()->count;
+            }
+        }
+
+        return $total;
     }
 }

@@ -2,20 +2,16 @@
 
 namespace App\Models\Submission;
 
-use Config;
-use DB;
-use Carbon\Carbon;
 use App\Models\Model;
 
-class SubmissionCharacter extends Model
-{
+class SubmissionCharacter extends Model {
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'submission_id', 'character_id', 'data', 'is_focus'
+        'submission_id', 'character_id', 'data', 'is_focus',
     ];
 
     /**
@@ -34,16 +30,14 @@ class SubmissionCharacter extends Model
     /**
      * Get the submission this is attached to.
      */
-    public function submission()
-    {
+    public function submission() {
         return $this->belongsTo('App\Models\Submission\Submission', 'submission_id');
     }
 
     /**
      * Get the character being attached to the submission.
      */
-    public function character()
-    {
+    public function character() {
         return $this->belongsTo('App\Models\Character\Character', 'character_id');
     }
 
@@ -58,8 +52,7 @@ class SubmissionCharacter extends Model
      *
      * @return array
      */
-    public function getDataAttribute()
-    {
+    public function getDataAttribute() {
         return json_decode($this->attributes['data'], true);
     }
 
@@ -68,22 +61,30 @@ class SubmissionCharacter extends Model
      *
      * @return array
      */
-    public function getRewardsAttribute()
-    {
+    public function getRewardsAttribute() {
         $assets = parseAssetData($this->data);
         $rewards = [];
-        foreach($assets as $type => $a)
-        {
+        foreach ($assets as $type => $a) {
             $class = getAssetModelString($type, false);
-            foreach($a as $id => $asset)
-            {
-                $rewards[] = (object)[
-                    'rewardable_type' => $class,
-                    'rewardable_id' => $id,
-                    'quantity' => $asset['quantity']
-                ];
+            if ($class == 'Exp' || $class == 'Points') {
+                if (isset($a['quantity'])) {
+                    $rewards[] = (object) [
+                        'rewardable_type' => $class,
+                        'rewardable_id'   => 1,
+                        'quantity'        => $a['quantity'],
+                    ];
+                }
+            } else {
+                foreach ($a as $id => $asset) {
+                    $rewards[] = (object) [
+                        'rewardable_type' => $class,
+                        'rewardable_id'   => $id,
+                        'quantity'        => $asset['quantity'],
+                    ];
+                }
             }
         }
+
         return $rewards;
     }
 }

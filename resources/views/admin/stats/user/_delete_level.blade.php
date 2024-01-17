@@ -1,5 +1,5 @@
-@if($level)
-    {!! Form::open(['url' => 'admin/levels/delete/'.$level->id]) !!}
+@if ($level)
+    {!! Form::open(['url' => 'admin/levels/delete/' . $level->id]) !!}
 
     <p>You are about to delete the level <strong>{{ $level->name }}</strong>. This is not reversible. If a user/character has reached this level you will be unable to delete it.</p>
     <p>Are you sure you want to delete <strong>{{ $level->name }}</strong>?</p>
@@ -9,6 +9,6 @@
     </div>
 
     {!! Form::close() !!}
-@else 
+@else
     Invalid level selected.
 @endif

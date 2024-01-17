@@ -2,18 +2,16 @@
 
 namespace App\Models\Skill;
 
-use Config;
 use App\Models\Model;
 
-class Skill extends Model
-{
+class Skill extends Model {
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'description', 'skill_category_id', 'parent_id', 'parent_level', 'prerequisite_id', 'has_image', 'species_ids'
+        'name', 'description', 'skill_category_id', 'parent_id', 'parent_level', 'prerequisite_id', 'has_image', 'species_ids',
     ];
 
     /**
@@ -29,7 +27,7 @@ class Skill extends Model
      * @var array
      */
     public static $createRules = [
-        'name' => 'required|unique:rarities|between:3,100',
+        'name'        => 'required|unique:rarities|between:3,100',
         'description' => 'nullable',
     ];
 
@@ -39,7 +37,7 @@ class Skill extends Model
      * @var array
      */
     public static $updateRules = [
-        'name' => 'required|between:3,100',
+        'name'        => 'required|between:3,100',
         'description' => 'nullable',
     ];
 
@@ -52,40 +50,35 @@ class Skill extends Model
     /**
      * Get the category the skill belongs to.
      */
-    public function category()
-    {
+    public function category() {
         return $this->belongsTo('App\Models\Skill\SkillCategory', 'skill_category_id');
     }
 
     /**
-     * Get the children of the skill
+     * Get the children of the skill.
      */
-    public function children()
-    {
+    public function children() {
         return $this->hasMany('App\Models\Skill\Skill', 'parent_id');
     }
 
     /**
      * Get the parent the skill belongs to.
      */
-    public function parent()
-    {
+    public function parent() {
         return $this->belongsTo('App\Models\Skill\Skill', 'parent_id');
     }
 
     /**
      * Get the prerequisite the skill belongs to.
      */
-    public function prerequisite()
-    {
+    public function prerequisite() {
         return $this->belongsTo('App\Models\Skill\Skill', 'prerequisite_id');
     }
 
     /**
-     * get the species limits for the skill
+     * get the species limits for the skill.
      */
-    public function species()
-    {
+    public function species() {
         return $this->hasMany('App\Models\Species\SpeciesLimit', 'type_id')->where('type', 'skill');
     }
 
@@ -100,8 +93,7 @@ class Skill extends Model
      *
      * @return string
      */
-    public function getDisplayNameAttribute()
-    {
+    public function getDisplayNameAttribute() {
         return '<a href="'.$this->url.'" class="display-skill">'.$this->name.'</a>';
     }
 
@@ -110,8 +102,7 @@ class Skill extends Model
      *
      * @return string
      */
-    public function getImageDirectoryAttribute()
-    {
+    public function getImageDirectoryAttribute() {
         return 'images/data/skills';
     }
 
@@ -120,9 +111,8 @@ class Skill extends Model
      *
      * @return string
      */
-    public function getImageFileNameAttribute()
-    {
-        return $this->id . '-image.png';
+    public function getImageFileNameAttribute() {
+        return $this->id.'-image.png';
     }
 
     /**
@@ -130,8 +120,7 @@ class Skill extends Model
      *
      * @return string
      */
-    public function getImagePathAttribute()
-    {
+    public function getImagePathAttribute() {
         return public_path($this->imageDirectory);
     }
 
@@ -140,10 +129,12 @@ class Skill extends Model
      *
      * @return string
      */
-    public function getImageUrlAttribute()
-    {
-        if (!$this->has_image) return null;
-        return asset($this->imageDirectory . '/' . $this->imageFileName);
+    public function getImageUrlAttribute() {
+        if (!$this->has_image) {
+            return null;
+        }
+
+        return asset($this->imageDirectory.'/'.$this->imageFileName);
     }
 
     /**
@@ -151,8 +142,7 @@ class Skill extends Model
      *
      * @return string
      */
-    public function getUrlAttribute()
-    {
+    public function getUrlAttribute() {
         return url('world/skills?name='.$this->name);
     }
 
@@ -161,8 +151,7 @@ class Skill extends Model
      *
      * @return string
      */
-    public function getIdUrlAttribute()
-    {
+    public function getIdUrlAttribute() {
         return url('world/skills/'.$this->id);
     }
 
@@ -171,8 +160,7 @@ class Skill extends Model
      *
      * @return string
      */
-    public function getAssetTypeAttribute()
-    {
+    public function getAssetTypeAttribute() {
         return 'skills';
     }
 }

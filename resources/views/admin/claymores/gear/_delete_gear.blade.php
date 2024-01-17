@@ -1,5 +1,5 @@
-@if($gear)
-    {!! Form::open(['url' => 'admin/gear/delete/'.$gear->id]) !!}
+@if ($gear)
+    {!! Form::open(['url' => 'admin/gear/delete/' . $gear->id]) !!}
 
     <p>You are about to delete the gear <strong>{{ $gear->name }}</strong>. This is not reversible. If this gear exists in at least one user's possession, you will not be able to delete this gear.</p>
     <p>Are you sure you want to delete <strong>{{ $gear->name }}</strong>?</p>
@@ -9,6 +9,6 @@
     </div>
 
     {!! Form::close() !!}
-@else 
+@else
     Invalid gear selected.
 @endif

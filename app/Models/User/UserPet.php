@@ -3,11 +3,10 @@
 namespace App\Models\User;
 
 use App\Models\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Pet\PetDrop;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class UserPet extends Model
-{
+class UserPet extends Model {
     use SoftDeletes;
 
     /**
@@ -16,15 +15,9 @@ class UserPet extends Model
      * @var array
      */
     protected $fillable = [
-        'data', 'pet_id', 'user_id', 'attached_at', 'pet_name'
+        'data', 'pet_id', 'user_id', 'attached_at', 'pet_name', 'has_image', 'artist_url', 'artist_id', 'description',
+        'evolution_id',
     ];
-
-    /**
-     * Whether the model contains timestamps to be saved and updated.
-     *
-     * @var string
-     */
-    public $timestamps = true;
 
     /**
      * The table associated with the model.
@@ -32,6 +25,13 @@ class UserPet extends Model
      * @var string
      */
     protected $table = 'user_pets';
+
+    /**
+     * Whether the model contains timestamps to be saved and updated.
+     *
+     * @var string
+     */
+    public $timestamps = true;
 
     /**********************************************************************************************
 
@@ -42,49 +42,62 @@ class UserPet extends Model
     /**
      * Get the user who owns the stack.
      */
-    public function user()
-    {
+    public function user() {
         return $this->belongsTo('App\Models\User\User');
     }
 
     /**
      * Get the pet associated with this pet stack.
      */
-    public function pet()
-    {
+    public function pet() {
         return $this->belongsTo('App\Models\Pet\Pet');
+    }
+
+    /**
+     * Get the character associated with this pet stack.
+     */
+    public function character() {
+        return $this->belongsTo('App\Models\Character\Character', 'chara_id');
     }
 
     /**
      * Get the variant associated with this pet stack.
      */
-    public function variant()
-    {
-        return $this->belongsTo('App\Models\Pet\PetVariant','variant_id');
+    public function variant() {
+        return $this->belongsTo('App\Models\Pet\PetVariant', 'variant_id');
     }
 
-
-    public function character()
-    {
-        return $this->belongsTo('App\Models\Character\Character', 'chara_id');
+    /**
+     * Get the evolution associated with this pet stack.
+     */
+    public function evolution() {
+        return $this->belongsTo('App\Models\Pet\PetEvolution', 'evolution_id');
     }
-
 
     /**
      * Get the pet's pet drop data.
      */
-    public function drops()
-    {
-        if(!PetDrop::where('user_pet_id', $this->id)->first()) {
+    public function drops() {
+        if (!$this->pet->dropData) {
+            return $this->belongsTo('App\Models\Loot\Loot', 'rewardable_id', 'loot_table_id')->whereNull('loot_table_id');
+        }
+        if (!PetDrop::where('user_pet_id', $this->id)->first()) {
             $drop = new PetDrop;
             $drop->createDrop($this->id);
-        }
-        elseif(!PetDrop::where('user_pet_id', $this->id)->where('drop_id', $this->pet->dropData->id)->first()) {
+        } elseif (!PetDrop::where('user_pet_id', $this->id)->where('drop_id', $this->pet->dropData->id)->first()) {
             PetDrop::where('user_pet_id', $this->id)->delete;
             $drop = new PetDrop;
             $drop->createDrop($this->id);
         }
+
         return $this->hasOne('App\Models\Pet\PetDrop', 'user_pet_id');
+    }
+
+    /**
+     * Get the user that drew the pet art.
+     */
+    public function artist() {
+        return $this->belongsTo('App\Models\User\User', 'artist_id');
     }
 
     /**********************************************************************************************
@@ -98,8 +111,7 @@ class UserPet extends Model
      *
      * @return array
      */
-    public function getDataAttribute()
-    {
+    public function getDataAttribute() {
         return json_decode($this->attributes['data'], true);
     }
 
@@ -108,9 +120,11 @@ class UserPet extends Model
      *
      * @return array
      */
-    public function getIsTransferrableAttribute()
-    {
-        if(!isset($this->data['disallow_transfer']) && $this->pet->allow_transfer) return true;
+    public function getIsTransferrableAttribute() {
+        if (!isset($this->data['disallow_transfer']) && $this->pet->allow_transfer) {
+            return true;
+        }
+
         return false;
     }
 
@@ -119,8 +133,114 @@ class UserPet extends Model
      *
      * @return string
      */
-    public function getAssetTypeAttribute()
-    {
+    public function getAssetTypeAttribute() {
         return 'user_pets';
+    }
+
+    /**
+     * Gets the file directory containing the model's image.
+     *
+     * @return string
+     */
+    public function getImageDirectoryAttribute() {
+        return 'images/data/user-pets';
+    }
+
+    /**
+     * Gets the file name of the model's image.
+     *
+     * @return string
+     */
+    public function getImageFileNameAttribute() {
+        return $this->id.'-image.png';
+    }
+
+    /**
+     * Gets the path to the file directory containing the model's image.
+     *
+     * @return string
+     */
+    public function getImagePathAttribute() {
+        return public_path($this->imageDirectory);
+    }
+
+    /**
+     * Gets the URL of the model's image.
+     *
+     * @return string
+     */
+    public function getImageUrlAttribute() {
+        if (!$this->has_image) {
+            return null;
+        }
+
+        return asset($this->imageDirectory.'/'.$this->imageFileName);
+    }
+
+    /**
+     * Get the artist of the item's image.
+     *
+     * @return string
+     */
+    public function getPetArtistAttribute() {
+        if (!$this->artist_url && !$this->artist_id) {
+            return null;
+        }
+
+        // Check to see if the artist exists on site
+        $artist = checkAlias($this->artist_url, false);
+        if (is_object($artist)) {
+            $this->artist_id = $artist->id;
+            $this->artist_url = null;
+            $this->save();
+        }
+
+        if ($this->artist_id) {
+            return $this->artist->displayName;
+        } elseif ($this->artist_url) {
+            return prettyProfileLink($this->artist_url);
+        }
+    }
+
+    /**********************************************************************************************
+
+        OTHER FUNCTIONS
+
+    **********************************************************************************************/
+
+    /**
+     * Get the url for the pet's custom page.
+     *
+     * @param mixed|null $id
+     *
+     * @return array
+     */
+    public function pageUrl($id = null) {
+        if ($id && $this->user_id == $id) {
+            return url('pets/view/'.$this->id);
+        }
+
+        return url('user/'.$this->user->name.'/pets/'.$this->id);
+    }
+
+    /**
+     * gets all drops this pet is eligible for.
+     */
+    public function getAvailableDropsAttribute() {
+        if (!$this->pet->dropData) {
+            return null;
+        }
+        $rewards = [];
+        // otherwise return base rewards + variant rewards
+        if ($this->variant_id) {
+            if ($this->variant->dropData) {
+                $rewards[] = $this->variant->dropData;
+            }
+        }
+        if (!$this->pet->dropData->override) {
+            $rewards[] = $this->pet->dropData;
+        }
+
+        return $rewards;
     }
 }

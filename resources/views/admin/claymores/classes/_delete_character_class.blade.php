@@ -1,5 +1,5 @@
-@if($class)
-    {!! Form::open(['url' => 'admin/character-classes/delete/'.$class->id]) !!}
+@if ($class)
+    {!! Form::open(['url' => 'admin/character-classes/delete/' . $class->id]) !!}
 
     <p>You are about to delete the class <strong>{{ $class->name }}</strong>. This is not reversible. If characters in this class exist, you will not be able to delete this class.</p>
     <p>Are you sure you want to delete <strong>{{ $class->name }}</strong>?</p>
@@ -9,6 +9,6 @@
     </div>
 
     {!! Form::close() !!}
-@else 
+@else
     Invalid class selected.
 @endif

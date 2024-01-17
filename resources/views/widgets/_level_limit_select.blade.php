@@ -1,3 +1,13 @@
+@php
+    // This file represents a common source and definition for assets used in loot_select
+    // While it is not per se as tidy as defining these in the controller(s),
+    // doing so this way enables better compatibility across disparate extensions
+    $items = \App\Models\Item\Item::orderBy('name')->pluck('name', 'id');
+    $currencies = \App\Models\Currency\Currency::where('is_user_owned', 1)
+        ->orderBy('name')
+        ->pluck('name', 'id');
+@endphp
+
 <div class="text-right mb-3">
     <a href="#" class="btn btn-outline-info" id="addLimit">Add Limit</a>
 </div>
@@ -11,12 +21,12 @@
         </tr>
     </thead>
     <tbody id="limitTableBody">
-        @if($loots)
-            @foreach($loots as $loot)
+        @if ($loots)
+            @foreach ($loots as $loot)
                 <tr class="limit-row">
                     <td>{!! Form::select('limit_type[]', ['Item' => 'Item', 'Currency' => 'Currency'], $loot->limit_type, ['class' => 'form-control limit-type', 'placeholder' => 'Select limit Type']) !!}</td>
                     <td class="limit-row-select">
-                        @if($loot->limit_type == 'Item')
+                        @if ($loot->limit_type == 'Item')
                             {!! Form::select('limit_id[]', $items, $loot->limit_id, ['class' => 'form-control limit-item-select selectize', 'placeholder' => 'Select Item']) !!}
                         @elseif($loot->limit_type == 'Currency')
                             {!! Form::select('limit_id[]', $currencies, $loot->limit_id, ['class' => 'form-control limit-currency-select selectize', 'placeholder' => 'Select Currency']) !!}
@@ -28,4 +38,4 @@
             @endforeach
         @endif
     </tbody>
-</table> 
+</table>
