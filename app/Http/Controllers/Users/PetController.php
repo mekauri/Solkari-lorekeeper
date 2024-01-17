@@ -7,7 +7,6 @@ use App\Models\Character\Character;
 use App\Models\Item\ItemTag;
 use App\Models\Pet\Pet;
 use App\Models\Pet\PetCategory;
-use App\Services\InventoryManager;
 use App\Models\Pet\PetDrop;
 use App\Models\User\User;
 use App\Models\User\UserItem;

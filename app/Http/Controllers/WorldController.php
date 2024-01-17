@@ -7,12 +7,12 @@ use App\Models\Claymore\Gear;
 use App\Models\Claymore\GearCategory;
 use App\Models\Claymore\Weapon;
 use App\Models\Claymore\WeaponCategory;
-use App\Models\Level\Level;
 use App\Models\Currency\Currency;
 use App\Models\Feature\Feature;
 use App\Models\Feature\FeatureCategory;
 use App\Models\Item\Item;
 use App\Models\Item\ItemCategory;
+use App\Models\Level\Level;
 use App\Models\Pet\Pet;
 use App\Models\Pet\PetCategory;
 use App\Models\Rarity;
@@ -555,48 +555,48 @@ class WorldController extends Controller {
         ]);
     }
 
-   /**
-    * Shows the pets page.
-    *
-    * @return \Illuminate\Contracts\Support\Renderable
-    */
-   public function getPets(Request $request) {
-       $query = Pet::with('category');
-       $data = $request->only(['pet_category_id', 'name', 'sort']);
-       if (isset($data['pet_category_id']) && $data['pet_category_id'] != 'none') {
-           $query->where('pet_category_id', $data['pet_category_id']);
-       }
-       if (isset($data['name'])) {
-           $query->where('name', 'LIKE', '%'.$data['name'].'%');
-       }
+    /**
+     * Shows the pets page.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getPets(Request $request) {
+        $query = Pet::with('category');
+        $data = $request->only(['pet_category_id', 'name', 'sort']);
+        if (isset($data['pet_category_id']) && $data['pet_category_id'] != 'none') {
+            $query->where('pet_category_id', $data['pet_category_id']);
+        }
+        if (isset($data['name'])) {
+            $query->where('name', 'LIKE', '%'.$data['name'].'%');
+        }
 
-       if (isset($data['sort'])) {
-           switch ($data['sort']) {
-               case 'alpha':
-                   $query->sortAlphabetical();
-                   break;
-               case 'alpha-reverse':
-                   $query->sortAlphabetical(true);
-                   break;
-               case 'category':
-                   $query->sortCategory();
-                   break;
-               case 'newest':
-                   $query->sortNewest();
-                   break;
-               case 'oldest':
-                   $query->sortOldest();
-                   break;
-           }
-       } else {
-           $query->sortCategory();
-       }
+        if (isset($data['sort'])) {
+            switch ($data['sort']) {
+                case 'alpha':
+                    $query->sortAlphabetical();
+                    break;
+                case 'alpha-reverse':
+                    $query->sortAlphabetical(true);
+                    break;
+                case 'category':
+                    $query->sortCategory();
+                    break;
+                case 'newest':
+                    $query->sortNewest();
+                    break;
+                case 'oldest':
+                    $query->sortOldest();
+                    break;
+            }
+        } else {
+            $query->sortCategory();
+        }
 
-       return view('world.pets', [
-           'pets'       => $query->paginate(20)->appends($request->query()),
-           'categories' => ['none' => 'Any Category'] + PetCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-       ]);
-   }
+        return view('world.pets', [
+            'pets'       => $query->paginate(20)->appends($request->query()),
+            'categories' => ['none' => 'Any Category'] + PetCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+        ]);
+    }
 
     /**
      * Shows the weapon categories page.
@@ -615,48 +615,48 @@ class WorldController extends Controller {
         ]);
     }
 
-   /**
-    * Shows the weapons page.
-    *
-    * @return \Illuminate\Contracts\Support\Renderable
-    */
-   public function getWeapons(Request $request) {
-       $query = Weapon::with('category');
-       $data = $request->only(['weapon_category_id', 'name', 'sort']);
-       if (isset($data['weapon_category_id']) && $data['weapon_category_id'] != 'none') {
-           $query->where('weapon_category_id', $data['weapon_category_id']);
-       }
-       if (isset($data['name'])) {
-           $query->where('name', 'LIKE', '%'.$data['name'].'%');
-       }
+    /**
+     * Shows the weapons page.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getWeapons(Request $request) {
+        $query = Weapon::with('category');
+        $data = $request->only(['weapon_category_id', 'name', 'sort']);
+        if (isset($data['weapon_category_id']) && $data['weapon_category_id'] != 'none') {
+            $query->where('weapon_category_id', $data['weapon_category_id']);
+        }
+        if (isset($data['name'])) {
+            $query->where('name', 'LIKE', '%'.$data['name'].'%');
+        }
 
-       if (isset($data['sort'])) {
-           switch ($data['sort']) {
-               case 'alpha':
-                   $query->sortAlphabetical();
-                   break;
-               case 'alpha-reverse':
-                   $query->sortAlphabetical(true);
-                   break;
-               case 'category':
-                   $query->sortCategory();
-                   break;
-               case 'newest':
-                   $query->sortNewest();
-                   break;
-               case 'oldest':
-                   $query->sortOldest();
-                   break;
-           }
-       } else {
-           $query->sortCategory();
-       }
+        if (isset($data['sort'])) {
+            switch ($data['sort']) {
+                case 'alpha':
+                    $query->sortAlphabetical();
+                    break;
+                case 'alpha-reverse':
+                    $query->sortAlphabetical(true);
+                    break;
+                case 'category':
+                    $query->sortCategory();
+                    break;
+                case 'newest':
+                    $query->sortNewest();
+                    break;
+                case 'oldest':
+                    $query->sortOldest();
+                    break;
+            }
+        } else {
+            $query->sortCategory();
+        }
 
-       return view('world.weapons', [
-           'weapons'    => $query->paginate(20)->appends($request->query()),
-           'categories' => ['none' => 'Any Category'] + WeaponCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-       ]);
-   }
+        return view('world.weapons', [
+            'weapons'    => $query->paginate(20)->appends($request->query()),
+            'categories' => ['none' => 'Any Category'] + WeaponCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+        ]);
+    }
 
     /**
      * Shows an individual weapon's page.
@@ -698,48 +698,48 @@ class WorldController extends Controller {
         ]);
     }
 
-   /**
-    * Shows the gears page.
-    *
-    * @return \Illuminate\Contracts\Support\Renderable
-    */
-   public function getGears(Request $request) {
-       $query = Gear::with('category');
-       $data = $request->only(['gear_category_id', 'name', 'sort']);
-       if (isset($data['gear_category_id']) && $data['gear_category_id'] != 'none') {
-           $query->where('gear_category_id', $data['gear_category_id']);
-       }
-       if (isset($data['name'])) {
-           $query->where('name', 'LIKE', '%'.$data['name'].'%');
-       }
+    /**
+     * Shows the gears page.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getGears(Request $request) {
+        $query = Gear::with('category');
+        $data = $request->only(['gear_category_id', 'name', 'sort']);
+        if (isset($data['gear_category_id']) && $data['gear_category_id'] != 'none') {
+            $query->where('gear_category_id', $data['gear_category_id']);
+        }
+        if (isset($data['name'])) {
+            $query->where('name', 'LIKE', '%'.$data['name'].'%');
+        }
 
-       if (isset($data['sort'])) {
-           switch ($data['sort']) {
-               case 'alpha':
-                   $query->sortAlphabetical();
-                   break;
-               case 'alpha-reverse':
-                   $query->sortAlphabetical(true);
-                   break;
-               case 'category':
-                   $query->sortCategory();
-                   break;
-               case 'newest':
-                   $query->sortNewest();
-                   break;
-               case 'oldest':
-                   $query->sortOldest();
-                   break;
-           }
-       } else {
-           $query->sortCategory();
-       }
+        if (isset($data['sort'])) {
+            switch ($data['sort']) {
+                case 'alpha':
+                    $query->sortAlphabetical();
+                    break;
+                case 'alpha-reverse':
+                    $query->sortAlphabetical(true);
+                    break;
+                case 'category':
+                    $query->sortCategory();
+                    break;
+                case 'newest':
+                    $query->sortNewest();
+                    break;
+                case 'oldest':
+                    $query->sortOldest();
+                    break;
+            }
+        } else {
+            $query->sortCategory();
+        }
 
-       return view('world.gears', [
-           'gears'      => $query->paginate(20)->appends($request->query()),
-           'categories' => ['none' => 'Any Category'] + GearCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
-       ]);
-   }
+        return view('world.gears', [
+            'gears'      => $query->paginate(20)->appends($request->query()),
+            'categories' => ['none' => 'Any Category'] + GearCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+        ]);
+    }
 
     /**
      * Shows an individual gear's page.

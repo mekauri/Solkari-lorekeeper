@@ -63,9 +63,9 @@ class SkillService extends Service {
     /**
      * Update a category.
      *
-     * @param \App\Models\Skill\SkillCategory $category
-     * @param array                           $data
-     * @param \App\Models\User\User           $user
+     * @param SkillCategory         $category
+     * @param array                 $data
+     * @param \App\Models\User\User $user
      *
      * @return \App\Models\Skill\SkillCategory|bool
      */
@@ -104,7 +104,7 @@ class SkillService extends Service {
     /**
      * Delete a category.
      *
-     * @param \App\Models\Skill\SkillCategory $category
+     * @param SkillCategory $category
      *
      * @return bool
      */
@@ -216,9 +216,9 @@ class SkillService extends Service {
     /**
      * Updates an skill.
      *
-     * @param \App\Models\Skill\Skill $skill
-     * @param array                   $data
-     * @param \App\Models\User\User   $user
+     * @param Skill                 $skill
+     * @param array                 $data
+     * @param \App\Models\User\User $user
      *
      * @return \App\Models\Skill\Skill|bool
      */
@@ -270,7 +270,7 @@ class SkillService extends Service {
     /**
      * Deletes an skill.
      *
-     * @param \App\Models\Skill\Skill $skill
+     * @param Skill $skill
      *
      * @return bool
      */
@@ -300,8 +300,8 @@ class SkillService extends Service {
     /**
      * Processes user input for creating/updating an skill.
      *
-     * @param array                   $data
-     * @param \App\Models\Skill\Skill $skill
+     * @param array $data
+     * @param Skill $skill
      *
      * @return array
      */

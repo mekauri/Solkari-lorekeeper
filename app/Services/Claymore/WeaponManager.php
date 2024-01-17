@@ -29,8 +29,8 @@ class WeaponManager extends Service {
     /**
      * Grants an weapon to multiple users.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $staff
+     * @param array $data
+     * @param User  $staff
      *
      * @return bool
      */
@@ -89,9 +89,9 @@ class WeaponManager extends Service {
     /**
      * Transfers an weapon stack between users.
      *
-     * @param \App\Models\User\User       $sender
-     * @param \App\Models\User\User       $recipient
-     * @param \App\Models\User\UserWeapon $stack
+     * @param User       $sender
+     * @param User       $recipient
+     * @param UserWeapon $stack
      *
      * @return bool
      */
@@ -153,8 +153,8 @@ class WeaponManager extends Service {
     /**
      * Deletes an weapon stack.
      *
-     * @param \App\Models\User\User       $user
-     * @param \App\Models\User\UserWeapon $stack
+     * @param User       $user
+     * @param UserWeapon $stack
      *
      * @return bool
      */
@@ -196,7 +196,7 @@ class WeaponManager extends Service {
     /**
      * Names a weapon stack.
      *
-     * @param  \App\Models\User\UserWeapon
+     * @param  UserWeapon
      * @param mixed $weapon
      * @param mixed $name
      *
@@ -321,11 +321,11 @@ class WeaponManager extends Service {
     }
 
     /**
-     * @param \App\Models\User\UserWeapon
+     * @param UserWeapon
      * @param mixed $weapon
      * @param mixed $isStaff
      *
-     * @return \App\Models\User\UserWeapon
+     * @return UserWeapon
      */
     public function upgrade($weapon, $isStaff = false) {
         DB::beginTransaction();
@@ -408,8 +408,8 @@ class WeaponManager extends Service {
     /**
      * Credits an weapon to a user.
      *
-     * @param \App\Models\User\User     $sender
-     * @param \App\Models\User\User     $recipient
+     * @param User                      $sender
+     * @param User                      $recipient
      * @param string                    $type
      * @param array                     $data
      * @param \App\Models\Weapon\Weapon $weapon
@@ -439,11 +439,11 @@ class WeaponManager extends Service {
     /**
      * Moves an weapon stack from one user to another.
      *
-     * @param \App\Models\User\User $sender
-     * @param \App\Models\User\User $recipient
-     * @param string                $type
-     * @param array                 $data
-     * @param mixed                 $stack
+     * @param User   $sender
+     * @param User   $recipient
+     * @param string $type
+     * @param array  $data
+     * @param mixed  $stack
      *
      * @return bool
      */
@@ -469,7 +469,7 @@ class WeaponManager extends Service {
     /**
      * Debits an weapon from a user.
      *
-     * @param \App\Models\User\User         $user
+     * @param User                          $user
      * @param string                        $type
      * @param array                         $data
      * @param \App\Models\Weapon\UserWeapon $stack

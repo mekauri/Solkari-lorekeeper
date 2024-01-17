@@ -15,8 +15,8 @@ class ExperienceManager extends Service {
     /**
      * Grants EXP to multiple users.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $staff
+     * @param array $data
+     * @param User  $staff
      *
      * @return bool
      */
@@ -79,10 +79,10 @@ class ExperienceManager extends Service {
             }
             // for character
             else {
-                $recipient_stack = Characterlevel::where('character_id', $recipient->id)->first();
+                $recipient_stack = CharacterLevel::where('character_id', $recipient->id)->first();
 
                 if (!$recipient_stack) {
-                    $recipient_stack = Characterlevel::create(['character_id' => $recipient->id]);
+                    $recipient_stack = CharacterLevel::create(['character_id' => $recipient->id]);
                 }
                 $recipient_stack->current_exp += $quantity;
                 $recipient_stack->save();

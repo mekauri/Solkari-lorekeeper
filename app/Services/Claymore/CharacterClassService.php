@@ -58,8 +58,8 @@ class CharacterClassService extends Service {
     /**
      * Update a class.
      *
-     * @param \App\Models\Character\CharacterClass $class
-     * @param array                                $data
+     * @param CharacterClass $class
+     * @param array          $data
      *
      * @return \App\Models\Character\CharacterClass|bool
      */
@@ -97,7 +97,7 @@ class CharacterClassService extends Service {
     /**
      * Delete a class.
      *
-     * @param \App\Models\Character\CharacterClass $class
+     * @param CharacterClass $class
      *
      * @return bool
      */

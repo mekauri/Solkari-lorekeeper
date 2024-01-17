@@ -37,7 +37,7 @@ class ExchangeFocus extends Command {
         $submissions = Submission::where('focus_chara_id', '!=', null)->get();
         foreach ($submissions as $submission) {
             if (!SubmissionCharacter::where('submission_id', $submission->id)->where('character_id', $submission->focus_chara_id)->exists()) {
-                Submissioncharacter::create([
+                SubmissionCharacter::create([
                     'submission_id' => $submission->id,
                     'character_id'  => $submission->focus_chara_id,
                     'is_focus'      => 1,

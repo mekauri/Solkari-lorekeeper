@@ -7,7 +7,6 @@ use Illuminate\Console\Command;
 use Settings;
 
 class ResetStamina extends Command {
-
     /**
      * The name and signature of the console command.
      *

@@ -26,8 +26,8 @@ class GearManager extends Service {
     /**
      * Grants an gear to multiple users.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $staff
+     * @param array $data
+     * @param User  $staff
      *
      * @return bool
      */
@@ -86,9 +86,9 @@ class GearManager extends Service {
     /**
      * Transfers an gear stack between users.
      *
-     * @param \App\Models\User\User     $sender
-     * @param \App\Models\User\User     $recipient
-     * @param \App\Models\User\UserGear $stack
+     * @param User     $sender
+     * @param User     $recipient
+     * @param UserGear $stack
      *
      * @return bool
      */
@@ -150,8 +150,8 @@ class GearManager extends Service {
     /**
      * Deletes an gear stack.
      *
-     * @param \App\Models\User\User     $user
-     * @param \App\Models\User\UserGear $stack
+     * @param User     $user
+     * @param UserGear $stack
      *
      * @return bool
      */
@@ -193,7 +193,7 @@ class GearManager extends Service {
     /**
      * Names a gear stack.
      *
-     * @param  \App\Models\User\UserGear
+     * @param  UserGear
      * @param mixed $gear
      * @param mixed $name
      *
@@ -316,11 +316,11 @@ class GearManager extends Service {
     }
 
     /**
-     * @param \App\Models\User\UserGear
+     * @param UserGear
      * @param mixed $gear
      * @param mixed $isStaff
      *
-     * @return \App\Models\User\UserGear
+     * @return UserGear
      */
     public function upgrade($gear, $isStaff = false) {
         DB::beginTransaction();
@@ -363,8 +363,8 @@ class GearManager extends Service {
     /**
      * Credits an gear to a user.
      *
-     * @param \App\Models\User\User $sender
-     * @param \App\Models\User\User $recipient
+     * @param User                  $sender
+     * @param User                  $recipient
      * @param string                $type
      * @param array                 $data
      * @param \App\Models\Gear\Gear $gear
@@ -394,11 +394,11 @@ class GearManager extends Service {
     /**
      * Moves an gear stack from one user to another.
      *
-     * @param \App\Models\User\User $sender
-     * @param \App\Models\User\User $recipient
-     * @param string                $type
-     * @param array                 $data
-     * @param mixed                 $stack
+     * @param User   $sender
+     * @param User   $recipient
+     * @param string $type
+     * @param array  $data
+     * @param mixed  $stack
      *
      * @return bool
      */
@@ -424,7 +424,7 @@ class GearManager extends Service {
     /**
      * Debits an gear from a user.
      *
-     * @param \App\Models\User\User     $user
+     * @param User                      $user
      * @param string                    $type
      * @param array                     $data
      * @param \App\Models\Gear\UserGear $stack

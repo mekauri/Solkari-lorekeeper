@@ -26,8 +26,8 @@ class PetManager extends Service {
     /**
      * Grants an pet to multiple users.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $staff
+     * @param array $data
+     * @param User  $staff
      *
      * @return bool
      */
@@ -86,9 +86,9 @@ class PetManager extends Service {
     /**
      * Transfers an pet stack between users.
      *
-     * @param \App\Models\User\User    $sender
-     * @param \App\Models\User\User    $recipient
-     * @param \App\Models\User\UserPet $stack
+     * @param User    $sender
+     * @param User    $recipient
+     * @param UserPet $stack
      *
      * @return bool
      */
@@ -150,8 +150,8 @@ class PetManager extends Service {
     /**
      * Deletes an pet stack.
      *
-     * @param \App\Models\User\User    $user
-     * @param \App\Models\User\UserPet $stack
+     * @param User    $user
+     * @param UserPet $stack
      *
      * @return bool
      */
@@ -193,7 +193,7 @@ class PetManager extends Service {
     /**
      * Names a pet stack.
      *
-     * @param  \App\Models\User\UserPet
+     * @param  UserPet
      * @param mixed $pet
      * @param mixed $name
      *
@@ -361,8 +361,9 @@ class PetManager extends Service {
                 if (!$invman->debitStack($pet->user, 'Used to change pet variant', ['data' => 'Used to change '.$pet->pet->name.' variant'], $item, 1)) {
                     throw new \Exception('Could not debit item.');
                 }
-            }
-            else logAdminAction($pet->user, 'Pet Variant Changed', ['pet' => $pet->id, 'variant' => $id]); // for when develop is merged
+            } else {
+                logAdminAction($pet->user, 'Pet Variant Changed', ['pet' => $pet->id, 'variant' => $id]);
+            } // for when develop is merged
 
             $pet['variant_id'] = $id;
             $pet->save();
@@ -398,8 +399,9 @@ class PetManager extends Service {
                 if (!$invman->debitStack($pet->user, 'Used to change pet evolution', ['data' => 'Used to change '.$pet->pet->name.' evolution'], $item, 1)) {
                     throw new \Exception('Could not debit item.');
                 }
-            }
-            else logAdminAction($pet->user, 'Pet Evolution Changed', ['pet' => $pet->id, 'evolution' => $id]); // for when develop is merged
+            } else {
+                logAdminAction($pet->user, 'Pet Evolution Changed', ['pet' => $pet->id, 'evolution' => $id]);
+            } // for when develop is merged
 
             $pet['evolution_id'] = $id;
             $pet->save();
@@ -483,12 +485,12 @@ class PetManager extends Service {
     /**
      * Credits an pet to a user.
      *
-     * @param \App\Models\User\User $sender
-     * @param \App\Models\User\User $recipient
-     * @param string                $type
-     * @param array                 $data
-     * @param \App\Models\Pet\Pet   $pet
-     * @param int                   $quantity
+     * @param User   $sender
+     * @param User   $recipient
+     * @param string $type
+     * @param array  $data
+     * @param Pet    $pet
+     * @param int    $quantity
      *
      * @return bool
      */
@@ -523,11 +525,11 @@ class PetManager extends Service {
     /**
      * Moves an pet stack from one user to another.
      *
-     * @param \App\Models\User\User $sender
-     * @param \App\Models\User\User $recipient
-     * @param string                $type
-     * @param array                 $data
-     * @param mixed                 $stack
+     * @param User   $sender
+     * @param User   $recipient
+     * @param string $type
+     * @param array  $data
+     * @param mixed  $stack
      *
      * @return bool
      */
@@ -553,7 +555,7 @@ class PetManager extends Service {
     /**
      * Debits an pet from a user.
      *
-     * @param \App\Models\User\User   $user
+     * @param User                    $user
      * @param string                  $type
      * @param array                   $data
      * @param \App\Models\Pet\UserPet $stack

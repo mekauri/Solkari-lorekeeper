@@ -85,12 +85,12 @@ class SkillManager extends Service {
     /**
      * Credits skill to a character.
      *
-     * @param \App\Models\Character\Character $recipient
-     * @param string                          $type
-     * @param array                           $data
-     * @param \App\Models\Skill\Skill         $skill
-     * @param int                             $quantity
-     * @param mixed                           $sender
+     * @param Character $recipient
+     * @param string    $type
+     * @param array     $data
+     * @param Skill     $skill
+     * @param int       $quantity
+     * @param mixed     $sender
      *
      * @return bool
      */

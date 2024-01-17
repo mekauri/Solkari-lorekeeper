@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comment;
-use App\Models\Report\Report;
 use App\Models\Gallery\GallerySubmission;
 use Auth;
 

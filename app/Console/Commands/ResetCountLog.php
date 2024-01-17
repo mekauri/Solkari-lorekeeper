@@ -2,8 +2,6 @@
 
 namespace App\Console\Commands;
 
-use Carbon\Carbon;
-use Config;
 use Illuminate\Console\Command;
 
 class ResetCountLog extends Command {

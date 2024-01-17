@@ -65,9 +65,9 @@ class PetService extends Service {
     /**
      * Update a category.
      *
-     * @param \App\Models\Pet\PetCategory $category
-     * @param array                       $data
-     * @param \App\Models\User\User       $user
+     * @param PetCategory           $category
+     * @param array                 $data
+     * @param \App\Models\User\User $user
      *
      * @return \App\Models\Pet\PetCategory|bool
      */
@@ -106,7 +106,7 @@ class PetService extends Service {
     /**
      * Delete a category.
      *
-     * @param \App\Models\Pet\PetCategory $category
+     * @param PetCategory $category
      *
      * @return bool
      */
@@ -212,7 +212,7 @@ class PetService extends Service {
     /**
      * Updates an pet.
      *
-     * @param \App\Models\Pet\Pet   $pet
+     * @param Pet                   $pet
      * @param array                 $data
      * @param \App\Models\User\User $user
      *
@@ -260,7 +260,7 @@ class PetService extends Service {
     /**
      * Deletes an pet.
      *
-     * @param \App\Models\Pet\Pet $pet
+     * @param Pet $pet
      *
      * @return bool
      */
@@ -578,8 +578,8 @@ class PetService extends Service {
     /**
      * Processes user input for creating/updating an pet.
      *
-     * @param array               $data
-     * @param \App\Models\Pet\Pet $pet
+     * @param array $data
+     * @param Pet   $pet
      *
      * @return array
      */
