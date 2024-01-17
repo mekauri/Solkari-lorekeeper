@@ -2,15 +2,14 @@
 
 namespace App\Services;
 
+use App\Facades\Notifications;
 use App\Models\Character\CharacterItem;
 use App\Models\Item\Item;
 use App\Models\User\User;
 use App\Models\User\UserItem;
 use Carbon\Carbon;
-use Config;
-use DB;
 use Illuminate\Support\Arr;
-use Notifications;
+use Illuminate\Support\Facades\DB;
 
 class InventoryManager extends Service {
     /*
@@ -25,8 +24,8 @@ class InventoryManager extends Service {
     /**
      * Grants an item to multiple users.
      *
-     * @param array $data
-     * @param User  $staff
+     * @param array                 $data
+     * @param \App\Models\User\User $staff
      *
      * @return bool
      */
@@ -90,7 +89,7 @@ class InventoryManager extends Service {
      *
      * @param array                           $data
      * @param \App\Models\Character\Character $character
-     * @param User                            $staff
+     * @param \App\Models\User\User           $staff
      *
      * @return bool
      */
@@ -240,10 +239,10 @@ class InventoryManager extends Service {
     /**
      * Transfers items between user stacks.
      *
-     * @param User     $sender
-     * @param User     $recipient
-     * @param UserItem $stacks
-     * @param int      $quantities
+     * @param \App\Models\User\User     $sender
+     * @param \App\Models\User\User     $recipient
+     * @param \App\Models\User\UserItem $stacks
+     * @param int                       $quantities
      *
      * @return bool
      */
@@ -393,9 +392,9 @@ class InventoryManager extends Service {
     /**
      * Sells items from stack.
      *
-     * @param User     $user
-     * @param UserItem $stacks
-     * @param int      $quantities
+     * @param \App\Models\User\User     $user
+     * @param \App\Models\User\UserItem $stacks
+     * @param int                       $quantities
      *
      * @return bool
      */
@@ -420,7 +419,7 @@ class InventoryManager extends Service {
                 if (!isset($stack->item->data['resell'])) {
                     throw new \Exception('This item cannot be sold.');
                 }
-                if (!Config::get('lorekeeper.extensions.item_entry_expansion.resale_function')) {
+                if (!config('lorekeeper.extensions.item_entry_expansion.resale_function')) {
                     throw new \Exception('This function is not currently enabled.');
                 }
 
@@ -463,7 +462,7 @@ class InventoryManager extends Service {
      * @param \App\Models\Character\Character|\App\Models\User\User $recipient
      * @param string                                                $type
      * @param array                                                 $data
-     * @param Item                                                  $item
+     * @param \App\Models\Item\Item                                 $item
      * @param int                                                   $quantity
      *
      * @return bool
@@ -499,6 +498,13 @@ class InventoryManager extends Service {
                 $recipient_stack->count += $quantity;
                 $recipient_stack->save();
             }
+
+            if (!$item->is_released) {
+                $item->update([
+                    'is_released' => 1,
+                ]);
+            }
+
             if ($type && !$this->createLog($sender ? $sender->id : null, $sender ? $sender->logType : null, $recipient ? $recipient->id : null, $recipient ? $recipient->logType : null, null, $type, $data['data'], $item->id, $quantity)) {
                 throw new \Exception('Failed to create log.');
             }
@@ -658,7 +664,7 @@ class InventoryManager extends Service {
     /**
      * Consolidates a user's item stacks.
      *
-     * @param User $user
+     * @param \App\Models\User\User $user
      *
      * @return bool
      */

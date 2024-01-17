@@ -6,7 +6,7 @@ use App\Models\Feature\Feature;
 use App\Models\Feature\FeatureCategory;
 use App\Models\Species\Species;
 use App\Models\Species\Subtype;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class FeatureService extends Service {
     /*
@@ -41,6 +41,7 @@ class FeatureService extends Service {
             $image = null;
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
+                $data['hash'] = randomString(10);
                 $image = $data['image'];
                 unset($data['image']);
             } else {
@@ -68,9 +69,9 @@ class FeatureService extends Service {
     /**
      * Update a category.
      *
-     * @param FeatureCategory       $category
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param \App\Models\Feature\FeatureCategory $category
+     * @param array                               $data
+     * @param \App\Models\User\User               $user
      *
      * @return \App\Models\Feature\FeatureCategory|bool
      */
@@ -88,6 +89,7 @@ class FeatureService extends Service {
             $image = null;
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
+                $data['hash'] = randomString(10);
                 $image = $data['image'];
                 unset($data['image']);
             }
@@ -117,8 +119,8 @@ class FeatureService extends Service {
     /**
      * Delete a category.
      *
-     * @param FeatureCategory $category
-     * @param mixed           $user
+     * @param \App\Models\Feature\FeatureCategory $category
+     * @param mixed                               $user
      *
      * @return bool
      */
@@ -223,6 +225,7 @@ class FeatureService extends Service {
             $image = null;
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
+                $data['hash'] = randomString(10);
                 $image = $data['image'];
                 unset($data['image']);
             } else {
@@ -250,9 +253,9 @@ class FeatureService extends Service {
     /**
      * Updates a feature.
      *
-     * @param Feature               $feature
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param \App\Models\Feature\Feature $feature
+     * @param array                       $data
+     * @param \App\Models\User\User       $user
      *
      * @return \App\Models\Feature\Feature|bool
      */
@@ -295,6 +298,7 @@ class FeatureService extends Service {
             $image = null;
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
+                $data['hash'] = randomString(10);
                 $image = $data['image'];
                 unset($data['image']);
             }
@@ -320,8 +324,8 @@ class FeatureService extends Service {
     /**
      * Deletes a feature.
      *
-     * @param Feature $feature
-     * @param mixed   $user
+     * @param \App\Models\Feature\Feature $feature
+     * @param mixed                       $user
      *
      * @return bool
      */
@@ -382,8 +386,8 @@ class FeatureService extends Service {
     /**
      * Processes user input for creating/updating a feature.
      *
-     * @param array   $data
-     * @param Feature $feature
+     * @param array                       $data
+     * @param \App\Models\Feature\Feature $feature
      *
      * @return array
      */

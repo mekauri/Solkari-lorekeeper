@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\Character\CharacterCategory;
 use App\Models\Character\Sublist;
 use App\Models\Species\Species;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class SublistService extends Service {
     /*
@@ -56,9 +56,9 @@ class SublistService extends Service {
     /**
      * Update a sublist.
      *
-     * @param Sublist $sublist
-     * @param array   $data
-     * @param array   $contents
+     * @param \App\Models\Character\Sublist $sublist
+     * @param array                         $data
+     * @param array                         $contents
      *
      * @return \App\Models\Character\Sublist|bool
      */
@@ -95,7 +95,7 @@ class SublistService extends Service {
     /**
      * Delete a sublist.
      *
-     * @param Sublist $sublist
+     * @param \App\Models\Character\Sublist $sublist
      *
      * @return bool
      */

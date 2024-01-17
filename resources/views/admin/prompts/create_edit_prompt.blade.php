@@ -165,6 +165,7 @@
 @section('scripts')
     @parent
     @include('js._loot_js', ['showLootTables' => true, 'showRaffles' => true])
+    @include('widgets._datetimepicker_js')
     <script>
         $(document).ready(function() {
 
@@ -199,10 +200,6 @@
                 loadModal("{{ url('admin/data/prompts/delete') }}/{{ $prompt->id }}", 'Delete Prompt');
             });
 
-            $(".datepicker").datetimepicker({
-                dateFormat: "yy-mm-dd",
-                timeFormat: 'HH:mm:ss',
-            });
             $('.is-level-class').change(function(e) {
                 console.log(this.checked)
                 $('.level-form-group').css('display', this.checked ? 'block' : 'none')

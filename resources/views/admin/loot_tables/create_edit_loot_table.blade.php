@@ -209,7 +209,6 @@
                 else if (val == 'ItemRarity') $clone = $itemRaritySelect.clone();
                 else if (val == 'Pet') $clone = $petSelect.clone();
                 else if (val == 'Currency') $clone = $currencySelect.clone();
-                else if (val == 'Pet') $clone = $petSelect.clone();
                 else if (val == 'ItemCategory') $clone = $categorySelect.clone();
                 else if (val == 'ItemCategoryRarity') $clone = $categoryRaritySelect.clone();
                 else if (val == 'LootTable') $clone = $tableSelect.clone();
@@ -237,7 +236,6 @@
                     else if (val == 'ItemCategoryRarity') $clone = $categoryRaritySelect.clone();
                     else if (val == 'Pet') $clone = $petSelect.clone();
                     else if (val == 'Currency') $clone = $currencySelect.clone();
-                    else if (val == 'Pet') $clone = $petSelect.clone();
                     else if (val == 'LootTable') $clone = $tableSelect.clone();
                     else if (val == 'None') $clone = $noneSelect.clone();
 

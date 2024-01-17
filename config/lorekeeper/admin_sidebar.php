@@ -175,7 +175,7 @@ return [
             ],
         ],
     ],
-    'Data' => [
+    'Data'       => [
         'power' => 'edit_data',
         'links' => [
             [

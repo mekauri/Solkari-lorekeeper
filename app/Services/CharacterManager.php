@@ -2,25 +2,26 @@
 
 namespace App\Services;
 
+use App\Facades\Notifications;
+use App\Facades\Settings;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterBookmark;
-use App\Models\Character\CharacterCategory;
 use App\Models\Character\CharacterClass;
+use App\Models\Character\CharacterCategory;
 use App\Models\Character\CharacterCurrency;
 use App\Models\Character\CharacterDesignUpdate;
 use App\Models\Character\CharacterFeature;
 use App\Models\Character\CharacterImage;
 use App\Models\Character\CharacterTransfer;
-use App\Models\Species\Subtype;
 use App\Models\Stat\CharacterStat;
+use App\Models\Sales\SalesCharacter;
+use App\Models\Species\Subtype;
 use App\Models\User\User;
 use Carbon\Carbon;
-use Config;
-use DB;
 use Illuminate\Support\Arr;
-use Image;
-use Notifications;
-use Settings;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
+use Intervention\Image\Facades\Image;
 
 class CharacterManager extends Service {
     /*
@@ -40,13 +41,13 @@ class CharacterManager extends Service {
      * @return string
      */
     public function pullNumber($categoryId) {
-        $digits = Config::get('lorekeeper.settings.character_number_digits');
+        $digits = config('lorekeeper.settings.character_number_digits');
         $result = str_pad('', $digits, '0'); // A default value, in case
         $number = 0;
 
         // First check if the number needs to be the overall next
         // or next in category, and retrieve the highest number
-        if (Config::get('lorekeeper.settings.character_pull_number') == 'all') {
+        if (config('lorekeeper.settings.character_pull_number') == 'all') {
             $character = Character::myo(0)->orderBy('number', 'DESC')->first();
             if ($character) {
                 $number = ltrim($character->number, 0);
@@ -54,7 +55,7 @@ class CharacterManager extends Service {
             if (!strlen($number)) {
                 $number = '0';
             }
-        } elseif (Config::get('lorekeeper.settings.character_pull_number') == 'category' && $categoryId) {
+        } elseif (config('lorekeeper.settings.character_pull_number') == 'category' && $categoryId) {
             $character = Character::myo(0)->where('character_category_id', $categoryId)->orderBy('number', 'DESC')->first();
             if ($character) {
                 $number = ltrim($character->number, 0);
@@ -72,9 +73,9 @@ class CharacterManager extends Service {
     /**
      * Creates a new character or MYO slot.
      *
-     * @param array $data
-     * @param User  $user
-     * @param bool  $isMyo
+     * @param array                 $data
+     * @param \App\Models\User\User $user
+     * @param bool                  $isMyo
      *
      * @return \App\Models\Character\Character|bool
      */
@@ -199,13 +200,20 @@ class CharacterManager extends Service {
     /**
      * Trims and optionally resizes and watermarks an image.
      *
-     * @param CharacterImage $characterImage
+     * @param \App\Models\Character\CharacterImage $characterImage
      */
     public function processImage($characterImage) {
+        $imageProperties = getimagesize($characterImage->imagePath.'/'.$characterImage->imageFileName);
+        if ($imageProperties[0] > 2000 || $imageProperties[1] > 2000) {
+            // For large images (in terms of dimensions),
+            // use imagick instead, as it's better at handling them
+            Config::set('image.driver', 'imagick');
+        }
+
         // Trim transparent parts of image.
         $image = Image::make($characterImage->imagePath.'/'.$characterImage->imageFileName)->trim('transparent');
 
-        if (Config::get('lorekeeper.settings.masterlist_image_automation') == 1) {
+        if (config('lorekeeper.settings.masterlist_image_automation') == 1) {
             // Make the image be square
             $imageWidth = $image->width();
             $imageHeight = $image->height();
@@ -221,12 +229,13 @@ class CharacterManager extends Service {
             }
         }
 
-        if (Config::get('lorekeeper.settings.masterlist_image_format') != 'png' && Config::get('lorekeeper.settings.masterlist_image_format') != null && Config::get('lorekeeper.settings.masterlist_image_background') != null) {
-            $canvas = Image::canvas($image->width(), $image->height(), Config::get('lorekeeper.settings.masterlist_image_background'));
+        // Add background fill if destination format is not transparent
+        if (!in_array(config('lorekeeper.settings.masterlist_image_format'), ['png', 'webp']) && config('lorekeeper.settings.masterlist_image_format') != null && config('lorekeeper.settings.masterlist_image_background') != null) {
+            $canvas = Image::canvas($image->width(), $image->height(), config('lorekeeper.settings.masterlist_image_background'));
             $image = $canvas->insert($image, 'center');
         }
 
-        if (Config::get('lorekeeper.settings.store_masterlist_fullsizes') == 1) {
+        if (config('lorekeeper.settings.store_masterlist_fullsizes') == 1) {
             // Generate fullsize hash if not already generated,
             // then save the full-sized image
             if (!$characterImage->fullsize_hash) {
@@ -234,19 +243,16 @@ class CharacterManager extends Service {
                 $characterImage->save();
             }
 
-            if (Config::get('lorekeeper.settings.masterlist_fullsizes_cap') != 0) {
-                $imageWidth = $image->width();
-                $imageHeight = $image->height();
-
-                if ($imageWidth > $imageHeight) {
+            if (config('lorekeeper.settings.masterlist_fullsizes_cap') != 0) {
+                if ($image->width() > $image->height()) {
                     // Landscape
-                    $image->resize(Config::get('lorekeeper.settings.masterlist_fullsizes_cap'), null, function ($constraint) {
+                    $image->resize(config('lorekeeper.settings.masterlist_fullsizes_cap'), null, function ($constraint) {
                         $constraint->aspectRatio();
                         $constraint->upsize();
                     });
                 } else {
                     // Portrait
-                    $image->resize(null, Config::get('lorekeeper.settings.masterlist_fullsizes_cap'), function ($constraint) {
+                    $image->resize(null, config('lorekeeper.settings.masterlist_fullsizes_cap'), function ($constraint) {
                         $constraint->aspectRatio();
                         $constraint->upsize();
                     });
@@ -254,7 +260,7 @@ class CharacterManager extends Service {
             }
 
             // Save the processed image
-            $image->save($characterImage->imagePath.'/'.$characterImage->fullsizeFileName, 100, Config::get('lorekeeper.settings.masterlist_image_format'));
+            $image->save($characterImage->imagePath.'/'.$characterImage->fullsizeFileName, 100, config('lorekeeper.settings.masterlist_fullsizes_format'));
         } else {
             // Delete fullsize if it was previously created.
             if (isset($characterImage->fullsize_hash) ? file_exists(public_path($characterImage->imageDirectory.'/'.$characterImage->fullsizeFileName)) : false) {
@@ -263,36 +269,47 @@ class CharacterManager extends Service {
         }
 
         // Resize image if desired
-        if (Config::get('lorekeeper.settings.masterlist_image_dimension') != 0) {
-            $imageWidth = $image->width();
-            $imageHeight = $image->height();
-
-            if ($imageWidth > $imageHeight) {
+        if (config('lorekeeper.settings.masterlist_image_dimension') != 0) {
+            if ($image->width() > $image->height()) {
                 // Landscape
-                $image->resize(null, Config::get('lorekeeper.settings.masterlist_image_dimension'), function ($constraint) {
-                    $constraint->aspectRatio();
-                    $constraint->upsize();
-                });
+                if (config('lorekeeper.settings.masterlist_image_dimension_target') == 'short') {
+                    $image->resize(null, config('lorekeeper.settings.masterlist_image_dimension'), function ($constraint) {
+                        $constraint->aspectRatio();
+                        $constraint->upsize();
+                    });
+                } else {
+                    $image->resize(config('lorekeeper.settings.masterlist_image_dimension'), null, function ($constraint) {
+                        $constraint->aspectRatio();
+                        $constraint->upsize();
+                    });
+                }
             } else {
                 // Portrait
-                $image->resize(Config::get('lorekeeper.settings.masterlist_image_dimension'), null, function ($constraint) {
-                    $constraint->aspectRatio();
-                    $constraint->upsize();
-                });
+                if (config('lorekeeper.settings.masterlist_image_dimension_target') == 'short') {
+                    $image->resize(config('lorekeeper.settings.masterlist_image_dimension'), null, function ($constraint) {
+                        $constraint->aspectRatio();
+                        $constraint->upsize();
+                    });
+                } else {
+                    $image->resize(null, config('lorekeeper.settings.masterlist_image_dimension'), function ($constraint) {
+                        $constraint->aspectRatio();
+                        $constraint->upsize();
+                    });
+                }
             }
         }
         // Watermark the image if desired
-        if (Config::get('lorekeeper.settings.watermark_masterlist_images') == 1) {
+        if (config('lorekeeper.settings.watermark_masterlist_images') == 1) {
             $watermark = Image::make('images/watermark.png');
 
-            if (Config::get('lorekeeper.settings.watermark_resizing') == 1) {
+            if (config('lorekeeper.settings.watermark_resizing') == 1) {
                 $imageWidth = $image->width();
                 $imageHeight = $image->height();
 
                 $wmWidth = $watermark->width();
                 $wmHeight = $watermark->height();
 
-                $wmScale = Config::get('lorekeeper.settings.watermark_percent');
+                $wmScale = config('lorekeeper.settings.watermark_percent');
 
                 //Assume Landscape by Default
                 $maxSize = $imageWidth * $wmScale;
@@ -321,35 +338,39 @@ class CharacterManager extends Service {
         }
 
         // Save the processed image
-        $image->save($characterImage->imagePath.'/'.$characterImage->imageFileName, 100, Config::get('lorekeeper.settings.masterlist_image_format'));
+        $image->save($characterImage->imagePath.'/'.$characterImage->imageFileName, 100, config('lorekeeper.settings.masterlist_image_format'));
     }
 
     /**
      * Crops a thumbnail for the given image.
      *
-     * @param array          $points
-     * @param CharacterImage $characterImage
-     * @param mixed          $isMyo
+     * @param array                                $points
+     * @param \App\Models\Character\CharacterImage $characterImage
+     * @param mixed                                $isMyo
      */
     public function cropThumbnail($points, $characterImage, $isMyo = false) {
+        $imageProperties = getimagesize($characterImage->imagePath.'/'.$characterImage->imageFileName);
+        if ($imageProperties[0] > 2000 || $imageProperties[1] > 2000) {
+            // For large images (in terms of dimensions),
+            // use imagick instead, as it's better at handling them
+            Config::set('image.driver', 'imagick');
+        }
+
         $image = Image::make($characterImage->imagePath.'/'.$characterImage->imageFileName);
 
-        if (Config::get('lorekeeper.settings.masterlist_image_format') != 'png' && Config::get('lorekeeper.settings.masterlist_image_format') != null && Config::get('lorekeeper.settings.masterlist_image_background') != null) {
-            $canvas = Image::canvas($image->width(), $image->height(), Config::get('lorekeeper.settings.masterlist_image_background'));
+        if (!in_array(config('lorekeeper.settings.masterlist_image_format'), ['png', 'webp']) && config('lorekeeper.settings.masterlist_image_format') != null && config('lorekeeper.settings.masterlist_image_background') != null) {
+            $canvas = Image::canvas($image->width(), $image->height(), config('lorekeeper.settings.masterlist_image_background'));
             $image = $canvas->insert($image, 'center');
             $trimColor = true;
         }
 
-        if (Config::get('lorekeeper.settings.watermark_masterlist_thumbnails') == 1 && !$isMyo) {
+        if (config('lorekeeper.settings.watermark_masterlist_thumbnails') == 1 && !$isMyo) {
             // Trim transparent parts of image.
             $image->trim(isset($trimColor) && $trimColor ? 'top-left' : 'transparent');
 
-            if (Config::get('lorekeeper.settings.masterlist_image_automation') == 1) {
+            if (config('lorekeeper.settings.masterlist_image_automation') == 1) {
                 // Make the image be square
-                $imageWidth = $image->width();
-                $imageHeight = $image->height();
-
-                if ($imageWidth > $imageHeight) {
+                if ($image->width() > $image->height()) {
                     // Landscape
                     $canvas = Image::canvas($image->width(), $image->width());
                     $image = $canvas->insert($image, 'center');
@@ -360,8 +381,8 @@ class CharacterManager extends Service {
                 }
             }
 
-            $cropWidth = Config::get('lorekeeper.settings.masterlist_thumbnails.width');
-            $cropHeight = Config::get('lorekeeper.settings.masterlist_thumbnails.height');
+            $cropWidth = config('lorekeeper.settings.masterlist_thumbnails.width');
+            $cropHeight = config('lorekeeper.settings.masterlist_thumbnails.height');
 
             $imageWidthOld = $image->width();
             $imageHeightOld = $image->height();
@@ -369,21 +390,18 @@ class CharacterManager extends Service {
             $trimOffsetX = $imageWidthOld - $image->width();
             $trimOffsetY = $imageHeightOld - $image->height();
 
-            if (Config::get('lorekeeper.settings.watermark_masterlist_images') == 1) {
+            if (config('lorekeeper.settings.watermark_masterlist_images') == 1) {
                 // Resize image if desired, so that the watermark is applied to the correct size of image
-                if (Config::get('lorekeeper.settings.masterlist_image_dimension') != 0) {
-                    $imageWidth = $image->width();
-                    $imageHeight = $image->height();
-
-                    if ($imageWidth > $imageHeight) {
+                if (config('lorekeeper.settings.masterlist_image_dimension') != 0) {
+                    if ($image->width() > $image->height()) {
                         // Landscape
-                        $image->resize(null, Config::get('lorekeeper.settings.masterlist_image_dimension'), function ($constraint) {
+                        $image->resize(null, config('lorekeeper.settings.masterlist_image_dimension'), function ($constraint) {
                             $constraint->aspectRatio();
                             $constraint->upsize();
                         });
                     } else {
                         // Portrait
-                        $image->resize(Config::get('lorekeeper.settings.masterlist_image_dimension'), null, function ($constraint) {
+                        $image->resize(config('lorekeeper.settings.masterlist_image_dimension'), null, function ($constraint) {
                             $constraint->aspectRatio();
                             $constraint->upsize();
                         });
@@ -392,14 +410,14 @@ class CharacterManager extends Service {
                 // Watermark the image
                 $watermark = Image::make('images/watermark.png');
 
-                if (Config::get('lorekeeper.settings.watermark_resizing_thumb') == 1) {
+                if (config('lorekeeper.settings.watermark_resizing_thumb') == 1) {
                     $imageWidth = $image->width();
                     $imageHeight = $image->height();
 
                     $wmWidth = $watermark->width();
                     $wmHeight = $watermark->height();
 
-                    $wmScale = Config::get('lorekeeper.settings.watermark_percent');
+                    $wmScale = config('lorekeeper.settings.watermark_percent');
 
                     //Assume Landscape by Default
                     $maxSize = $imageWidth * $wmScale;
@@ -445,7 +463,7 @@ class CharacterManager extends Service {
                 });
             }
 
-            if (Config::get('lorekeeper.settings.masterlist_image_automation') == 0) {
+            if (config('lorekeeper.settings.masterlist_image_automation') == 0) {
                 $xOffset = 0 + (($points['x0'] - $trimOffsetX) > 0 ? ($points['x0'] - $trimOffsetX) : 0);
                 if (($xOffset + $cropWidth) > $image->width()) {
                     $xOffsetNew = $cropWidth - ($image->width() - $xOffset);
@@ -472,17 +490,17 @@ class CharacterManager extends Service {
             $cropWidth = $points['x1'] - $points['x0'];
             $cropHeight = $points['y1'] - $points['y0'];
 
-            if (Config::get('lorekeeper.settings.masterlist_image_automation') == 0) {
+            if (config('lorekeeper.settings.masterlist_image_automation') == 0) {
                 // Crop according to the selected area
                 $image->crop($cropWidth, $cropHeight, $points['x0'], $points['y0']);
             }
 
             // Resize to fit the thumbnail size
-            $image->resize(Config::get('lorekeeper.settings.masterlist_thumbnails.width'), Config::get('lorekeeper.settings.masterlist_thumbnails.height'));
+            $image->resize(config('lorekeeper.settings.masterlist_thumbnails.width'), config('lorekeeper.settings.masterlist_thumbnails.height'));
         }
 
         // Save the thumbnail
-        $image->save($characterImage->thumbnailPath.'/'.$characterImage->thumbnailFileName, 100, Config::get('lorekeeper.settings.masterlist_image_format'));
+        $image->save($characterImage->thumbnailPath.'/'.$characterImage->thumbnailFileName, 100, config('lorekeeper.settings.masterlist_image_format'));
     }
 
     /**
@@ -528,9 +546,9 @@ class CharacterManager extends Service {
     /**
      * Creates a character image.
      *
-     * @param array     $data
-     * @param Character $character
-     * @param User      $user
+     * @param array                           $data
+     * @param \App\Models\Character\Character $character
+     * @param \App\Models\User\User           $user
      *
      * @return \App\Models\Character\Character|bool
      */
@@ -603,9 +621,9 @@ class CharacterManager extends Service {
     /**
      * Updates a character image.
      *
-     * @param array          $data
-     * @param CharacterImage $image
-     * @param User           $user
+     * @param array                                $data
+     * @param \App\Models\Character\CharacterImage $image
+     * @param \App\Models\User\User                $user
      *
      * @return bool
      */
@@ -676,9 +694,9 @@ class CharacterManager extends Service {
     /**
      * Updates image data.
      *
-     * @param array          $data
-     * @param CharacterImage $image
-     * @param User           $user
+     * @param array                                $data
+     * @param \App\Models\Character\CharacterImage $image
+     * @param \App\Models\User\User                $user
      *
      * @return bool
      */
@@ -712,9 +730,9 @@ class CharacterManager extends Service {
     /**
      * Updates image credits.
      *
-     * @param array          $data
-     * @param CharacterImage $image
-     * @param User           $user
+     * @param array                                $data
+     * @param \App\Models\Character\CharacterImage $image
+     * @param \App\Models\User\User                $user
      *
      * @return bool
      */
@@ -804,9 +822,9 @@ class CharacterManager extends Service {
     /**
      * Reuploads an image.
      *
-     * @param array          $data
-     * @param CharacterImage $image
-     * @param User           $user
+     * @param array                                $data
+     * @param \App\Models\Character\CharacterImage $image
+     * @param \App\Models\User\User                $user
      *
      * @return bool
      */
@@ -818,7 +836,7 @@ class CharacterManager extends Service {
                 throw new \Exception('Failed to log admin action.');
             }
 
-            if (Config::get('lorekeeper.settings.masterlist_image_format') != null) {
+            if (config('lorekeeper.settings.masterlist_image_format') != null) {
                 // Remove old versions so that images in various filetypes don't pile up
                 if (file_exists($image->imagePath.'/'.$image->imageFileName)) {
                     unlink($image->imagePath.'/'.$image->imageFileName);
@@ -833,7 +851,7 @@ class CharacterManager extends Service {
                 }
 
                 // Set the image's extension in the DB as defined in settings
-                $image->extension = Config::get('lorekeeper.settings.masterlist_image_format');
+                $image->extension = config('lorekeeper.settings.masterlist_image_format');
                 $image->save();
             } else {
                 // Get uploaded image's extension and save it to the DB
@@ -872,9 +890,9 @@ class CharacterManager extends Service {
     /**
      * Deletes an image.
      *
-     * @param CharacterImage $image
-     * @param User           $user
-     * @param bool           $forceDelete
+     * @param \App\Models\Character\CharacterImage $image
+     * @param \App\Models\User\User                $user
+     * @param bool                                 $forceDelete
      *
      * @return bool
      */
@@ -922,9 +940,9 @@ class CharacterManager extends Service {
     /**
      * Updates image settings.
      *
-     * @param array          $data
-     * @param CharacterImage $image
-     * @param User           $user
+     * @param array                                $data
+     * @param \App\Models\Character\CharacterImage $image
+     * @param \App\Models\User\User                $user
      *
      * @return bool
      */
@@ -959,8 +977,8 @@ class CharacterManager extends Service {
     /**
      * Updates a character's active image.
      *
-     * @param CharacterImage $image
-     * @param User           $user
+     * @param \App\Models\Character\CharacterImage $image
+     * @param \App\Models\User\User                $user
      *
      * @return bool
      */
@@ -997,9 +1015,9 @@ class CharacterManager extends Service {
     /**
      * Sorts a character's images.
      *
-     * @param array $data
-     * @param User  $user
-     * @param mixed $character
+     * @param array                 $data
+     * @param \App\Models\User\User $user
+     * @param mixed                 $character
      *
      * @return bool
      */
@@ -1008,7 +1026,7 @@ class CharacterManager extends Service {
 
         try {
             $ids = explode(',', $data['sort']);
-            $images = CharacterImage::whereIn('id', $ids)->where('character_id', $character->id)->orderByRaw(DB::raw('FIELD(id, '.implode(',', $ids).')'))->get();
+            $images = CharacterImage::whereIn('id', $ids)->where('character_id', $character->id)->orderBy(DB::raw('FIELD(id, '.implode(',', $ids).')'))->get();
 
             if (count($images) != count($ids)) {
                 throw new \Exception('Invalid image included in sorting order.');
@@ -1045,8 +1063,8 @@ class CharacterManager extends Service {
     /**
      * Sorts a user's characters.
      *
-     * @param array $data
-     * @param User  $user
+     * @param array                 $data
+     * @param \App\Models\User\User $user
      *
      * @return bool
      */
@@ -1055,7 +1073,7 @@ class CharacterManager extends Service {
 
         try {
             $ids = array_reverse(explode(',', $data['sort']));
-            $characters = Character::myo(0)->whereIn('id', $ids)->where('user_id', $user->id)->where('is_visible', 1)->orderByRaw(DB::raw('FIELD(id, '.implode(',', $ids).')'))->get();
+            $characters = Character::myo(0)->whereIn('id', $ids)->where('user_id', $user->id)->where('is_visible', 1)->orderBy(DB::raw('FIELD(id, '.implode(',', $ids).')'))->get();
 
             if (count($characters) != count($ids)) {
                 throw new \Exception('Invalid character included in sorting order.');
@@ -1079,9 +1097,9 @@ class CharacterManager extends Service {
     /**
      * Updates a character's stats.
      *
-     * @param array $data
-     * @param User  $user
-     * @param mixed $character
+     * @param array                 $data
+     * @param \App\Models\User\User $user
+     * @param mixed                 $character
      *
      * @return bool
      */
@@ -1182,9 +1200,9 @@ class CharacterManager extends Service {
     /**
      * Updates a character's description.
      *
-     * @param array     $data
-     * @param Character $character
-     * @param User      $user
+     * @param array                           $data
+     * @param \App\Models\Character\Character $character
+     * @param \App\Models\User\User           $user
      *
      * @return bool
      */
@@ -1218,9 +1236,9 @@ class CharacterManager extends Service {
     /**
      * Updates a character's settings.
      *
-     * @param array $data
-     * @param User  $user
-     * @param mixed $character
+     * @param array                 $data
+     * @param \App\Models\User\User $user
+     * @param mixed                 $character
      *
      * @return bool
      */
@@ -1252,10 +1270,10 @@ class CharacterManager extends Service {
     /**
      * Updates a character's profile.
      *
-     * @param array     $data
-     * @param Character $character
-     * @param User      $user
-     * @param bool      $isAdmin
+     * @param array                           $data
+     * @param \App\Models\Character\Character $character
+     * @param \App\Models\User\User           $user
+     * @param bool                            $isAdmin
      *
      * @return bool
      */
@@ -1300,7 +1318,7 @@ class CharacterManager extends Service {
             }
             $character->save();
 
-            if (!$character->is_myo_slot && Config::get('lorekeeper.extensions.character_TH_profile_link')) {
+            if (!$character->is_myo_slot && config('lorekeeper.extensions.character_TH_profile_link')) {
                 $character->profile->link = $data['link'];
             }
             $character->profile->save();
@@ -1312,7 +1330,7 @@ class CharacterManager extends Service {
             if ($isAdmin && isset($data['alert_user']) && $character->is_visible && $character->user_id) {
                 Notifications::create('CHARACTER_PROFILE_EDIT', $character->user, [
                     'character_name' => $character->name,
-                    'character_slug' => $character->slug,
+                    'character_slug' => $character->is_myo_slot ? $character->id : $character->slug,
                     'sender_url'     => $user->url,
                     'sender_name'    => $user->name,
                 ]);
@@ -1339,8 +1357,8 @@ class CharacterManager extends Service {
     /**
      * Deletes a character.
      *
-     * @param Character $character
-     * @param User      $user
+     * @param \App\Models\Character\Character $character
+     * @param \App\Models\User\User           $user
      *
      * @return bool
      */
@@ -1348,6 +1366,9 @@ class CharacterManager extends Service {
         DB::beginTransaction();
 
         try {
+            if (SalesCharacter::where('character_id', $character->id)->exists()) {
+                throw new \Exception('This character currently exists in a previous sale post and cannot be deleted.');
+            }
             if ($character->user_id) {
                 $character->user->settings->save();
             }
@@ -1388,9 +1409,9 @@ class CharacterManager extends Service {
     /**
      * Creates a character transfer.
      *
-     * @param array     $data
-     * @param Character $character
-     * @param User      $user
+     * @param array                           $data
+     * @param \App\Models\Character\Character $character
+     * @param \App\Models\User\User           $user
      *
      * @return bool
      */
@@ -1474,9 +1495,9 @@ class CharacterManager extends Service {
     /**
      * Forces an admin transfer of a character.
      *
-     * @param array     $data
-     * @param Character $character
-     * @param User      $user
+     * @param array                           $data
+     * @param \App\Models\Character\Character $character
+     * @param \App\Models\User\User           $user
      *
      * @return bool
      */
@@ -1566,8 +1587,8 @@ class CharacterManager extends Service {
     /**
      * Processes a character transfer.
      *
-     * @param array $data
-     * @param User  $user
+     * @param array                 $data
+     * @param \App\Models\User\User $user
      *
      * @return bool
      */
@@ -1634,8 +1655,8 @@ class CharacterManager extends Service {
     /**
      * Cancels a character transfer.
      *
-     * @param array $data
-     * @param User  $user
+     * @param array                 $data
+     * @param \App\Models\User\User $user
      *
      * @return bool
      */
@@ -1670,8 +1691,8 @@ class CharacterManager extends Service {
     /**
      * Processes a character transfer in the approvals queue.
      *
-     * @param array $data
-     * @param User  $user
+     * @param array                 $data
+     * @param \App\Models\User\User $user
      *
      * @return bool
      */
@@ -1766,11 +1787,11 @@ class CharacterManager extends Service {
     /**
      * Moves a character from one user to another.
      *
-     * @param Character $character
-     * @param User      $recipient
-     * @param string    $data
-     * @param int       $cooldown
-     * @param string    $logType
+     * @param \App\Models\Character\Character $character
+     * @param \App\Models\User\User           $recipient
+     * @param string                          $data
+     * @param int                             $cooldown
+     * @param string                          $logType
      */
     public function moveCharacter($character, $recipient, $data, $cooldown = -1, $logType = null) {
         $sender = $character->user;
@@ -1815,7 +1836,7 @@ class CharacterManager extends Service {
         // Notify bookmarkers
         $character->notifyBookmarkers('BOOKMARK_OWNER');
 
-        if (Config::get('lorekeeper.settings.reset_character_status_on_transfer')) {
+        if (config('lorekeeper.settings.reset_character_status_on_transfer')) {
             // Reset trading status, gift art status, and writing status
             $character->update([
                 'is_gift_art_allowed'     => 0,
@@ -1824,7 +1845,7 @@ class CharacterManager extends Service {
             ]);
         }
 
-        if (Config::get('lorekeeper.settings.reset_character_profile_on_transfer') && !$character->is_myo_slot) {
+        if (config('lorekeeper.settings.reset_character_profile_on_transfer') && !$character->is_myo_slot) {
             // Reset name and profile
             $character->update(['name' => null]);
 
@@ -1846,41 +1867,6 @@ class CharacterManager extends Service {
             $data,
             'user'
         );
-    }
-
-    /*************************************************************************************
-     * CLAYMORE
-     *************************************************************************************/
-    public function editClass($data, $character, $user) {
-        DB::beginTransaction();
-
-        try {
-            if ($data['class_id'] != 'none') {
-                $class = CharacterClass::find($data['class_id']);
-                if (!$class) {
-                    throw new \Exception('Invalid class.');
-                }
-                $character->class_id = $class->id;
-                $character->save();
-
-                if (!$this->createLog($user->id, null, $character->user_id, ($character->user_id ? null : $character->owner_url), $character->id, 'Character Class Updated', '['.$class->displayName.']', 'character')) {
-                    throw new \Exception('Failed to create log.');
-                }
-            } else {
-                $character->class_id = null;
-                $character->save();
-
-                if (!$this->createLog($user->id, null, $character->user_id, ($character->user_id ? null : $character->owner_url), $character->id, 'Character Class Removed', '[None]', 'character')) {
-                    throw new \Exception('Failed to create log.');
-                }
-            }
-
-            return $this->commitReturn(true);
-        } catch (\Exception $e) {
-            $this->setError('error', $e->getMessage());
-        }
-
-        return $this->rollbackReturn(false);
     }
 
     /**
@@ -1943,7 +1929,7 @@ class CharacterManager extends Service {
      * @param bool  $isMyo
      * @param mixed $character
      *
-     * @return Character                                 $character
+     * @return \App\Models\Character\Character           $character
      * @return \App\Models\Character\CharacterImage|bool
      */
     private function handleCharacterImage($data, $character, $isMyo = false) {
@@ -1955,9 +1941,10 @@ class CharacterManager extends Service {
 
                 // Use default images for MYO slots without an image provided
                 if (!isset($data['image'])) {
-                    $data['image'] = asset('images/myo.png');
-                    $data['thumbnail'] = asset('images/myo-th.png');
-                    $data['extension'] = 'png';
+                    $data['image'] = public_path('images/myo.png');
+                    $data['thumbnail'] = public_path('images/myo-th.png');
+                    $data['extension'] = config('lorekeeper.settings.masterlist_image_format') ?? 'png';
+                    $data['fullsize_extension'] = config('lorekeeper.settings.masterlist_fullsizes_format') ?? $data['extension'];
                     $data['default_image'] = true;
                     unset($data['use_cropper']);
                 }
@@ -1974,7 +1961,8 @@ class CharacterManager extends Service {
             $imageData['sort'] = 0;
             $imageData['is_valid'] = isset($data['is_valid']);
             $imageData['is_visible'] = isset($data['is_visible']);
-            $imageData['extension'] = (Config::get('lorekeeper.settings.masterlist_image_format') ? Config::get('lorekeeper.settings.masterlist_image_format') : ($data['extension'] ?? $data['image']->getClientOriginalExtension()));
+            $imageData['extension'] = (config('lorekeeper.settings.masterlist_image_format') ?? ($data['extension'] ?? $data['image']->getClientOriginalExtension()));
+            $imageData['fullsize_extension'] = (config('lorekeeper.settings.masterlist_fullsizes_format') ?? ($data['fullsize_extension'] ?? $data['image']->getClientOriginalExtension()));
             $imageData['character_id'] = $character->id;
 
             $image = CharacterImage::create($imageData);
@@ -2069,7 +2057,7 @@ class CharacterManager extends Service {
     /**
      * Generates a list of features for displaying.
      *
-     * @param CharacterImage $image
+     * @param \App\Models\Character\CharacterImage $image
      *
      * @return string
      */
@@ -2085,7 +2073,7 @@ class CharacterManager extends Service {
     /**
      * Generates a list of image credits for displaying.
      *
-     * @param CharacterImage $image
+     * @param \App\Models\Character\CharacterImage $image
      *
      * @return string
      */
@@ -2099,5 +2087,48 @@ class CharacterManager extends Service {
         }
 
         return $result;
+    }
+
+    /*************************************************************************************
+     * CLAYMORE
+     *************************************************************************************/
+
+    /**
+     * Edits a character's class
+     * @param  array $data
+     * @param  \App\Models\Character\Character $character
+     * @param  \App\Models\User\User $user
+     * @return bool
+     */
+    public function editClass($data, $character, $user) {
+        DB::beginTransaction();
+
+        try {
+            if ($data['class_id'] != 'none') {
+                $class = CharacterClass::find($data['class_id']);
+                if (!$class) {
+                    throw new \Exception('Invalid class.');
+                }
+                $character->class_id = $class->id;
+                $character->save();
+
+                if (!$this->createLog($user->id, null, $character->user_id, ($character->user_id ? null : $character->owner_url), $character->id, 'Character Class Updated', '['.$class->displayName.']', 'character')) {
+                    throw new \Exception('Failed to create log.');
+                }
+            } else {
+                $character->class_id = null;
+                $character->save();
+
+                if (!$this->createLog($user->id, null, $character->user_id, ($character->user_id ? null : $character->owner_url), $character->id, 'Character Class Removed', '[None]', 'character')) {
+                    throw new \Exception('Failed to create log.');
+                }
+            }
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+
+            return $this->rollbackReturn(false);
+        }
     }
 }

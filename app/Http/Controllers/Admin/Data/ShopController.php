@@ -9,8 +9,10 @@ use App\Models\Pet\Pet;
 use App\Models\Shop\Shop;
 use App\Models\Shop\ShopStock;
 use App\Services\ShopService;
-use Auth;
+
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 use Log;
 
 class ShopController extends Controller {
@@ -163,6 +165,33 @@ class ShopController extends Controller {
     }
 
     /**
+     * Creates a shop's stock.
+     *
+     * @param App\Services\ShopService $service
+     * @param int                      $id
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postCreateShopStock(Request $request, ShopService $service, $id) {
+        $data = $request->only([
+            'shop_id', 'item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'purchase_limit', 'purchase_limit_timeframe', 'is_fto', 'stock_type', 'is_visible',
+            'restock', 'restock_quantity', 'restock_interval', 'range', 'is_timed_stock', 'start_at', 'end_at',
+        ]);
+        if ($service->updateShopStock(Shop::find($id), $data, Auth::user())) {
+            flash('Shop stock updated successfully.')->success();
+
+            return redirect()->back();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
+
+
+    /**
      * Edits a shop's stock.
      *
      * @param App\Services\ShopService $service
@@ -176,32 +205,6 @@ class ShopController extends Controller {
             'restock', 'restock_quantity', 'restock_interval', 'range', 'disallow_transfer', 'is_timed_stock', 'start_at', 'end_at',
         ]);
         if ($service->editShopStock(ShopStock::find($id), $data, Auth::user())) {
-            flash('Shop stock updated successfully.')->success();
-
-            return redirect()->back();
-        } else {
-            foreach ($service->errors()->getMessages()['error'] as $error) {
-                flash($error)->error();
-            }
-        }
-
-        return redirect()->back();
-    }
-
-    /**
-     * Edits a shop's stock.
-     *
-     * @param App\Services\ShopService $service
-     * @param int                      $id
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function postCreateShopStock(Request $request, ShopService $service, $id) {
-        $data = $request->only([
-            'shop_id', 'item_id', 'currency_id', 'cost', 'use_user_bank', 'use_character_bank', 'is_limited_stock', 'quantity', 'purchase_limit', 'purchase_limit_timeframe', 'is_fto', 'stock_type', 'is_visible',
-            'restock', 'restock_quantity', 'restock_interval', 'range', 'is_timed_stock', 'start_at', 'end_at',
-        ]);
-        if ($service->updateShopStock(Shop::find($id), $data, Auth::user())) {
             flash('Shop stock updated successfully.')->success();
 
             return redirect()->back();

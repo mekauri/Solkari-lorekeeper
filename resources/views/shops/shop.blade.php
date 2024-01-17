@@ -82,7 +82,6 @@
             @endforeach
         @endif
     @endforeach
-
 @endsection
 @section('scripts')
     <script>

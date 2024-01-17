@@ -7,8 +7,8 @@ use App\Models\Prompt\PromptCategory;
 use App\Models\Prompt\PromptReward;
 use App\Models\Prompt\PromptSkill;
 use App\Models\Submission\Submission;
-use DB;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 
 class PromptService extends Service {
     /*
@@ -43,6 +43,7 @@ class PromptService extends Service {
             $image = null;
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
+                $data['hash'] = randomString(10);
                 $image = $data['image'];
                 unset($data['image']);
             } else {
@@ -66,9 +67,9 @@ class PromptService extends Service {
     /**
      * Update a category.
      *
-     * @param PromptCategory        $category
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param \App\Models\Prompt\PromptCategory $category
+     * @param array                             $data
+     * @param \App\Models\User\User             $user
      *
      * @return \App\Models\Prompt\PromptCategory|bool
      */
@@ -86,6 +87,7 @@ class PromptService extends Service {
             $image = null;
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
+                $data['hash'] = randomString(10);
                 $image = $data['image'];
                 unset($data['image']);
             }
@@ -107,7 +109,7 @@ class PromptService extends Service {
     /**
      * Delete a category.
      *
-     * @param PromptCategory $category
+     * @param \App\Models\Prompt\PromptCategory $category
      *
      * @return bool
      */
@@ -190,6 +192,7 @@ class PromptService extends Service {
             $image = null;
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
+                $data['hash'] = randomString(10);
                 $image = $data['image'];
                 unset($data['image']);
             } else {
@@ -221,9 +224,9 @@ class PromptService extends Service {
     /**
      * Updates a prompt.
      *
-     * @param Prompt                $prompt
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param \App\Models\Prompt\Prompt $prompt
+     * @param array                     $data
+     * @param \App\Models\User\User     $user
      *
      * @return \App\Models\Prompt\Prompt|bool
      */
@@ -251,6 +254,7 @@ class PromptService extends Service {
             $image = null;
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
+                $data['hash'] = randomString(10);
                 $image = $data['image'];
                 unset($data['image']);
             }
@@ -280,7 +284,7 @@ class PromptService extends Service {
     /**
      * Deletes a prompt.
      *
-     * @param Prompt $prompt
+     * @param \App\Models\Prompt\Prompt $prompt
      *
      * @return bool
      */
@@ -336,8 +340,8 @@ class PromptService extends Service {
     /**
      * Processes user input for creating/updating a prompt.
      *
-     * @param array  $data
-     * @param Prompt $prompt
+     * @param array                     $data
+     * @param \App\Models\Prompt\Prompt $prompt
      *
      * @return array
      */
@@ -376,8 +380,8 @@ class PromptService extends Service {
     /**
      * Processes user input for creating/updating prompt rewards.
      *
-     * @param array  $data
-     * @param Prompt $prompt
+     * @param array                     $data
+     * @param \App\Models\Prompt\Prompt $prompt
      */
     private function populateRewards($data, $prompt) {
         // Clear the old rewards...

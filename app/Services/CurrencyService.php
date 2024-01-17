@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\Character\CharacterCurrency;
 use App\Models\Currency\Currency;
 use App\Models\User\UserCurrency;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class CurrencyService extends Service {
     /*
@@ -47,6 +47,7 @@ class CurrencyService extends Service {
 
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
+                $data['hash'] = randomString(10);
                 $image = $data['image'];
                 unset($data['image']);
             } else {
@@ -77,9 +78,9 @@ class CurrencyService extends Service {
     /**
      * Updates a currency.
      *
-     * @param Currency              $currency
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param \App\Models\Currency\Currency $currency
+     * @param array                         $data
+     * @param \App\Models\User\User         $user
      *
      * @return \App\Models\Currency\Currency|bool
      */
@@ -109,6 +110,7 @@ class CurrencyService extends Service {
 
             if (isset($data['image']) && $data['image']) {
                 $data['has_image'] = 1;
+                $data['hash'] = randomString(10);
                 $image = $data['image'];
                 unset($data['image']);
             }
@@ -137,8 +139,8 @@ class CurrencyService extends Service {
     /**
      * Deletes a currency.
      *
-     * @param Currency $currency
-     * @param mixed    $user
+     * @param \App\Models\Currency\Currency $currency
+     * @param mixed                         $user
      *
      * @return bool
      */
@@ -215,8 +217,8 @@ class CurrencyService extends Service {
     /**
      * Processes user input for creating/updating a currency.
      *
-     * @param array    $data
-     * @param Currency $currency
+     * @param array                         $data
+     * @param \App\Models\Currency\Currency $currency
      *
      * @return array
      */

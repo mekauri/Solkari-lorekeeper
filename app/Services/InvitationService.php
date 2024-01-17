@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Models\Invitation;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class InvitationService extends Service {
     /*
@@ -70,7 +70,7 @@ class InvitationService extends Service {
     /**
      * Deletes an unused invitation code.
      *
-     * @param Invitation $invitation
+     * @param \App\Models\Invitation $invitation
      *
      * @return bool
      */

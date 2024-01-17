@@ -41,8 +41,7 @@
     @endif
     <div class="card mb-3">
         <div class="card-header">
-            <h3 class="d-inline">
-                {{ $groups[$raffle->group_id]->name }} <span class="badge badge-xs {{ $groups[$raffle->group_id]->is_active ? 'badge-success' : 'badge-danger' }}">{{ $groups[$raffle->group_id]->is_active ? 'Visible' : 'Hidden' }}</span>
+            <h3 class="d-inline">{{ $groups[$raffle->group_id]->name }} <span class="badge badge-xs {{ $groups[$raffle->group_id]->is_active ? 'badge-success' : 'badge-danger' }}">{{ $groups[$raffle->group_id]->is_active ? 'Visible' : 'Hidden' }}</span>
             </h3>
 
             @if ($raffle->is_active < 2)

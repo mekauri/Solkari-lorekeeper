@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Characters;
 
+use App\Facades\Settings;
 use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
+use App\Models\Character\CharacterCurrency;
 use App\Models\Character\CharacterItem;
 use App\Models\Character\CharacterProfile;
 use App\Models\Character\CharacterTransfer;
@@ -20,12 +22,10 @@ use App\Services\CharacterManager;
 use App\Services\CurrencyManager;
 use App\Services\DesignUpdateManager;
 use App\Services\InventoryManager;
-use Auth;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Route;
-use Settings;
 
 class CharacterController extends Controller {
     /*
@@ -59,10 +59,11 @@ class CharacterController extends Controller {
                 ]);
             }
 
-            if (Config::get('lorekeeper.extensions.previous_and_next_characters.display')) {
+
+            if (config('lorekeeper.extensions.previous_and_next_characters.display')) {
                 $query = Character::myo(0);
                 // Get only characters of this category if pull number is limited to category
-                if (Config::get('lorekeeper.settings.character_pull_number') === 'category') {
+                if (config('lorekeeper.settings.character_pull_number') === 'category') {
                     $query->where('character_category_id', $this->character->character_category_id);
                 }
 
@@ -84,7 +85,7 @@ class CharacterController extends Controller {
                     $higherChar = $characters->where('number', '>', $this->character->number)->last();
                 }
 
-                if (Config::get('lorekeeper.extensions.previous_and_next_characters.reverse') == 0) {
+                if (config('lorekeeper.extensions.previous_and_next_characters.reverse') == 0) {
                     $nextCharacter = $lowerChar;
                     $previousCharacter = $higherChar;
                 } else {
@@ -269,7 +270,7 @@ class CharacterController extends Controller {
             'userInventory' => UserItem::with('item')->whereIn('item_id', $itemOptions->pluck('id'))->whereNull('deleted_at')->where('count', '>', '0')->where('user_id', Auth::user()->id)->get()->filter(function ($userItem) {
                 return $userItem->isTransferrable == true;
             })->sortBy('item.name'),
-            'page' => 'character',
+            'page'          => 'character',
         ] : []));
     }
 
@@ -415,7 +416,7 @@ class CharacterController extends Controller {
     }
 
     /**
-     * Shows a character's item logs.
+     * Shows a character's exp logs.
      *
      * @param mixed $slug
      *
@@ -426,7 +427,23 @@ class CharacterController extends Controller {
 
         return view('character.stats.exp_logs', [
             'character' => $this->character,
+            'extPrevAndNextBtnsUrl' => '/exp-logs',
             'logs'      => $this->character->getExpLogs(0),
+        ]);
+    }
+
+    /**
+     * Shows a character's skill logs.
+     *
+     * @param string $slug
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCharacterSkillLogs($slug) {
+        return view('character.character_skill_logs', [
+            'character' => $this->character,
+            'extPrevAndNextBtnsUrl' => '/skill-logs',
+            'logs'      => $this->character->getCharacterSkillLogs(),
         ]);
     }
 
@@ -442,6 +459,7 @@ class CharacterController extends Controller {
 
         return view('character.stats.stat_logs', [
             'character' => $this->character,
+            'extPrevAndNextBtnsUrl' => '/stat-logs',
             'logs'      => $this->character->getStatLogs(0),
         ]);
     }
@@ -458,6 +476,7 @@ class CharacterController extends Controller {
 
         return view('character.stats.level_logs', [
             'character' => $this->character,
+            'extPrevAndNextBtnsUrl' => '/level-logs',
             'logs'      => $this->character->getLevelLogs(0),
         ]);
     }
@@ -474,6 +493,7 @@ class CharacterController extends Controller {
 
         return view('character.stats.count_logs', [
             'character' => $this->character,
+            'extPrevAndNextBtnsUrl' => '/count-logs',
             'logs'      => $this->character->getCountLogs(0),
         ]);
     }
@@ -520,20 +540,6 @@ class CharacterController extends Controller {
             'character'             => $this->character,
             'extPrevAndNextBtnsUrl' => '/submissions',
             'logs'                  => $this->character->getSubmissions(),
-        ]);
-    }
-
-    /**
-     * Shows a character's skill logs.
-     *
-     * @param string $slug
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-    public function getCharacterSkillLogs($slug) {
-        return view('character.character_skill_logs', [
-            'character' => $this->character,
-            'logs'      => $this->character->getCharacterSkillLogs(),
         ]);
     }
 
@@ -685,6 +691,10 @@ class CharacterController extends Controller {
      * @return \Illuminate\Http\RedirectResponse
      */
     private function postName(Request $request, InventoryManager $service) {
+        $request->validate([
+            'stack_name' => 'nullable|max:100',
+        ]);
+
         if ($service->nameStack($this->character, CharacterItem::find($request->get('ids')), $request->get('stack_name'), Auth::user())) {
             flash('Item named successfully.')->success();
         } else {

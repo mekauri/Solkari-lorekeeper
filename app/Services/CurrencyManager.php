@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
+use App\Facades\Notifications;
 use App\Models\Character\CharacterCurrency;
 use App\Models\Currency\Currency;
 use App\Models\User\User;
 use App\Models\User\UserCurrency;
 use Carbon\Carbon;
-use DB;
-use Notifications;
+use Illuminate\Support\Facades\DB;
 
 class CurrencyManager extends Service {
     /*
@@ -23,8 +23,8 @@ class CurrencyManager extends Service {
     /**
      * Admin function for granting currency to multiple users.
      *
-     * @param array $data
-     * @param User  $staff
+     * @param array                 $data
+     * @param \App\Models\User\User $staff
      *
      * @return bool
      */
@@ -93,7 +93,7 @@ class CurrencyManager extends Service {
      *
      * @param array                           $data
      * @param \App\Models\Character\Character $staff
-     * @param User                            $staff
+     * @param \App\Models\User\User           $staff
      * @param mixed                           $character
      *
      * @return bool
@@ -155,10 +155,10 @@ class CurrencyManager extends Service {
     /**
      * Transfers currency between users.
      *
-     * @param User     $sender
-     * @param User     $recipient
-     * @param Currency $currency
-     * @param int      $quantity
+     * @param \App\Models\User\User         $sender
+     * @param \App\Models\User\User         $recipient
+     * @param \App\Models\Currency\Currency $currency
+     * @param int                           $quantity
      *
      * @return bool
      */
@@ -207,7 +207,7 @@ class CurrencyManager extends Service {
      *
      * @param \App\Models\Character\Character|\App\Models\User\User $sender
      * @param \App\Models\Character\Character|\App\Models\User\User $recipient
-     * @param Currency                                              $currency
+     * @param \App\Models\Currency\Currency                         $currency
      * @param int                                                   $quantity
      *
      * @return bool
@@ -255,7 +255,7 @@ class CurrencyManager extends Service {
      * @param \App\Models\Character\Character|\App\Models\User\User $recipient
      * @param string                                                $type
      * @param string                                                $data
-     * @param Currency                                              $currency
+     * @param \App\Models\Currency\Currency                         $currency
      * @param int                                                   $quantity
      *
      * @return bool
@@ -312,7 +312,7 @@ class CurrencyManager extends Service {
      * @param \App\Models\Character\Character|\App\Models\User\User $recipient
      * @param string                                                $type
      * @param string                                                $data
-     * @param Currency                                              $currency
+     * @param \App\Models\Currency\Currency                         $currency
      * @param int                                                   $quantity
      *
      * @return bool

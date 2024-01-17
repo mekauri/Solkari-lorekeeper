@@ -7,6 +7,7 @@ use App\Models\Claymore\Gear;
 use App\Models\Claymore\GearCategory;
 use App\Models\Claymore\Weapon;
 use App\Models\Claymore\WeaponCategory;
+use App\Models\Character\CharacterCategory;
 use App\Models\Currency\Currency;
 use App\Models\Feature\Feature;
 use App\Models\Feature\FeatureCategory;
@@ -24,9 +25,8 @@ use App\Models\Species\Species;
 use App\Models\Species\Subtype;
 use App\Models\Stat\Stat;
 use App\Models\User\User;
-use Auth;
-use Config;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class WorldController extends Controller {
     /*
@@ -245,7 +245,7 @@ class WorldController extends Controller {
         if (!$species) {
             abort(404);
         }
-        if (!Config::get('lorekeeper.extensions.species_trait_index.enable')) {
+        if (!config('lorekeeper.extensions.species_trait_index.enable')) {
             abort(404);
         }
 
@@ -302,7 +302,7 @@ class WorldController extends Controller {
         if (!$feature) {
             abort(404);
         }
-        if (!Config::get('lorekeeper.extensions.species_trait_index.trait_modals')) {
+        if (!config('lorekeeper.extensions.species_trait_index.trait_modals')) {
             abort(404);
         }
 
@@ -320,7 +320,10 @@ class WorldController extends Controller {
         $query = Item::with('category')->released();
 
         $categoryVisibleCheck = ItemCategory::visible(Auth::check() ? Auth::user() : null)->pluck('id', 'name')->toArray();
-        $query->whereIn('item_category_id', $categoryVisibleCheck);
+        // query where category is visible, or, no category and released
+        $query->where(function ($query) use ($categoryVisibleCheck) {
+            $query->whereIn('item_category_id', $categoryVisibleCheck)->orWhereNull('item_category_id');
+        });
         $data = $request->only(['item_category_id', 'name', 'sort', 'artist']);
         if (isset($data['item_category_id']) && $data['item_category_id'] != 'none') {
             if ($data['item_category_id'] == 'withoutOption') {
@@ -379,7 +382,7 @@ class WorldController extends Controller {
         if (!$item) {
             abort(404);
         }
-        if (!$item->category->is_visible) {
+        if ($item->category && !$item->category->is_visible) {
             if (Auth::check() ? !Auth::user()->isStaff : true) {
                 abort(404);
             }

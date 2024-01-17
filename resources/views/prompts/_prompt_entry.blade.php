@@ -35,7 +35,7 @@
                     <p class="text-info">Submissions to this prompt are hidden.</p>
                 @endif
             </div>
-            <h4>Rewards</h4>
+            <h3>Rewards</h3>
             @if (!count($prompt->rewards))
                 No rewards.
             @else
