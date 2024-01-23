@@ -80,7 +80,7 @@
     </li>
 @endif
 
-@if ($user && $splices && $user->id == $pet->user_id)
+@if ($user && count($splices) && $user->id == $pet->user_id)
     <li class="list-group-item">
         <a class="card-title h5 collapse-title" data-toggle="collapse" href="#userVariantForm">Change Pet Variant</a>
         {!! Form::open(['url' => 'pets/variant/' . $pet->id, 'id' => 'userVariantForm', 'class' => 'collapse']) !!}
@@ -172,8 +172,7 @@
             @endif
         </div>
         <div class="col-md">
-            {!! Form::label('Pet Artist (Optional)') !!} {!! add_help('Provide the artist\'s username if they are on
-                                                site or, failing that, a link.') !!}
+            {!! Form::label('Pet Artist (Optional)') !!} {!! add_help('Provide the artist\'s username if they are on site or, failing that, a link.') !!}
             <div class="row">
                 <div class="col-md">
                     <div class="form-group">
@@ -183,8 +182,7 @@
                 <div class="col-md">
                     <div class="form-group">
                         {!! Form::text('artist_url', $pet->artist_url ? $pet->artist_url : '', [
-                            'class' => 'form-control
-                                                                                                mr-2',
+                            'class' => 'form-control mr-2',
                             'placeholder' => 'Artist URL',
                         ]) !!}
                     </div>

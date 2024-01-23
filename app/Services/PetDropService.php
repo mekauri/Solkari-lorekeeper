@@ -68,8 +68,8 @@ class PetDropService extends Service {
     /**
      * Updates pet drop data.
      *
-     * @param PetDropData $drop
-     * @param array       $data
+     * @param \App\Models\Pet\PetDropData $drop
+     * @param array                       $data
      *
      * @return \App\Models\Pet\PetDropData|bool
      */
@@ -117,7 +117,7 @@ class PetDropService extends Service {
     /**
      * Deletes pet drop data.
      *
-     * @param PetDropData $drop
+     * @param \App\Models\Pet\PetDropData $drop
      *
      * @return bool
      */

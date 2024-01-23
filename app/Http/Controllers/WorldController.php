@@ -602,6 +602,19 @@ class WorldController extends Controller {
     }
 
     /**
+     * Gets a specific pet page.
+     *
+     * @param mixed $id
+     */
+    public function getPet($id) {
+        $pet = Pet::with('category')->findOrFail($id);
+
+        return view('world.pet_page', [
+            'pet' => $pet,
+        ]);
+    }
+
+    /**
      * Shows the weapon categories page.
      *
      * @return \Illuminate\Contracts\Support\Renderable

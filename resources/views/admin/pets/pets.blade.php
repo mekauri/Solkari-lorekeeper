@@ -54,8 +54,6 @@
 
     <div class="text-center mt-4 small text-muted">{{ $pets->total() }} result{{ $pets->total() == 1 ? '' : 's' }} found.</div>
 
-    <div class="text-center mt-4 small text-muted">{{ $pets->total() }} result{{ $pets->total() == 1 ? '' : 's' }} found.</div>
-
 @endsection
 
 @section('scripts')

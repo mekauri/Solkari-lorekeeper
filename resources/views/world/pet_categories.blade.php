@@ -17,6 +17,7 @@
         <div class="form-group mb-3">
             {!! Form::submit('Search', ['class' => 'btn btn-primary']) !!}
         </div>
+        {!! Form::close() !!}
     </div>
 
     {!! $categories->render() !!}

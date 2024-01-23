@@ -6,6 +6,7 @@ use App\Models\Character\Character;
 use App\Models\Pet\Pet;
 use App\Models\Pet\PetDrop;
 use App\Models\User\User;
+use App\Models\User\UserItem;
 use App\Models\User\UserPet;
 use Auth;
 use Carbon\Carbon;
@@ -26,8 +27,8 @@ class PetManager extends Service {
     /**
      * Grants an pet to multiple users.
      *
-     * @param array $data
-     * @param User  $staff
+     * @param array                 $data
+     * @param \App\Models\User\User $staff
      *
      * @return bool
      */
@@ -54,6 +55,13 @@ class PetManager extends Service {
                 }
             });
 
+            $keyed_variant = [];
+            array_walk($data['pet_ids'], function ($id, $key) use (&$keyed_variant, $data) {
+                if ($id != null && !in_array($id, array_keys($keyed_variant), true)) {
+                    $keyed_variant[$id] = $data['variant'][$key];
+                }
+            });
+
             // Process pet
             $pets = Pet::find($data['pet_ids']);
             if (!count($pets)) {
@@ -62,7 +70,7 @@ class PetManager extends Service {
 
             foreach ($users as $user) {
                 foreach ($pets as $pet) {
-                    if ($this->creditPet($staff, $user, 'Staff Grant', Arr::only($data, ['data', 'disallow_transfer', 'notes']), $pet, $keyed_quantities[$pet->id])) {
+                    if ($this->creditPet($staff, $user, 'Staff Grant', Arr::only($data, ['data', 'disallow_transfer', 'notes']), $pet, $keyed_quantities[$pet->id], $keyed_variant[$pet->id])) {
                         Notifications::create('PET_GRANT', $user, [
                             'pet_name'     => $pet->name,
                             'pet_quantity' => $keyed_quantities[$pet->id],
@@ -86,9 +94,9 @@ class PetManager extends Service {
     /**
      * Transfers an pet stack between users.
      *
-     * @param User    $sender
-     * @param User    $recipient
-     * @param UserPet $stack
+     * @param \App\Models\User\User    $sender
+     * @param \App\Models\User\User    $recipient
+     * @param \App\Models\User\UserPet $stack
      *
      * @return bool
      */
@@ -150,8 +158,8 @@ class PetManager extends Service {
     /**
      * Deletes an pet stack.
      *
-     * @param User    $user
-     * @param UserPet $stack
+     * @param \App\Models\User\User    $user
+     * @param \App\Models\User\UserPet $stack
      *
      * @return bool
      */
@@ -193,7 +201,7 @@ class PetManager extends Service {
     /**
      * Names a pet stack.
      *
-     * @param  UserPet
+     * @param  \App\Models\User\UserPet
      * @param mixed $pet
      * @param mixed $name
      *
@@ -355,17 +363,31 @@ class PetManager extends Service {
                     throw new \Exception('No item selected.');
                 }
 
+                if ($id == 0) {
+                    $id = 'default';
+                }
+
                 // check if user has item
                 $item = UserItem::find($stack_id);
+                $tag = $item->item->tags->where('tag', 'splice')->first();
+                if (!$tag) {
+                    throw new \Exception('Item is not a splice.');
+                }
+                if ($tag->data['variant_ids'] && !in_array($id, $tag->data['variant_ids'])) {
+                    throw new \Exception('Item is not a splice for this variant.');
+                }
+                if ($id == $pet->variant_id) {
+                    throw new \Exception('Pet is already this variant.');
+                }
+
                 $invman = new InventoryManager;
                 if (!$invman->debitStack($pet->user, 'Used to change pet variant', ['data' => 'Used to change '.$pet->pet->name.' variant'], $item, 1)) {
                     throw new \Exception('Could not debit item.');
                 }
-            } else {
-                logAdminAction($pet->user, 'Pet Variant Changed', ['pet' => $pet->id, 'variant' => $id]);
-            } // for when develop is merged
+            }
+            // else logAdminAction($pet->user, 'Pet Variant Changed', ['pet' => $pet->id, 'variant' => $id]); // for when develop is merged
 
-            $pet['variant_id'] = $id;
+            $pet['variant_id'] = $id == 'default' ? null : $id;
             $pet->save();
 
             return $this->commitReturn(true);
@@ -399,9 +421,8 @@ class PetManager extends Service {
                 if (!$invman->debitStack($pet->user, 'Used to change pet evolution', ['data' => 'Used to change '.$pet->pet->name.' evolution'], $item, 1)) {
                     throw new \Exception('Could not debit item.');
                 }
-            } else {
-                logAdminAction($pet->user, 'Pet Evolution Changed', ['pet' => $pet->id, 'evolution' => $id]);
-            } // for when develop is merged
+            }
+            // else logAdminAction($pet->user, 'Pet Evolution Changed', ['pet' => $pet->id, 'evolution' => $id]); // for when develop is merged
 
             $pet['evolution_id'] = $id;
             $pet->save();
@@ -485,28 +506,55 @@ class PetManager extends Service {
     /**
      * Credits an pet to a user.
      *
-     * @param User   $sender
-     * @param User   $recipient
-     * @param string $type
-     * @param array  $data
-     * @param Pet    $pet
-     * @param int    $quantity
+     * @param \App\Models\User\User $sender
+     * @param \App\Models\User\User $recipient
+     * @param string                $type
+     * @param array                 $data
+     * @param \App\Models\Pet\Pet   $pet
+     * @param int                   $quantity
+     * @param mixed                 $variant_id
      *
      * @return bool
      */
-    public function creditPet($sender, $recipient, $type, $data, $pet, $quantity) {
+    public function creditPet($sender, $recipient, $type, $data, $pet, $quantity, $variant_id = null) {
         DB::beginTransaction();
 
         try {
             for ($i = 0; $i < $quantity; $i++) {
-                $user_pet = UserPet::create(['user_id' => $recipient->id, 'pet_id' => $pet->id, 'data' => json_encode($data)]);
+                if ($variant_id == 'randomize' && count($pet->variants)) {
+                    // randomly get a variant
+                    $variant = $pet->variants->random();
+                    // 25% chance to be no variant
+                    if (rand(1, 4) == 1) {
+                        $variant = null;
+                    }
+                } elseif ($variant_id == 'none') {
+                    $variant = null;
+                } else {
+                    $variant = $pet->variants->where('id', $variant_id)->first();
+                }
+
+                $user_pet = UserPet::create([
+                    'user_id'    => $recipient->id,
+                    'pet_id'     => $pet->id,
+                    'data'       => json_encode($data),
+                    'variant_id' => $variant?->id,
+                ]);
             }
 
-            // Create drop information for the character, if relevant
-            if ($pet->pet && $pet->pet->dropData) {
-                $drop = new PetDrop;
-                if ($drop->createDrop($user_pet->id, null)) {
-                    throw new \Exception('Failed to create pet drop.');
+            // Create drop information for the pet, if relevant
+            if ($pet->hasDrops) {
+                $drop = PetDrop::create([
+                    'drop_id'         => $user_pet->pet->dropData->id,
+                    'user_pet_id'     => $user_pet->id,
+                    'parameters'      => $user_pet->pet->dropData->rollParameters(),
+                    'drops_available' => 0,
+                    'next_day'        => Carbon::now()
+                        ->add($user_pet->pet->dropData->frequency, $user_pet->pet->dropData->interval)
+                        ->startOf($user_pet->pet->dropData->interval),
+                ]);
+                if (!$drop) {
+                    throw new \Exception('Failed to create drop.');
                 }
             }
 
@@ -525,11 +573,11 @@ class PetManager extends Service {
     /**
      * Moves an pet stack from one user to another.
      *
-     * @param User   $sender
-     * @param User   $recipient
-     * @param string $type
-     * @param array  $data
-     * @param mixed  $stack
+     * @param \App\Models\User\User $sender
+     * @param \App\Models\User\User $recipient
+     * @param string                $type
+     * @param array                 $data
+     * @param mixed                 $stack
      *
      * @return bool
      */
@@ -555,7 +603,8 @@ class PetManager extends Service {
     /**
      * Debits an pet from a user.
      *
-     * @param User                    $user
+
+     * @param \App\Models\User\User   $user
      * @param string                  $type
      * @param array                   $data
      * @param \App\Models\Pet\UserPet $stack

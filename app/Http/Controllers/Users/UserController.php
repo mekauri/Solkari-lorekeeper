@@ -93,7 +93,7 @@ class UserController extends Controller {
             'characters' => $characters,
             'aliases'    => $aliases->orderBy('is_primary_alias', 'DESC')->orderBy('site')->get(),
             'armours'    => $armours,
-            'pets'       => $this->user->pets()->orderBy('user_pets.updated_at', 'DESC')->take(4)->get(),
+            'pets'       => $this->user->pets()->orderBy('user_pets.updated_at', 'DESC')->take(5)->get(),
         ]);
     }
 

@@ -141,7 +141,6 @@ class ShopController extends Controller {
             'stock'      => $stock,
             'currencies' => Currency::orderBy('name')->pluck('name', 'id'),
             'items'      => Item::orderBy('name')->pluck('name', 'id'),
-            'pets'       => Pet::orderBy('name')->pluck('name', 'id'),
         ]);
     }
 
