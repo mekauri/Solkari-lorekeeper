@@ -76,7 +76,10 @@ class UserController extends Controller {
 
         $gears = $this->user->gears()->orderBy('user_gears.updated_at', 'DESC')->take(4)->get();
         $weapons = $this->user->weapons()->orderBy('user_weapons.updated_at', 'DESC')->take(4)->get();
-        $armours = $gears->union($weapons);
+
+        $armours = $gears->concat($weapons)->sortByDesc(function ($item) {
+            return $item->updated_at;
+        })->take(4);
 
         $aliases = $this->user->aliases();
         if (!Auth::check() || !(Auth::check() && Auth::user()->hasPower('edit_user_info'))) {
@@ -90,6 +93,7 @@ class UserController extends Controller {
             'characters' => $characters,
             'aliases'    => $aliases->orderBy('is_primary_alias', 'DESC')->orderBy('site')->get(),
             'armours'    => $armours,
+            'pets'       => $this->user->pets()->orderBy('user_pets.updated_at', 'DESC')->take(4)->get(),
         ]);
     }
 
@@ -305,8 +309,8 @@ class UserController extends Controller {
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getUserLevel($name) {
-        return view('user.level', [
+    public function getUserStats($name) {
+        return view('user.stats', [
             'user'     => $this->user,
             'exps'     => $this->user->getExpLogs(),
             'levels'   => $this->user->getLevelLogs(),

@@ -861,3 +861,12 @@ tr.accountbound {
 .member-image{
     position: relative;
 }
+
+.stat-entry {
+    transition: background-color 0.2s;
+}
+
+.stat-entry:hover {
+    /* darken bg-color */
+    background-color: rgba(0,0,0,0.05) !important;
+}

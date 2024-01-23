@@ -21,62 +21,80 @@
         <div class="col-md">
             <div class="form-group">
                 {!! Form::label('Name') !!}
-                {!! Form::text('name', $stat->name, ['class' => 'form-control']) !!}
+                {!! Form::text('name', $stat->name, ['class' => 'form-control', 'placeholder' => 'E.g Health']) !!}
             </div>
         </div>
         <div class="col-md">
             <div class="form-group">
-                {!! Form::label('Abbreviation') !!}
-                {!! Form::text('abbreviation', $stat->abbreviation, ['class' => 'form-control']) !!}
+                {!! Form::label('Abbreviation (Optional)') !!}
+                {!! Form::text('abbreviation', $stat->abbreviation, ['class' => 'form-control', 'placeholder' => 'E.g HP']) !!}
             </div>
         </div>
     </div>
 
-    <div class="form-group">
-        {!! Form::label('default') !!} {!! add_help('This is the \'default\' or \'starter\' amount of stat. Can be negative. If negative, all level ups will apply as if the base was 1.') !!}
-        {!! Form::number('base', $stat->base, ['class' => 'form-control']) !!}
-    </div>
-
-    <p>Multiplier can apply to step (e.g (current + step) X Multiplier) or just to current. Leave step blank if you want it to apply just to current</p>
-    <p>If a stat calculation is a decimal it will round to the nearest whole number.</p>
     <div class="row">
         <div class="col-md">
             <div class="form-group">
-                {!! Form::label('Step (optional)') !!} {!! add_help('If you want a stat to increase more than by 1 per level up, enter a unique step here.') !!}
-                {!! Form::text('step', $stat->step, ['class' => 'form-control']) !!}
+                {!! Form::label('Base Stat') !!} {!! add_help('This is the \'default\' or \'starter\' amount of stat. Can be negative. If negative, all level ups will apply as if the base was 1.') !!}
+                {!! Form::number('base', $stat->base, ['class' => 'form-control']) !!}
             </div>
         </div>
         <div class="col-md">
             <div class="form-group">
-                {!! Form::label('Multiplier (optional)') !!} {!! add_help('If you want the stat to increase based on a multiplication set it here.') !!}
-                {!! Form::text('multiplier', $stat->multiplier, ['class' => 'form-control']) !!}
+                {!! Form::label('Colour') !!} {!! add_help('This is the colour that will be used to display the stat on the character page. Set it to white to disable.') !!}
+                {!! Form::color('colour', $stat->colour, ['class' => 'form-control']) !!}
             </div>
         </div>
     </div>
 
-    <p>A max level can be applied if you want to cap the levels a character can gain</p>
+    <h3>Level Up Information</h3>
+    <p>
+        Multiplier can apply to the increment (e.g (current stat value + increment) * Multiplier) or just to current stat value. Leave the increment blank if you want it to apply just to current stat value.
+    </p>
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i>
+        If a stat calculation is a decimal it will be rounded to the nearest whole number.
+    </div>
+    <div class="row">
+        <div class="col-md">
+            <div class="form-group">
+                {!! Form::label('Increment (Optional)') !!} {!! add_help('If you want a stat to increase more than by 1 per level up, enter a unique increment here.') !!}
+                {!! Form::text('increment', $stat->increment, ['class' => 'form-control']) !!}
+            </div>
+        </div>
+        <div class="col-md">
+            <div class="form-group">
+                {!! Form::label('Multiplier (Optional)') !!} {!! add_help('If you want the stat to increase based on a multiplication set it here.') !!}
+                {!! Form::text('multiplier', $stat->multiplier, ['class' => 'form-control', 'placeholder' => 'E.g. 1.1 = 10% increase']) !!}
+            </div>
+        </div>
+    </div>
+
     <div class="form-group">
-        {!! Form::label('Max level (optional)') !!}
+        {!! Form::label('Max level (Optional)') !!} {!! add_help('A max level can be applied here if you want to cap the level a character can gain in this stat.') !!}
         {!! Form::text('max_level', $stat->max_level, ['class' => 'form-control']) !!}
     </div>
 
     @if ($stat->id)
+        <h3>Species / Subtypes</h3>
+        <p>If you want this stat to only apply to certain species / subtypes, select them below.</p>
+        <p>If you select a species, all subtypes of that species will be included.</p>
         <div class="form-group">
-            {!! Form::label('Species / Subtypes') !!} {!! add_help('Allow only the selected species / subtypes to have this skill.') !!}
+            {!! Form::label('Species / Subtypes') !!} {!! add_help('Allow only the selected species / subtypes to have this stat.') !!}
             <div id="featureList">
-                @foreach ($stat->species as $species)
-                    <div class="d-flex mb-2">
+                @foreach ($stat->limits as $limit)
+                    <div class="row mb-2">
                         <div class="col-md-5">
-                            {!! Form::select('types[]', ['species' => 'Species', 'subtype' => 'Subtype'], !$species->is_subtype ? 'species' : 'subtype', ['class' => 'form-control mr-2 type', 'placeholder' => 'Select Type']) !!}
+                            {!! Form::select('types[]', ['species' => 'Species', 'subtype' => 'Subtype'], !$limit->is_subtype ? 'species' : 'subtype', ['class' => 'form-control mr-2 type', 'placeholder' => 'Select Type']) !!}
                         </div>
                         <div class="col-md-6 typeid">
-                            @if ($species->type == 'species')
-                                {!! Form::select('type_ids[]', !$species->is_subtype ? $specieses : $subtypes, $species->species_id, ['class' => 'form-control mr-2 feature-select species', 'placeholder' => 'Select Species']) !!}
+                            @if ($limit->type == 'species')
+                                {!! Form::select('type_ids[]', !$limit->is_subtype ? $specieses : $subtypes, $limit->species_id, ['class' => 'form-control mr-2 feature-select species', 'placeholder' => 'Select Species']) !!}
                             @else
-                                {!! Form::select('type_ids[]', !$species->is_subtype ? $specieses : $subtypes, $species->species_id, ['class' => 'form-control mr-2 feature-select subtype', 'placeholder' => 'Select Subtype']) !!}
+                                {!! Form::select('type_ids[]', !$limit->is_subtype ? $specieses : $subtypes, $limit->species_id, ['class' => 'form-control mr-2 feature-select subtype', 'placeholder' => 'Select Subtype']) !!}
                             @endif
                         </div>
-                        <a href="#" class="remove-feature btn btn-danger mb-2">×</a>
+                        <a href="#" class="remove-feature btn btn-danger mb-2 ml-auto mr-3">×</a>
                     </div>
                 @endforeach
             </div>
@@ -91,13 +109,13 @@
     {!! Form::close() !!}
 
     @if ($stat->id)
-        <div class="feature-row hide mb-2">
+        <div class="row feature-row hide mb-2">
             <div class="col-md-5">
                 {!! Form::select('types[]', ['species' => 'Species', 'subtype' => 'Subtype'], null, ['class' => 'form-control mr-2 type', 'placeholder' => 'Select Type']) !!}
             </div>
             <div class="col-md-6 typeid">
             </div>
-            <a href="#" class="remove-feature btn btn-danger mb-2">×</a>
+            <a href="#" class="remove-feature btn btn-danger mb-2 ml-auto mr-3">×</a>
         </div>
 
         <div class="hide">

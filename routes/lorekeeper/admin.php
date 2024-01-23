@@ -376,6 +376,9 @@ Route::group(['prefix' => 'grants', 'namespace' => 'Users', 'middleware' => 'pow
     Route::get('exp', 'GrantController@getExp');
     Route::post('exp', 'GrantController@postExp');
 
+    Route::get('points', 'GrantController@getPoints');
+    Route::post('points', 'GrantController@postPoints');
+
     Route::get('pets', 'GrantController@getPets');
     Route::post('pets', 'GrantController@postPets');
 
@@ -548,46 +551,36 @@ Route::group(['prefix' => 'designs', 'middleware' => 'power:manage_characters'],
 });
 Route::get('{type}/{status}', 'DesignController@getDesignIndex')->where('type', 'myo-approvals|design-approvals')->where('status', 'pending|approved|rejected');
 
-// STATS - STATS
-Route::group(['prefix' => 'stats', 'namespace' => 'Stats', 'middleware' => 'power:edit_stats'], function () {
+/***********************************************************************************
+ * 
+ * CLAYMORES
+ * 
+ ***********************************************************************************/
+
+// STATS
+Route::group(['prefix' => 'stats', 'namespace' => 'Stats', 'middleware' => 'power:edit_claymores'], function () {
     // GET
     Route::get('/', 'StatController@getIndex');
-    Route::get('/create', 'StatController@getCreateStat');
-    Route::get('/edit/{id}', 'StatController@getEditStat');
+    Route::get('create', 'StatController@getCreateStat');
+    Route::get('edit/{id}', 'StatController@getEditStat');
     Route::get('/delete/{id}', 'StatController@getDeleteStat');
     // POST
-    Route::post('/create', 'StatController@postCreateEditStat');
-    Route::post('/edit/{id}', 'StatController@postCreateEditStat');
-    Route::post('/delete/{id}', 'StatController@postDeleteStat');
+    Route::post('create', 'StatController@postCreateEditStat');
+    Route::post('edit/{id}', 'StatController@postCreateEditStat');
+    Route::post('delete/{id}', 'StatController@postDeleteStat');
 });
-// STATS - LEVELS
-Route::group(['prefix' => 'levels', 'namespace' => 'Stats', 'middleware' => 'power:edit_levels'], function () {
-    // USER
+// LEVELS
+Route::group(['prefix' => 'levels', 'namespace' => 'Stats', 'middleware' => 'power:edit_claymores'], function () {
     // GET
-    Route::get('/user', 'LevelController@getIndex');
-    Route::get('/create', 'LevelController@getCreateLevel');
-    Route::get('/edit/{id}', 'LevelController@getEditLevel');
-    Route::get('/delete/{id}', 'LevelController@getDeleteLevel');
+    Route::get('{type}', 'LevelController@getLevels')->where('type', 'user|character');
+    Route::get('{type}/create', 'LevelController@getCreateLevel')->where('type', 'user|character');
+    Route::get('{type}/edit/{id}', 'LevelController@getEditLevel')->where('type', 'user|character');
+    Route::get('delete/{id}', 'LevelController@getDeleteLevel');
     // POST
-    Route::post('/create', 'LevelController@postCreateEditLevel');
-    Route::post('/edit/{id}', 'LevelController@postCreateEditLevel');
-    Route::post('/delete/{id}', 'LevelController@postDeleteLevel');
-    // ---------------------------------------------
-    // CHARACTER
-    // GET
-    Route::get('/character', 'LevelController@getCharaIndex');
-    Route::get('character/create', 'LevelController@getCharaCreateLevel');
-    Route::get('character/edit/{id}', 'LevelController@getCharaEditLevel');
-    Route::get('character/delete/{id}', 'LevelController@getCharaDeleteLevel');
-    // POST
-    Route::post('character/create', 'LevelController@postCharaCreateEditLevel');
-    Route::post('character/edit/{id}', 'LevelController@postCharaCreateEditLevel');
-    Route::post('character/delete/{id}', 'LevelController@postCharaDeleteLevel');
+    Route::post('{type}/create', 'LevelController@postCreateEditLevel')->where('type', 'user|character');
+    Route::post('{type}/edit/{id}', 'LevelController@postCreateEditLevel')->where('type', 'user|character');
+    Route::post('delete/{id}', 'LevelController@postDeleteLevel');
 });
-
-/***********************************************************************************
- * CLAYMORES
- ***********************************************************************************/
 // GEARS
 Route::group(['prefix' => 'gear', 'namespace' => 'Claymores', 'middleware' => 'power:edit_claymores'], function () {
     Route::get('/', 'GearController@getGearIndex');

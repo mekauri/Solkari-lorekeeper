@@ -36,7 +36,7 @@ class Weapon extends Model {
         'weapon_category_id' => 'nullable',
         'name'               => 'required|unique:weapons|between:3,100',
         'description'        => 'nullable',
-        'image'              => 'mimes:png',
+        'image'              => 'mimes:png,webp',
     ];
 
     /**
@@ -112,9 +112,11 @@ class Weapon extends Model {
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeSortCategory($query) {
-        $ids = WeaponCategory::orderBy('sort', 'DESC')->pluck('id')->toArray();
+        if (WeaponCategory::all()->count()) {
+            return $query->orderBy(WeaponCategory::select('sort')->whereColumn('weapon_category_id', 'weapon_categories.id'), 'DESC');
+        }
 
-        return count($ids) ? $query->orderByRaw(DB::raw('FIELD(weapon_category_id, '.implode(',', $ids).')')) : $query;
+        return $query;
     }
 
     /**
@@ -239,5 +241,29 @@ class Weapon extends Model {
      */
     public function getAdminUrlAttribute() {
         return url('admin/weapons/edit/'.$this->id);
+    }
+
+    /**********************************************************************************************
+
+        OTHER FUNCTIONS
+
+    **********************************************************************************************/
+
+    /**
+     * displays the weapon's name, with stats.
+     */
+    public function displayWithStats() {
+        $stats = $this->stats->sortByDesc('count')->map(function ($stat) {
+            return $stat->stat->name . ' + ' . $stat->count;
+        })->implode('<br />');
+
+        return $this->name.($stats ? '<br />'.$stats : '');
+    }
+
+    /**
+     * Gets the imageurl of the user's stack of this gear.
+     */
+    public function getStackImageUrl($id) {
+        return UserWeapon::find($id)->imageUrl;
     }
 }

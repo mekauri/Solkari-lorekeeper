@@ -149,6 +149,7 @@ class Notification extends Model {
     public const FORCED_PET_TRANSFER = 243;
     public const PET_GRANT = 244;
     public const EXP_GRANT = 245;
+    public const STAT_GRANT = 246;
     public const GEAR_GRANT = 250;
     public const WEAPON_GRANT = 251;
     public const WEAPON_REMOVAL = 252;

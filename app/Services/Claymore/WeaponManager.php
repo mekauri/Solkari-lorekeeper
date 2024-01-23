@@ -327,7 +327,7 @@ class WeaponManager extends Service {
      *
      * @return UserWeapon
      */
-    public function upgrade($weapon, $isStaff = false) {
+    public function upgradeWeapon($weapon, $isStaff = false) {
         DB::beginTransaction();
 
         try {
@@ -371,7 +371,7 @@ class WeaponManager extends Service {
      * @param mixed $weapon
      * @param mixed $data
      */
-    public function image($weapon, $data) {
+    public function addImage($weapon, $data) {
         DB::beginTransaction();
 
         try {

@@ -5,18 +5,22 @@
 @endsection
 
 @section('profile-content')
-    {!! breadcrumbs(['Users' => 'users', $user->name => $user->url, 'Level' => $user->url . '/level']) !!}
+    {!! breadcrumbs(['Users' => 'users', $user->name => $user->url, 'Stats' => $user->url . '/stats']) !!}
 
     <h1>
-        {!! $user->displayName !!}'s Level Logs
+        {!! $user->displayName !!}'s Stat Information
     </h1>
 
-    <div class="mb-4 text-center">
-        <div class="card text-center">
-            <div class="m-4"><strong>Level:</strong> <br>{{ $user->level->current_level }}</div>
-            <div class="m-4"><strong>Current EXP:</strong> <br>{{ $user->level->current_exp }} </div>
-            <div class="m-4"><strong>Current Available Stat Points:</strong> <br>{{ $user->level->current_points }}</div>
-        </div>
+    @include('widgets._level_info', ['level' => $user->level, ])
+
+    <div class="container mb-3 text-right">
+        @if (Auth::check() && Auth::user()->id == $user->id)
+            <a href="{{url('stats')}}">
+                <div class="btn btn-primary mr-0">
+                    Go to Personal Stat Page
+                </div>
+            </a>
+        @endif
     </div>
 
     <h3>Latest EXP Activity</h3>
@@ -35,10 +39,10 @@
         </tbody>
     </table>
     <div class="text-right">
-        <a href="{{ url($user->url . '/exp-logs') }}">View all...</a>
+        <a href="{{ url($user->url . '/stats/logs/exp') }}">View all...</a>
     </div>
 
-    <h3>Latest Stat Transfer Activity</h3>
+    <h3>Latest Stat Activity</h3>
     <table class="table table-sm">
         <thead>
             <th>Sender</th>
@@ -54,7 +58,7 @@
         </tbody>
     </table>
     <div class="text-right">
-        <a href="{{ url($user->url . '/stat-logs') }}">View all...</a>
+        <a href="{{ url($user->url . '/stats/logs/points') }}">View all...</a>
     </div>
 
     <h3>Latest Level-Up Activity</h3>
@@ -72,6 +76,6 @@
         </tbody>
     </table>
     <div class="text-right">
-        <a href="{{ url($user->url . '/level-logs') }}">View all...</a>
+        <a href="{{ url($user->url . '/stats/logs/level') }}">View all...</a>
     </div>
 @endsection

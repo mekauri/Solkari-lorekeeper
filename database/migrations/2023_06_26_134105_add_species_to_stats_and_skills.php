@@ -10,7 +10,6 @@ class AddSpeciesToStatsAndSkills extends Migration {
      */
     public function up() {
         Schema::create('species_limits', function (Blueprint $table) {
-            $table->id();
             $table->integer('species_id')->unsigned();
             $table->string('type')->default('stat');
             $table->integer('type_id')->unsigned();

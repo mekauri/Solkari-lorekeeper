@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Level\UserLevel;
+use App\Models\User\UserLevel;
 use Illuminate\Console\Command;
 use Settings;
 

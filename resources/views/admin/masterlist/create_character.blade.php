@@ -293,6 +293,8 @@
             }).fail(function(jqXHR, textStatus, errorThrown) {
                 alert("AJAX call failed: " + textStatus + ", " + errorThrown);
             });
+
+            // Check stats
             $.ajax({
                 type: "GET",
                 url: "{{ url('admin/masterlist/check-stats') }}?species=" + species + "&subtype=" + subtype,
@@ -304,7 +306,7 @@
             });
         });
 
-        $("#subtype").change(function() {
+        $("#subtypes").change(function() {
             var species = $('#species').val();
             var subtype = $('#subtype').val();
             $.ajax({

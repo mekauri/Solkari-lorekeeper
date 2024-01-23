@@ -36,7 +36,7 @@ class Gear extends Model {
         'gear_category_id' => 'nullable',
         'name'             => 'required|unique:gears|between:3,100',
         'description'      => 'nullable',
-        'image'            => 'mimes:png',
+        'image'            => 'mimes:png,webp',
     ];
 
     /**
@@ -71,10 +71,16 @@ class Gear extends Model {
         return $this->belongsTo('App\Models\Claymore\Gear', 'parent_id');
     }
 
+    /**
+     * Get the children of the gear.
+     */
     public function children() {
         return $this->hasMany('App\Models\Claymore\Gear', 'parent_id');
     }
 
+    /**
+     * Get the stats of the gear.
+     */
     public function stats() {
         return $this->hasMany('App\Models\Claymore\GearStat');
     }
@@ -112,9 +118,11 @@ class Gear extends Model {
      * @return \Illuminate\Database\Eloquent\Builder
      */
     public function scopeSortCategory($query) {
-        $ids = GearCategory::orderBy('sort', 'DESC')->pluck('id')->toArray();
+        if (GearCategory::all()->count()) {
+            return $query->orderBy(GearCategory::select('sort')->whereColumn('gear_category_id', 'gear_categories.id'), 'DESC');
+        }
 
-        return count($ids) ? $query->orderByRaw(DB::raw('FIELD(gear_category_id, '.implode(',', $ids).')')) : $query;
+        return $query;
     }
 
     /**
@@ -239,5 +247,29 @@ class Gear extends Model {
      */
     public function getAdminUrlAttribute() {
         return url('admin/gear/edit/'.$this->id);
+    }
+
+    /**********************************************************************************************
+
+        OTHER FUNCTIONS
+
+    **********************************************************************************************/
+
+    /**
+     * displays the gear's name, with stats.
+     */
+    public function displayWithStats() {
+        $stats = $this->stats->sortByDesc('value')->map(function ($stat) {
+            return $stat->name;
+        })->implode(', ');
+
+        return $this->name.'<br />'.($stats ? ' ('.$stats.')' : '');
+    }
+
+    /**
+     * Gets the imageurl of the user's stack of this gear.
+     */
+    public function getStackImageUrl($id) {
+        return UserGear::find($id)->imageUrl;
     }
 }

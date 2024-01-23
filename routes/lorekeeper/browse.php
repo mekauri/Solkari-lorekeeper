@@ -16,8 +16,7 @@
 
 Route::get('items/{id}', 'Users\InventoryController@getStack');
 Route::get('pets/{id}', 'Users\PetController@getStack');
-Route::get('weapons/{id}', 'Users\WeaponController@getStack');
-Route::get('gears/{id}', 'Users\GearController@getStack');
+Route::get('{type}/{id}', 'Users\ArmouryController@getStack')->where(['type' => 'gear|weapons']);
 Route::get('items/character/{id}', 'Users\InventoryController@getCharacterStack');
 
 /**************************************************************************************************
@@ -62,7 +61,10 @@ Route::group(['prefix' => 'user', 'namespace' => 'Users'], function () {
     Route::get('{name}/pets', 'UserController@getUserPets');
     Route::get('{name}/pets/{id}', 'UserController@getUserPet');
     Route::get('{name}/bank', 'UserController@getUserBank');
-    Route::get('{name}/level', 'UserController@getUserLevel');
+    Route::get('{name}/stats', 'UserController@getUserStats');
+    Route::get('{name}/stats/logs/level', 'UserController@getUserLevelLogs');
+    Route::get('{name}/stats/logs/points', 'UserController@getUserStatLogs');
+    Route::get('{name}/stats/logs/exp', 'UserController@getUserExpLogs');
     Route::get('{name}/armoury', 'UserController@getUserArmoury');
 
     Route::get('{name}/currency-logs', 'UserController@getUserCurrencyLogs');
@@ -70,9 +72,6 @@ Route::group(['prefix' => 'user', 'namespace' => 'Users'], function () {
     Route::get('{name}/pet-logs', 'UserController@getUserPetLogs');
     Route::get('{name}/ownership', 'UserController@getUserOwnershipLogs');
     Route::get('{name}/submissions', 'UserController@getUserSubmissions');
-    Route::get('{name}/exp-logs', 'UserController@getUserExpLogs');
-    Route::get('{name}/level-logs', 'UserController@getUserLevelLogs');
-    Route::get('{name}/stat-logs', 'UserController@getUserStatLogs');
     Route::get('{name}/gear-logs', 'UserController@getUserGearLogs');
     Route::get('{name}/weapon-logs', 'UserController@getUserWeaponLogs');
 });
@@ -97,10 +96,11 @@ Route::group(['prefix' => 'character', 'namespace' => 'Characters'], function ()
     Route::get('{slug}/change-log', 'CharacterController@getCharacterLogs');
     Route::get('{slug}/skill-logs', 'CharacterController@getCharacterSkillLogs');
     Route::get('{slug}/submissions', 'CharacterController@getCharacterSubmissions');
-    Route::get('{slug}/exp-logs', 'CharacterController@getCharacterExpLogs');
-    Route::get('{slug}/stat-logs', 'CharacterController@getCharacterStatLogs');
-    Route::get('{slug}/level-logs', 'CharacterController@getCharacterLevelLogs');
-    Route::get('{slug}/count-logs', 'CharacterController@getCharacterCountLogs');
+    Route::get('{slug}/stats/logs', 'CharacterController@getCharacterStatLogs');
+    Route::get('{slug}/stats/logs/points', 'CharacterController@getCharacterStatPointLogs');
+    Route::get('{slug}/stats/logs/exp', 'CharacterController@getCharacterExpLogs');
+    Route::get('{slug}/stats/logs/level', 'CharacterController@getCharacterLevelLogs');
+    Route::get('{slug}/stats/logs/count', 'CharacterController@getCharacterCountLogs');
 
     Route::get('{slug}/gallery', 'CharacterController@getCharacterGallery');
 });
@@ -137,8 +137,8 @@ Route::group(['prefix' => 'world'], function () {
     Route::get('character-categories', 'WorldController@getCharacterCategories');
     Route::get('levels', 'WorldController@getLevels');
     Route::get('levels/{type}', 'WorldController@getLevelTypes');
-    Route::get('levels/{type}/{level}', 'WorldController@getSingleLevel');
     Route::get('stats', 'WorldController@getStats');
+    Route::get('stats/{abbreviation}', 'WorldController@getStat');
     Route::get('weapon-categories', 'WorldController@getWeaponCategories');
     Route::get('weapons', 'WorldController@getWeapons');
     Route::get('weapons/{id}', 'WorldController@getWeapon');

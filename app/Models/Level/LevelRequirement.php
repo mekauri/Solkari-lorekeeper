@@ -5,7 +5,8 @@ namespace App\Models\Level;
 use App;
 use App\Models\Model;
 
-class UserLevelRequirement extends Model {
+class LevelRequirement extends Model {
+
     /**
      * The attributes that are mass assignable.
      *
@@ -20,12 +21,19 @@ class UserLevelRequirement extends Model {
      *
      * @var string
      */
-    protected $table = 'user_level_requirements';
+    protected $table = 'level_requirements';
 
     /**********************************************************************************************
 
         RELATIONS
     **********************************************************************************************/
+
+    /**
+     * Get the level that owns the reward.
+     */
+    public function level() {
+        return $this->belongsTo('App\Models\Level\Level');
+    }
 
     /**
      * Get the reward attached to the loot entry.
@@ -40,7 +48,7 @@ class UserLevelRequirement extends Model {
                 //    return $this->belongsTo('App\Models\Recipe\Recipe', 'limit_id');
             case 'None':
                 // Laravel requires a relationship instance to be returned (cannot return null), so returning one that doesn't exist here.
-                return $this->belongsTo('App\Models\Level\UserLevelRequirement', 'limit_id', 'level_id')->whereNull('level_id');
+                return $this->belongsTo('App\Models\User\LevelRequirement', 'limit_id', 'level_id')->whereNull('level_id');
         }
 
         return null;

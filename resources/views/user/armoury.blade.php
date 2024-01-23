@@ -11,7 +11,7 @@
         Armoury
     </h1>
 
-    <h3>Weapons</h3>
+    <h2>Weapons</h2>
     @foreach ($weapons as $categoryId => $categoryWeapons)
         <div class="card mb-3 inventory-category">
             <h5 class="card-header inventory-header">
@@ -32,7 +32,9 @@
                                 <div>
                                     <a href="#" class="weapon-stack inventory-stack-name">{{ $weapon->name }}</a>
                                     @if ($weapon->pivot->character_id)
-                                        <p class="small">Attached to a character</p>
+                                        <p class="small">
+                                            Attached to {!! getDisplayName(\App\Models\Character\Character::class, $weapon->pivot->character_id) !!}
+                                        </p>
                                     @endif
                                 </div>
                             </div>
@@ -43,7 +45,9 @@
         </div>
     @endforeach
 
-    <h3>Gear</h3>
+    <hr class="my-4">
+
+    <h2>Gear</h2>
     @foreach ($gears as $categoryId => $categoryGears)
         <div class="card mb-3 inventory-category">
             <h5 class="card-header inventory-header">
@@ -64,7 +68,7 @@
                                 <div>
                                     <a href="#" class="gear-stack inventory-stack-name">{{ $gear->name }}</a>
                                     @if ($gear->pivot->character_id)
-                                        <p class="small">Attached to a character</p>
+                                        <p class="small">Attached to {!! getDisplayName(\App\Models\Character\Character::class, $gear->pivot->character_id) !!}</p>
                                     @endif
                                 </div>
                             </div>

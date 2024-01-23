@@ -107,6 +107,10 @@ return [
                 'url'  => 'admin/grants/exp',
             ],
             [
+                'name' => 'Stat Point Grants',
+                'url'  => 'admin/grants/points',
+            ],
+            [
                 'name' => 'Pet Grants',
                 'url'  => 'admin/grants/pets',
             ],
@@ -150,28 +154,6 @@ return [
             [
                 'name' => 'MYO Approvals',
                 'url'  => 'admin/myo-approvals/pending',
-            ],
-        ],
-    ],
-    'Stats' => [
-        'power' => 'edit_stats',
-        'links' => [
-            [
-                'name' => 'Stats',
-                'url'  => 'admin/stats',
-            ],
-        ],
-    ],
-    'Levels' => [
-        'power' => 'edit_levels',
-        'links' => [
-            [
-                'name' => 'User Levels',
-                'url'  => 'admin/levels/user',
-            ],
-            [
-                'name' => 'Character Levels',
-                'url'  => 'admin/levels/character',
             ],
         ],
     ],
@@ -254,6 +236,18 @@ return [
             [
                 'name' => 'Character Skills',
                 'url'  => 'admin/data/skills',
+            ],
+            [
+                'name' => 'Stats',
+                'url'  => 'admin/stats',
+            ],
+            [
+                'name' => 'Character Levels',
+                'url'  => 'admin/levels/character',
+            ],
+            [
+                'name' => 'User Levels',
+                'url'  => 'admin/levels/user',
             ],
         ],
     ],

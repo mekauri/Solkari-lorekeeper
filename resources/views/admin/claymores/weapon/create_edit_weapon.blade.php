@@ -86,19 +86,19 @@
         @if ($stats)
             {!! Form::open(['url' => 'admin/weapons/stats/' . $weapon->id]) !!}
             <h3>Stats {!! add_help('Leave empty to have no effect on stat.') !!}</h3>
-            <div class="form-group">
-                @foreach ($stats as $stat)
-                    @php
-                        if ($weapon->stats->where('stat_id', $stat->id)->first()) {
-                            $base = $weapon->stats->where('stat_id', $stat->id)->first()->count;
-                        } else {
-                            $base = null;
-                        }
-                    @endphp
+            @foreach ($stats as $stat)
+                @php
+                    if ($weapon->stats->where('stat_id', $stat->id)->first()) {
+                        $base = $weapon->stats->where('stat_id', $stat->id)->first()->count;
+                    } else {
+                        $base = null;
+                    }
+                @endphp
+                <div class="form-group">
                     {!! Form::label($stat->name) !!}
-                    {!! Form::number('stats[' . $stat->id . ']', $base, ['class' => 'form-control m-1']) !!}
-                @endforeach
-            </div>
+                    {!! Form::number('stats[' . $stat->id . ']', $base, ['class' => 'form-control']) !!}
+                </div>
+            @endforeach
             <div class="text-right">
                 {!! Form::submit('Edit Stats', ['class' => 'btn btn-primary']) !!}
             </div>

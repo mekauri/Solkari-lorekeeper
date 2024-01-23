@@ -1,3 +1,4 @@
+@if(count($skills))
 @foreach ($skills->chunk(2) as $chunk)
     <div class="row">
         @foreach ($chunk as $skill)
@@ -14,32 +15,35 @@
                                 ->first();
                         @endphp
                         Level: {{ $characterSkill->level }}
-                </div>
-                <div class="row">
-                    @foreach ($skill->children as $children)
-                        <div class="col-md  mx-auto body children-body children-scroll">
-                            <div class="children-skill ">
-                                <ul>
-                                    @include('character._skill_children', ['children' => $children, 'skill' => $skill])
-                                </ul>
-                            </div>
                         </div>
-                    @endforeach
+                        <div class="row">
+                            @foreach ($skill->children as $children)
+                                <div class="col-md  mx-auto body children-body children-scroll">
+                                    <div class="children-skill ">
+                                        <ul>
+                                            @include('character._skill_children', ['children' => $children, 'skill' => $skill])
+                                        </ul>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        </div>
+                        <p class="mx-auto text-center">Not unlocked.
+                            <br>
+                            @if ($skill->prerequisite)
+                                Requires {!! $skill->prerequisite->displayname !!}
+                            @endif
+                        </p>
+                    @endif
                 </div>
-            @else
-            </div>
-            <p class="mx-auto text-center">Not unlocked.
-                <br>
-                @if ($skill->prerequisite)
-                    Requires {!! $skill->prerequisite->displayname !!}
-                @endif
-            </p>
-        @endif
-    </div>
+            @endforeach
+        </div>
+    <hr>
 @endforeach
-</div>
-<hr>
-@endforeach
+@else
+    <p class="text-center">No available skills.</p>
+@endif
 
 <script>
     $(function() {

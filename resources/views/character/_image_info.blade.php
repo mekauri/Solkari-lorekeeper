@@ -136,58 +136,45 @@
                     </div>
                 @endif
 
-                <div class="mb-1">
-                    <div>
-                        <h5>Pets</h5>
+                @if (count($image->character->pets))
+                    <div class="mb-1">
+                        <div>
+                            <h5>Pets</h5>
+                        </div>
+                        <div class="text-center row">
+                            @foreach ($image->character->pets as $pet)
+                                <div class="ml-2 mr-3">
+                                    <img src="{{ $pet->pet->variantImage($pet->id) }}" style="max-width: 75px;" />
+                                    <br>
+                                    <span class="text-light badge badge-dark" style="font-size:95%;">{!! $pet->pet_name !!}</span>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
-                    <div class="text-center row">
-                        @foreach ($image->character->pets as $pet)
-                            <div class="ml-2 mr-3">
-                                <img src="{{ $pet->pet->variantImage($pet->id) }}" style="max-width: 75px;" />
-                                <br>
-                                <span class="text-light badge badge-dark" style="font-size:95%;">{!! $pet->pet_name !!}</span>
-                            </div>
-                        @endforeach
+                @endif
+                @if (count($image->character->equipment()))
+                    <div class="mb-1 mt-4">
+                        <div class="mb-0">
+                            <h5>Equipment</h5>
+                        </div>
+                        <div class="text-center row">
+                            @foreach ($image->character->equipment()->take(5) as $equipment)
+                                <div class="col-md-2">
+                                    @if ($equipment->has_image)
+                                        <img class="rounded" src="{{ $equipment->imageUrl }}" data-toggle="tooltip" title="{{ $equipment->equipment->name }}" style="max-width: 75px;" />
+                                    @elseif($equipment->equipment->imageurl)
+                                        <img class="rounded" src="{{ $equipment->equipment->imageUrl }}" data-toggle="tooltip" title="{{ $equipment->equipment->name }}" style="max-width: 75px;" />
+                                    @else
+                                        {!! $equipment->equipment->displayName !!}
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                        <div class="float-right">
+                            <a href="{{ $character->url . '/stats'}}">View All...</a>
+                        </div>
                     </div>
-                </div>
-
-                <div class="mb-1">
-                    <div>
-                        <h5>Gear</h5>
-                    </div>
-                    <div class="text-center row">
-                        @foreach ($image->character->gear as $gear)
-                            <div class="ml-3 mr-3">
-                                @if ($gear->has_image)
-                                    <img src="{{ $gear->imageUrl }}" data-toggle="tooltip" title="{{ $gear->gear->name }}" style="max-width: 75px;" />
-                                @elseif($gear->gear->imageurl)
-                                    <img src="{{ $gear->gear->imageUrl }}" data-toggle="tooltip" title="{{ $gear->gear->name }}" style="max-width: 75px;" />
-                                @else
-                                    {!! $gear->gear->displayName !!}
-                                @endif
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
-
-                <div class="mb-1">
-                    <div>
-                        <h5>Weapons</h5>
-                    </div>
-                    <div class="text-center row">
-                        @foreach ($image->character->weapons as $weapon)
-                            <div class="ml-3 mr-3">
-                                @if ($weapon->has_image)
-                                    <img src="{{ $weapon->imageUrl }}" data-toggle="tooltip" title="{{ $weapon->weapon->name }}" style="max-width: 75px;" />
-                                @elseif($weapon->weapon->imageurl)
-                                    <img src="{{ $weapon->weapon->imageUrl }}" data-toggle="tooltip" title="{{ $weapon->weapon->name }}" style="max-width: 75px;" />
-                                @else
-                                    {!! $weapon->weapon->displayName !!}
-                                @endif
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
+                @endif
             </div>
 
             {{-- Image notes --}}

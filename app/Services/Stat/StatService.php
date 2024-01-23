@@ -17,13 +17,22 @@ class StatService extends Service {
 
         try {
             if (!isset($data['name'])) {
-                throw new \Exception('Please name the stat');
+                throw new \Exception('Please provide a name for the stat.');
             }
             if (!isset($data['base'])) {
-                throw new \Exception('Please set a default.');
+                throw new \Exception('Please set a base stat value.');
             }
-            if (!isset($data['abbreviation'])) {
-                throw new \Exception('Please add an abbreviation.');
+            if (isset($data['colour'])) {
+                // if colour is white, set to null
+                // use regex since there might be fewer or greater f
+                if (preg_match('/^#?ffffff$/i', $data['colour'])) {
+                    $data['colour'] = null;
+                } else {
+                    // if colour is not white, make sure it's a valid hex colour
+                    if (!preg_match('/^#?[0-9a-fA-F]{6}$/i', $data['colour'])) {
+                        throw new \Exception('Please provide a valid hex colour.');
+                    }
+                }
             }
 
             $stat = Stat::create($data);
@@ -47,16 +56,14 @@ class StatService extends Service {
 
         try {
             // check species_ids
+            $stat->limits()->delete();
             if (isset($data['types']) && $data['types']) {
-                if ($stat->species) {
-                    $stat->species()->delete();
-                }
                 foreach ($data['types'] as $key=>$type) {
                     if ($type == 'species') {
                         if (!isset($data['type_ids'][$key]) || !$data['type_ids'][$key]) {
                             throw new \Exception('Please select at least one species.');
                         }
-                        $stat->species()->create([
+                        $stat->limits()->create([
                             'species_id' => $data['type_ids'][$key],
                             'type'       => 'stat',
                             'type_id'    => $stat->id,
@@ -66,12 +73,30 @@ class StatService extends Service {
                         if (!isset($data['type_ids'][$key]) || !$data['type_ids'][$key]) {
                             throw new \Exception('Please select at least one subtype.');
                         }
-                        $stat->species()->create([
+                        $stat->limits()->create([
                             'species_id' => $data['type_ids'][$key],
                             'type'       => 'stat',
                             'type_id'    => $stat->id,
                             'is_subtype' => 1,
                         ]);
+                    }
+                }
+            }
+            if (!isset($data['name'])) {
+                throw new \Exception('Please provide a name for the stat.');
+            }
+            if (!isset($data['base'])) {
+                throw new \Exception('Please set a base stat value.');
+            }
+            if (isset($data['colour'])) {
+                // if colour is white, set to null
+                // use regex since there might be fewer or greater f
+                if (preg_match('/^#?ffffff$/i', $data['colour'])) {
+                    $data['colour'] = null;
+                } else {
+                    // if colour is not white, make sure it's a valid hex colour
+                    if (!preg_match('/^#?[0-9a-fA-F]{6}$/i', $data['colour'])) {
+                        throw new \Exception('Please provide a valid hex colour.');
                     }
                 }
             }

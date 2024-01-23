@@ -2,9 +2,11 @@
 
 namespace App\Services\Stat;
 
+use App\Facades\Notifications;
 use App\Models\Character\Character;
-use App\Models\Level\CharacterLevel;
-use App\Models\Level\UserLevel;
+use App\Models\Character\CharacterLevel;
+use App\Models\Character\CharacterStat;
+use App\Models\User\UserLevel;
 use App\Models\Stat\Stat;
 use App\Models\User\User;
 use App\Services\Service;
@@ -13,155 +15,79 @@ use Carbon\Carbon;
 use DB;
 
 class StatManager extends Service {
-    /**
-     * Gives user stat points to use on characters (from levelling up).
-     *
-     * @param object $user
-     * @param mixed  $type
-     * @param mixed  $data
-     * @param mixed  $next
-     */
-    public function creditUserStat($user, $type, $data, $next) {
-        DB::beginTransaction();
-
-        try {
-            $points = $next->stat_points;
-
-            if ($this->createTransferLog($user->id, 'User', $user->id, 'User', $type, $data, $points)) {
-                $user->level->current_points += $points;
-                $user->level->save();
-            } else {
-                throw new \Exception('Error creating log.');
-            }
-
-            return $this->commitReturn(true);
-        } catch (\Exception $e) {
-            $this->setError('error', $e->getMessage());
-        }
-
-        return $this->rollbackReturn(false);
-    }
 
     /**
-     * Transfers stat points from a user to a character from the user's built up points.
-     *
-     * @param mixed $user
+     * Levels up a character's stat. User's do not have stats so this only works for characters.
+     * 
      * @param mixed $character
-     * @param mixed $quantity
+     * @param mixed $stat App\Models\Stat\Stat
+     * @param bool $isStaff
      */
-    public function userToCharacter($user, $character, $quantity) {
-        DB::beginTransaction();
-
-        try {
-            if ($user->id != $character->user_id) {
-                throw new \Exception('You must own the character to transfer to it.');
-            }
-            if ($user->level->current_points < $quantity) {
-                throw new \Exception('Not enough points to transfer this amount.');
-            }
-
-            $recipient_stack = $character->level;
-            $stack = $user->level;
-            if (!$recipient_stack) {
-                throw new \Exception('This character has no level log.');
-            }
-
-            $stack->current_points -= $quantity;
-            $recipient_stack->current_points += $quantity;
-            $stack->save();
-            $recipient_stack->save();
-
-            $type = 'User Transfer';
-            $data = $user->displayName.' transferred '.$quantity.' exp to '.$character->displayName;
-
-            if ($type && !$this->createTransferLog($user->id, $user->logType, $character->id, $character->logType, $type, $data, $quantity)) {
-                throw new \Exception('Failed to create log.');
-            }
-
-            return $this->commitReturn(true);
-        } catch (\Exception $e) {
-            $this->setError('error', $e->getMessage());
-        }
-
-        return $this->rollbackReturn(false);
-    }
-
-    /* --------------------------------
-    |
-    |   CHARACTER
-    |
-    |  -----------------------------------
-    */
-
-    /*
-    *   Level the stat
-    */
-    public function levelCharaStat($stat, $character, $isStaff = false) {
+    public function levelCharacterStat($character, $stat, $isStaff = false) {
         DB::beginTransaction();
 
         try {
             // registering previous
-            $previous = $stat->stat_level;
-            $stat->stat_level += 1;
-            $stat->save();
+            $character_stat = $character->stats()->where('stat_id', $stat->id)->first();
+            $previous_level = $character_stat->stat_level;
 
-            $headerStat = $stat->stat;
-            if ($headerStat->multiplier || $headerStat->step) {
-                // FIN
-                // First if there's a step, add that
+            // incrementing
+            $character_stat->stat_level += 1;
+            $character_stat->save();
+            
+            if ($stat->multiplier || $stat->increment) {
+                // we want to update the current_count too
+                if (!$character_stat->current_count) {
+                    $character_stat->current_count = $character_stat->count;
+                }
+
+                // First if there's an increment, add that
                 // This is so that the multiplier affects the new step total
                 // E.G if the current is 10 and step is 5, we do 15 * multiplier
                 // This can be changed if desired but generally I think this is fine
-                if ($headerStat->step) {
-                    $stat->count += $headerStat->step;
-                    $stat->save();
+
+                if ($stat->increment) {
+                    $character_stat->count += $stat->increment;
+                    $character_stat->current_count += $stat->increment;
+                    $character_stat->save();
                 }
-                if ($headerStat->multiplier) {
-                    $total = $stat->count * $headerStat->multiplier;
-                    //if($total < 0) $total = $total * -1;
-                    $stat->count = $total;
-                    $stat->save();
+                if ($stat->multiplier) {
+                    $total = $stat->count * $stat->multiplier;
+                    $character_stat->count = $total;
+                    $character_stat->current_count = $total;
+                    $character_stat->save();
                 }
-            }
-            if (!$isStaff) {
-                if ($character->level->current_points < 1) {
-                    throw new \Exception('You do not have enough stat points to level');
-                }
-                $character->level->current_points -= 1;
-                $character->level->save();
-            }
-
-            $type = 'Stat Level Up';
-            $data = 'Point used in stat level up.';
-            if (!$this->createTransferLog($character->id, 'Character', $character->id, 'Character', $type, $data, -1)) {
-                throw new \Exception('Error creating log.');
-            }
-            if (!$this->createLevelLog($character->id, $headerStat->id, 'Character', $previous, $stat->stat_level)) {
-                throw new \Exception('Error creating log.');
-            }
-
-            return $this->commitReturn(true);
-        } catch (\Exception $e) {
-            $this->setError('error', $e->getMessage());
-        }
-
-        return $this->rollbackReturn(false);
-    }
-
-    /*
-    * Credit stat
-    */
-    public function creditCharaStat($chara, $type, $data, $next) {
-        DB::beginTransaction();
-
-        try {
-            $points = $next->stat_points;
-
-            if ($this->createTransferLog($chara->id, 'Character', $chara->id, 'Character', $type, $data, $points)) {
-                $chara->level->current_points += $points;
-                $chara->level->save();
             } else {
-                throw new \Exception('Error creating log.');
+                // if there's no multiplier or step, just add 1
+                $character_stat->count += 1;
+                $character_stat->current_count += 1;
+                $character_stat->save();
+            }
+
+            if (!$isStaff) {
+                if ($character->level->current_points + $character->user->level->current_points < 1) {
+                    throw new \Exception('Not enough points to level up.');
+                }
+
+                // consume character points first
+                if ($character->level->current_points) {
+                    $character->level->current_points -= 1;
+                    $character->level->save();
+                } else {
+                    // if no character points, consume user points
+                    $character->user->level->current_points -= 1;
+                    $character->user->level->save();
+                }
+
+
+                $type = 'Stat Level Up';
+                $data = 'Point used in stat level up.';
+                if (!$this->createTransferLog($character->id, 'Character', null, null, $type, $data, -1)) {
+                    throw new \Exception('Error creating log.');
+                }
+                if (!$this->createLevelLog($character->id, 'Character', $stat->id, $previous_level, $character_stat->stat_level)) {
+                    throw new \Exception('Error creating log.');
+                }
             }
 
             return $this->commitReturn(true);
@@ -173,13 +99,13 @@ class StatManager extends Service {
     }
 
     /**
-     * sets the stat directly instead of incrementing or decrementing.
+     * sets the stat BASE VALUE directly
      *
      * @param mixed $stat
      * @param mixed $character
      * @param mixed $quantity
      */
-    public function setCharaStat($stat, $character, $quantity) {
+    public function editCharacterStatBaseCount($stat, $character, $quantity) {
         DB::beginTransaction();
 
         try {
@@ -188,11 +114,13 @@ class StatManager extends Service {
                 throw new \Exception('You are not staff.');
             }
 
-            $stat->current_count = $quantity;
+            $stat = $character->stats()->where('stat_id', $stat->id)->first();
+
+            $stat->count = $quantity;
             $stat->save();
 
             $type = 'Staff Edit';
-            $data = 'Edited Current Count by Staff';
+            $data = 'Edited Base Stat Value by Staff';
 
             if (!$this->createCountLog($sender->id, $sender->logtype, $character, $type, $data, $quantity, $stat->id)) {
                 throw new \Exception('Error creating log.');
@@ -206,11 +134,16 @@ class StatManager extends Service {
         return $this->rollbackReturn(false);
     }
 
-    /*
-    * Edit stat
-    * aka the current stat amount, increment or decrement
-    */
-    public function editCharaStat($stat, $character, $quantity, $override = false) {
+    /**
+     * Edit the current stat amount. Edits directly unless $set is false, then it increments / decrements.
+     * Staff Only function, unless override is true.
+     * 
+     * @param mixed $stat
+     * @param mixed $character
+     * @param mixed $quantity
+     * @param bool $override
+     */
+    public function editCharacterStatCurrentCount($stat, $character, $quantity, $set = true, $override = false) {
         DB::beginTransaction();
 
         try {
@@ -219,23 +152,14 @@ class StatManager extends Service {
                 throw new \Exception('You are not staff.');
             }
 
-            if ($stat->current_count == null) {
-                $stat->current_count = $stat->count;
-                $stat->save();
+            $stat = $character->stats()->where('stat_id', $stat->id)->first();
+
+            if ($set) {
+                $stat->current_count = $quantity > $stat->count ? $stat->count : $quantity;
             } else {
                 $stat->current_count += $quantity;
-                $stat->save();
             }
-
-            if ($stat->current_count < 0) {
-                $stat->current_count = 0;
-                $stat->save();
-            }
-
-            if ($stat->current_count > $stat->count) {
-                $stat->current_count = $stat->count;
-                $stat->save();
-            }
+            $stat->save();
 
             if ($override) {
                 // if different logs are needed
@@ -257,29 +181,57 @@ class StatManager extends Service {
     }
 
     /**
-     * edit base stat (aka what the current stat is based on).
-     *
-     * @param mixed $stat
-     * @param mixed $character
-     * @param mixed $quantity
+     * Grants / transfers Stat points users or characters
      */
-    public function editBaseCharaStat($stat, $character, $quantity) {
+    public function grantStats($data, $staff) {
         DB::beginTransaction();
 
         try {
-            $sender = Auth::user();
-            if (!$sender->isStaff) {
-                throw new \Exception('You are not staff.');
+            
+            $usernames = array_filter($data['names'], function ($name) {
+                return substr($name, 0, 5) == 'user-';
+            });
+            $characters = array_filter($data['names'], function ($name) {
+                return substr($name, 0, 10) == 'character-';
+            });
+
+            foreach($usernames as $id) {
+                $user = User::find(substr($id, 5));
+                if (!$user) {
+                    throw new \Exception('An invalid user was selected.');
+                }
+
+                foreach($data['stat_ids'] as $key=>$stat_id) {
+                    $stat = $stat_id == 'none' ? $stat_id : Stat::find($stat_id);
+                    if (!$this->creditStat($staff, $user, 'Staff Grant', $data['data'], $stat, $data['quantity'][$key], true)) {
+                        throw new \Exception('Failed to credit points to '.$user->name.'.');
+                    }
+                }
+
+                Notifications::create('STAT_GRANT', $user, [
+                    'sender_url'  => $staff->url,
+                    'sender_name' => $staff->name,
+                    'stat_url'    => '/stats',
+                ]);
             }
 
-            $stat->count = $quantity;
-            $stat->save();
+            foreach($characters as $id) {
+                $character = Character::find(substr($id, 10));
+                if (!$character) {
+                    throw new \Exception('An invalid character was selected.');
+                }
 
-            $type = 'Staff Edit';
-            $data = 'Editted Base Count by Staff';
-
-            if (!$this->createCountLog($sender->id, $sender->logtype, $character, $type, $data, $quantity, $stat->id)) {
-                throw new \Exception('Error creating log.');
+                foreach($data['stat_ids'] as $key=>$stat_id) {
+                    $stat = $stat_id == 'none' ? $stat_id : Stat::find($stat_id);
+                    if (!$this->creditStat($staff, $character, 'Staff Grant', $data['data'], $stat, $data['quantity'][$key], true)) {
+                        throw new \Exception('Failed to credit points to '.$character->fullName.'.');
+                    }
+                }
+                Notifications::create('STAT_GRANT', $character->user, [
+                    'sender_url'  => $staff->url,
+                    'sender_name' => $staff->name,
+                    'stat_url'    => '/character/'.$character->slug.'/stats',
+                ]);
             }
 
             return $this->commitReturn(true);
@@ -289,108 +241,72 @@ class StatManager extends Service {
 
         return $this->rollbackReturn(false);
     }
-
-    /**
-     * Sets a stat to a specific value. (for potions and the like).
-     *
-     * @param mixed $sender
-     * @param mixed $stat
-     * @param mixed $quantity
-     * @param mixed $type
-     * @param mixed $data
-     */
-    public function setStat($sender, $stat, $quantity, $type, $data) {
-        DB::beginTransaction();
-
-        try {
-            $sender = Auth::user();
-
-            if ($quantity > $stat->count) {
-                $quantity = $stat->count;
-            }
-
-            $stat->current_count = $quantity;
-            $stat->save();
-
-            if (!$this->createCountLog($sender->id, $sender->logtype, $stat->character, $type, $data, $quantity)) {
-                throw new \Exception('Error creating log.');
-            }
-
-            return $this->commitReturn(true);
-        } catch (\Exception $e) {
-            $this->setError('error', $e->getMessage());
-        }
-
-        return $this->rollbackReturn(false);
-    }
-
-    public function regenStat($stat, $character, $quantity, $type, $data) {
-        DB::beginTransaction();
-
-        try {
-            if ($stat->current_count == null) {
-                $stat->current_count = $stat->count;
-                $stat->save();
-            } else {
-                $stat->current_count += $quantity;
-                $stat->save();
-            }
-
-            if ($stat->current_count < 0) {
-                $stat->current_count = 0;
-                $stat->save();
-            }
-
-            if ($stat->current_count > $stat->count) {
-                $stat->current_count = $stat->count;
-                $stat->save();
-            }
-
-            if (!$this->createCountLog(null, 'User', $character, $type, $data, $quantity, $stat->id)) {
-                throw new \Exception('Error creating log.');
-            }
-
-            return $this->commitReturn(true);
-        } catch (\Exception $e) {
-            $this->setError('error', $e->getMessage());
-        }
-
-        return $this->rollbackReturn(false);
-    }
-
-    /*-----------------------------------------------
-    *
-    * MISC
-    *
-    *-----------------------------------------------/
 
     /**
      * Grants / transfers Stat points (to level up) to one user or character
      *
      */
-    public function creditStat($sender, $recipient, $type, $data, $quantity) {
+    public function creditStat($sender, $recipient, $type, $data, $stat, $quantity, $isStaff = false) {
         DB::beginTransaction();
 
         try {
             // for user
             if ($recipient->logType == 'User') {
-                $recipient_stack = UserLevel::where('user_id', '=', $recipient->id)->first();
 
-                if (!$recipient_stack) {
-                    $recipient_stack = UserLevel::create(['user_id' => $recipient->id]);
+                if (!$recipient->level) {
+                    $recipient->level()->create([
+                        'user_id' => $recipient->id,
+                    ]);
                 }
-                $recipient_stack->current_points += $quantity;
-                $recipient_stack->save();
+
+                // we only grant general points to users
+                if ($stat == 'none') {
+                    // if no data is passed aka notes
+                    if (!$data && $isStaff) {
+                        $data = 'Staff Grant of '.$quantity.' general stat points';
+                    }
+
+                    $recipient->level->current_points += $quantity;
+                    $recipient->level->save();
+                }
             }
             // for character
             else {
-                $recipient_stack = CharacterLevel::where('character_id', $recipient->id)->first();
-
-                if (!$recipient_stack) {
-                    $recipient_stack = CharacterLevel::create(['character_id' => $recipient->id]);
+                if (!$recipient->level) {
+                    $recipient->level()->create([
+                        'character_id' => $recipient->id,
+                    ]);
                 }
-                $recipient_stack->current_points += $quantity;
-                $recipient_stack->save();
+
+                // propagate stats
+                $recipient->propagateStats();
+                if ($stat == 'none') {
+                    // if no data is passed aka notes
+                    if (!$data && $isStaff) {
+                        $data = 'Staff Grant of '.$quantity.' general stat points';
+                    }
+
+                    $recipient->level->current_points += $quantity;
+                    $recipient->level->save();
+                } else {
+                    // if we are granting a specific stat
+                    $character_stat = $recipient->stats()->where('stat_id', $stat->id)->first();
+                    
+                    if (!$character_stat) {
+                        throw new \Exception('The stat '. $stat->name .' does not exist for the character '. $recipient->fullName .'. Check if the stat is allowed on this character.');
+                    }
+
+                    // we can't just increment the count of the stat, we have to level it up
+                    $this->levelCharacterStat($recipient, $character_stat, true);
+
+                    if (!$data) {
+                        $data = 'Staff granted stat level up on ' . $stat->name . ' to  lvl' . $character_stat->stat_level + 1 . '.';
+                    }
+
+                    if (!$this->createLevelLog($recipient->id, $stat->id, 'Character', $character_stat->stat_level, $character_stat->stat_level + 1)) {
+                        throw new \Exception('Error creating log.');
+                    }
+                }
             }
             if ($type && !$this->createTransferLog($sender ? $sender->id : null, $sender ? $sender->logType : null, $recipient ? $recipient->id : null, $recipient ? $recipient->logType : null, $type, $data, $quantity)) {
                 throw new \Exception('Failed to create log.');
@@ -492,7 +408,7 @@ class StatManager extends Service {
      * @param mixed $previous
      * @param mixed $new
      */
-    public function createLevelLog($recipientId, $stat, $recipientType, $previous, $new) {
+    public function createLevelLog($recipientId, $recipientType, $stat, $previous, $new) {
         return DB::table('stat_log')->insert(
             [
                 'recipient_id'   => $recipientId,

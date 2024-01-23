@@ -322,7 +322,7 @@ class GearManager extends Service {
      *
      * @return UserGear
      */
-    public function upgrade($gear, $isStaff = false) {
+    public function upgradeGear($gear, $isStaff = false) {
         DB::beginTransaction();
 
         try {
@@ -351,6 +351,46 @@ class GearManager extends Service {
 
             $gear->gear_id = $gear->gear->parent_id;
             $gear->save();
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+        }
+
+        return $this->rollbackReturn(false);
+    }
+
+    /**
+     * Image -> gives unique image.
+     *
+     * @param mixed $gear
+     * @param mixed $data
+     */
+    public function addImage($gear, $data) {
+        DB::beginTransaction();
+
+        try {
+            $gear->has_image = 1;
+            $gear->save();
+
+            $image = null;
+            if (isset($data['remove_image'])) {
+                if ($gear && $gear->has_image && $data['remove_image']) {
+                    $data['has_image'] = 0;
+                    $this->deleteImage($gear->categoryImagePath, $gear->categoryImageFileName);
+                }
+                unset($data['remove_image']);
+            }
+
+            if (isset($data['image']) && $data['image']) {
+                $data['has_image'] = 1;
+                $image = $data['image'];
+                unset($data['image']);
+            } else {
+                $data['has_image'] = 0;
+            }
+
+            $this->handleImage($image, $gear->imagePath, $gear->imageFileName);
 
             return $this->commitReturn(true);
         } catch (\Exception $e) {

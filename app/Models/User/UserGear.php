@@ -58,6 +58,16 @@ class UserGear extends Model {
         return $this->belongsTo('App\Models\Claymore\Gear');
     }
 
+    /**
+     * Get the gear associated with this gear stack, using an alias.
+     */
+    public function equipment() {
+        return $this->belongsTo('App\Models\Claymore\Gear', 'gear_id');
+    }
+
+    /**
+     * Get the character that this stack is currently attached to.
+     */
     public function character() {
         return $this->belongsTo('App\Models\Character\Character', 'character_id');
     }
@@ -133,7 +143,7 @@ class UserGear extends Model {
      */
     public function getImageUrlAttribute() {
         if (!$this->has_image) {
-            return null;
+            return $this->gear->imageUrl;
         }
 
         return asset($this->imageDirectory.'/'.$this->imageFileName);

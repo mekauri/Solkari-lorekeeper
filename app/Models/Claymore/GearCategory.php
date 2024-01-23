@@ -3,6 +3,7 @@
 namespace App\Models\Claymore;
 
 use App\Models\Model;
+use App\Models\Claymore\Gear;
 
 class GearCategory extends Model {
     /**
@@ -29,7 +30,7 @@ class GearCategory extends Model {
     public static $createRules = [
         'name'        => 'required|unique:gear_categories|between:3,25',
         'description' => 'nullable',
-        'image'       => 'mimes:png',
+        'image'       => 'mimes:png,webp',
     ];
 
     /**
@@ -42,6 +43,19 @@ class GearCategory extends Model {
         'description' => 'nullable',
         'image'       => 'mimes:png',
     ];
+
+    /**********************************************************************************************
+
+        RELATIONSHIPS
+
+    **********************************************************************************************/
+
+    /**
+     * gets all gears of this category
+     */
+    public function gears() {
+        return $this->hasMany(Gear::class, 'gear_category_id');
+    }
 
     /**********************************************************************************************
 

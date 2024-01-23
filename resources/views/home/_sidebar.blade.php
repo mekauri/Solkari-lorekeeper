@@ -7,12 +7,8 @@
         <div class="sidebar-item"><a href="{{ url('pets') }}" class="{{ set_active('pets*') }}">My Pets</a></div>
         <div class="sidebar-item"><a href="{{ url('inventory') }}" class="{{ set_active('inventory*') }}">Inventory</a></div>
         <div class="sidebar-item"><a href="{{ url('bank') }}" class="{{ set_active('bank*') }}">Bank</a></div>
-        <div class="sidebar-item"><a href="{{ url('level') }}" class="{{ set_active('level*') }}">Level Area</a></div>
-        <div class="sidebar-item"><a href="{{ url('gears') }}" class="{{ set_active('gears*') }}">Gear</a></div>
-        <div class="sidebar-item"><a href="{{ url('weapons') }}" class="{{ set_active('weapons*') }}">Weapons</a></div>
-        @if (Auth::check())
-            <div class="sidebar-item"><a href="{{ url(Auth::user()->url . '/level') }}" class="{{ set_active(Auth::user()->url . '/level') }}">Level Logs</a></div>
-        @endif
+        <div class="sidebar-item"><a href="{{ url('armoury') }}" class="{{ set_active('armoury*') }}">Armoury</a></div>
+        <div class="sidebar-item"><a href="{{ url('stats') }}" class="{{ set_active('stats*') }}">Stat Information</a></div>
     </li>
     <li class="sidebar-section">
         <div class="sidebar-section-header">Activity</div>

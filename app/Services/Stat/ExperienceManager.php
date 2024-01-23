@@ -3,8 +3,8 @@
 namespace App\Services\Stat;
 
 use App\Models\Character\Character;
-use App\Models\Level\CharacterLevel;
-use App\Models\Level\UserLevel;
+use App\Models\Character\CharacterLevel;
+use App\Models\User\UserLevel;
 use App\Models\User\User;
 use App\Services\Service;
 use Carbon\Carbon;
@@ -12,8 +12,9 @@ use DB;
 use Notifications;
 
 class ExperienceManager extends Service {
+
     /**
-     * Grants EXP to multiple users.
+     * Grants EXP to multiple users or characters.
      *
      * @param array $data
      * @param User  $staff
@@ -24,21 +25,46 @@ class ExperienceManager extends Service {
         DB::beginTransaction();
 
         try {
-            // Process names
-            $users = User::find($data['names']);
-            if (count($users) != count($data['names'])) {
-                throw new \Exception('An invalid user was selected.');
-            }
+            $usernames = array_filter($data['names'], function ($name) {
+                return substr($name, 0, 5) == 'user-';
+            });
+            $characters = array_filter($data['names'], function ($name) {
+                return substr($name, 0, 10) == 'character-';
+            });
 
-            foreach ($users as $user) {
+            foreach($usernames as $id) {
+                $user = User::find(substr($id, 5));
+                if (!$user) {
+                    throw new \Exception('An invalid user was selected.');
+                }
+
                 if ($this->creditExp($staff, $user, 'Staff Grant', $data['data'], $data['quantity'])) {
                     Notifications::create('EXP_GRANT', $user, [
                         'quantity'    => $data['quantity'],
                         'sender_url'  => $staff->url,
                         'sender_name' => $staff->name,
+                        'stat_url'         => '/stats',
                     ]);
                 } else {
                     throw new \Exception('Failed to credit exp to '.$user->name.'.');
+                }
+            }
+
+            foreach($characters as $id) {
+                $character = Character::find(substr($id, 10));
+                if (!$character) {
+                    throw new \Exception('An invalid character was selected.');
+                }
+
+                if ($this->creditExp($staff, $character, 'Staff Grant', $data['data'], $data['quantity'], true)) {
+                    Notifications::create('EXP_GRANT', $character->user, [
+                        'quantity'    => $data['quantity'],
+                        'sender_url'  => $staff->url,
+                        'sender_name' => $staff->name,
+                        'stat_url'         => '/character/'.$character->slug.'/stats',
+                    ]);
+                } else {
+                    throw new \Exception('Failed to credit exp to '.$character->fullName.'.');
                 }
             }
 

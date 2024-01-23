@@ -1,9 +1,11 @@
 @if (!$stack)
-    <div class="text-center">Invalid weapon selected.</div>
+    <div class="text-center">Invalid equipment selected.</div>
 @else
     <div class="text-center">
-        <div class="mb-1"><a href="{{ $stack->weapon->url }}"><img src="{{ $stack->weapon->imageUrl }}" /></a></div>
-        <div class="mb-1"><a href="{{ $stack->weapon->url }}">{{ $stack->weapon->name }}</a></div>
+        <div class="mb-1"><a href="{{ $stack->equipment->url }}">
+            <img src="{{ $stack->imageUrl }}" /></a>
+        </div>
+        <div class="mb-1"><a href="{{ $stack->equipment->url }}">{{ $stack->equipment->name }}</a></div>
     </div>
 
     @if (isset($stack->data['notes']) || isset($stack->data['data']))
@@ -37,23 +39,23 @@
                         <a class="card-title h5 collapse-title" data-toggle="collapse" href="#attachForm">
                             @if ($stack->user_id != $user->id)
                                 [ADMIN]
-                            @endif Detach Weapon from Character
+                            @endif Detach Equipment from Character
                         </a>
-                        {!! Form::open(['url' => 'weapons/detach/' . $stack->id, 'id' => 'attachForm', 'class' => 'collapse']) !!}
-                        <p>This weapon is currently attached to {!! $stack->character->displayName !!}, do you want to detach them?</p>
+                        {!! Form::open(['url' => 'armoury/'.$type.'/detach/' . $stack->id, 'id' => 'attachForm', 'class' => 'collapse']) !!}
+                        <p>This equipment is currently attached to {!! $stack->character->displayName !!}, do you want to detach them?</p>
                         <div class="text-right">
                             {!! Form::submit('Detach', ['class' => 'btn btn-primary']) !!}
                         </div>
                         {!! Form::close() !!}
-                    @elseif($stack->character_id == null || $diff < Carbon\Carbon::now())
+                    @elseif(!$stack->character_id || $diff < Carbon\Carbon::now())
                         <a class="card-title h5 collapse-title" data-toggle="collapse" href="#attachForm">
                             @if ($stack->user_id != $user->id)
                                 [ADMIN]
-                            @endif Attach Weapon to Character
+                            @endif Attach Equipment to Character
                         </a>
-                        {!! Form::open(['url' => 'weapons/attach/' . $stack->id, 'id' => 'attachForm', 'class' => 'collapse']) !!}
-                        <p>Attach this weapon to a character you own! They'll appear on the character's page and any stat bonuses will automatically be applied.</p>
-                        <p>Weapons can be detached.</p>
+                        {!! Form::open(['url' => 'armoury/'.$type.'/attach/' . $stack->id, 'id' => 'attachForm', 'class' => 'collapse']) !!}
+                        <p>Attach this equipment to a character you own! They'll appear on the character's page and any stat bonuses will automatically be applied.</p>
+                        <p>Gears can be detached.</p>
                         <div class="form-group">
                             {!! Form::label('id', 'Slug') !!} {!! add_help('Insert your character\'s slug.') !!}
                             {!! Form::select('id', $chara, null, ['class' => 'form-control']) !!}
@@ -63,21 +65,21 @@
                         </div>
                         {!! Form::close() !!}
                     @else
-                        <a class="card-title h5">You cannot currently attach / detach this weapon! It is under cooldown.</a>
+                        <a class="card-title h5">You cannot currently attach / detach this equipment! It is under cooldown.</a>
                     @endif
                 </li>
-                @if ($stack->weapon->parent_id && $stack->weapon->cost && $stack->weapon->currency_id <= 0)
+                @if ($stack->equipment->parent_id && $stack->equipment->cost && $stack->equipment->currency_id <= 0)
                     <li class="list-group-item">
                         <a class="card-title h5 collapse-title" data-toggle="collapse" href="#upgradeForm">
                             @if ($stack->user_id != $user->id)
                                 [ADMIN]
-                            @endif Upgrade Weapon
+                            @endif Upgrade Equipment
                         </a>
-                        {!! Form::open(['url' => 'weapons/upgrade/' . $stack->id, 'id' => 'upgradeForm', 'class' => 'collapse']) !!}
-                        <p class="alert alert-info my-2">This weapon can be upgraded to {!! $stack->weapon->parent->displayName !!}!</p>
-                        <p>Upgrade costs {{ $stack->weapon->cost }}
-                            @if ($stack->weapon->currency_id != 0)
-                                <img src="{!! $stack->weapon->currency->iconurl !!}"> {!! $stack->weapon->currency->displayName !!}.
+                        {!! Form::open(['url' => 'armoury/'.$type.'/upgrade/' . $stack->id, 'id' => 'upgradeForm', 'class' => 'collapse']) !!}
+                        <p class="alert alert-info my-2">This equipment can be upgraded to {!! $stack->equipment->parent->displayName !!}!</p>
+                        <p>Upgrade costs {{ $stack->equipment->cost }}
+                            @if ($stack->equipment->currency_id != 0)
+                                <img src="{!! $stack->equipment->currency->iconurl !!}"> {!! $stack->equipment->currency->displayName !!}.
                             @else
                                 stat points.
                             @endif
@@ -89,11 +91,42 @@
                         {!! Form::close() !!}
                     </li>
                 @endif
+                @if ($stack->isTransferrable || $user->hasPower('edit_inventories'))
+                    @if (!$stack->character_id)
+                        <li class="list-group-item">
+                            <a class="card-title h5 collapse-title" data-toggle="collapse" href="#transferForm">
+                                @if ($stack->user_id != $user->id)
+                                    [ADMIN]
+                                @endif Transfer Equipment
+                            </a>
+                            {!! Form::open(['url' => 'armoury/'.$type.'/transfer/' . $stack->id, 'id' => 'transferForm', 'class' => 'collapse']) !!}
+                            @if (!$stack->isTransferrable)
+                                <p class="alert alert-warning my-2">This equipment is account-bound, but your rank allows you to transfer it to another user.</p>
+                            @endif
+                            <div class="form-group">
+                                {!! Form::label('user_id', 'Recipient') !!} {!! add_help('You can only transfer gears to verified users.') !!}
+                                {!! Form::select('user_id', $userOptions, null, ['class' => 'form-control']) !!}
+                            </div>
+                            <div class="text-right">
+                                {!! Form::submit('Transfer', ['class' => 'btn btn-primary']) !!}
+                            </div>
+                            {!! Form::close() !!}
+                        </li>
+                    @else
+                        <li class="list-group-item bg-light">
+                            <h5 class="card-title mb-0 text-muted"><i class="fas fa-lock mr-2"></i> Currently Attached to a Character (Cannot Transfer)</h5>
+                        </li>
+                    @endif
+                @else
+                    <li class="list-group-item bg-light">
+                        <h5 class="card-title mb-0 text-muted"><i class="fas fa-lock mr-2"></i> Account-bound</h5>
+                    </li>
+                @endif
                 @if (Auth::user()->isStaff)
                     <li class="list-group-item">
-                        <a class="card-title h5 collapse-title" data-toggle="collapse" href="#imageForm"> [ADMIN] Unique Image to Weapon</a>
-                        {!! Form::open(['url' => 'weapons/image/' . $stack->id, 'files' => true, 'id' => 'imageForm', 'class' => 'collapse']) !!}
-                        <p class="alert alert-info my-2">Give this weapon a unique image.</p>
+                        <a class="card-title h5 collapse-title" data-toggle="collapse" href="#imageForm"> [ADMIN] Unique Image to {{$displayType}}</a>
+                        {!! Form::open(['url' => 'armoury/'.$type.'/image/' . $stack->id, 'files' => true, 'id' => 'imageForm', 'class' => 'collapse']) !!}
+                        <p class="alert alert-info my-2">Give this equipment a unique image.</p>
                         <div>{!! Form::file('image') !!}</div>
                         <div class="text-muted">Recommended size: 100px x 100px</div>
                         @if ($stack->has_image)
@@ -108,45 +141,14 @@
                         {!! Form::close() !!}
                     </li>
                 @endif
-                @if ($stack->isTransferrable || $user->hasPower('edit_inventories'))
-                    @if (!$stack->character_id)
-                        <li class="list-group-item">
-                            <a class="card-title h5 collapse-title" data-toggle="collapse" href="#transferForm">
-                                @if ($stack->user_id != $user->id)
-                                    [ADMIN]
-                                @endif Transfer Weapon
-                            </a>
-                            {!! Form::open(['url' => 'weapons/transfer/' . $stack->id, 'id' => 'transferForm', 'class' => 'collapse']) !!}
-                            @if (!$stack->isTransferrable)
-                                <p class="alert alert-warning my-2">This weapon is account-bound, but your rank allows you to transfer it to another user.</p>
-                            @endif
-                            <div class="form-group">
-                                {!! Form::label('user_id', 'Recipient') !!} {!! add_help('You can only transfer weapons to verified users.') !!}
-                                {!! Form::select('user_id', $userOptions, null, ['class' => 'form-control']) !!}
-                            </div>
-                            <div class="text-right">
-                                {!! Form::submit('Transfer', ['class' => 'btn btn-primary']) !!}
-                            </div>
-                            {!! Form::close() !!}
-                        </li>
-                    @else
-                        <li class="list-group-item bg-light">
-                            <h5 class="card-title mb-0 text-muted"><i class="fas fa-lock mr-2"></i> Currently attached to a character</h5>
-                        </li>
-                    @endif
-                @else
-                    <li class="list-group-item bg-light">
-                        <h5 class="card-title mb-0 text-muted"><i class="fas fa-lock mr-2"></i> Account-bound</h5>
-                    </li>
-                @endif
                 <li class="list-group-item">
                     <a class="card-title h5 collapse-title" data-toggle="collapse" href="#deleteForm">
                         @if ($stack->user_id != $user->id)
                             [ADMIN]
-                        @endif Delete Weapon
+                        @endif Delete Equipment
                     </a>
-                    {!! Form::open(['url' => 'weapons/delete/' . $stack->id, 'id' => 'deleteForm', 'class' => 'collapse']) !!}
-                    <p>This action is not reversible. Are you sure you want to delete this weapon?</p>
+                    {!! Form::open(['url' => 'armoury/'.$type.'/delete/' . $stack->id, 'id' => 'deleteForm', 'class' => 'collapse']) !!}
+                    <p>This action is not reversible. Are you sure you want to delete this equipment?</p>
                     <div class="text-right">
                         {!! Form::submit('Delete', ['class' => 'btn btn-danger']) !!}
                     </div>

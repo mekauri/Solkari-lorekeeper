@@ -1,10 +1,10 @@
 @extends('admin.layout')
 
-@section('home-title')
+@section('admin-title')
     {{ $submission->prompt_id ? 'Submission' : 'Claim' }} (#{{ $submission->id }})
 @endsection
 
-@section('home-content')
+@section('admin-content')
     @if ($submission->prompt_id)
         {!! breadcrumbs(['Admin Panel' => 'admin', 'Prompt Queue' => 'admin/submissions/pending', 'Submission (#' . $submission->id . ')' => $submission->viewUrl]) !!}
     @else
@@ -231,10 +231,9 @@
             </div>
             <table>
                 <tr class="character-reward-row">
-
                     @if ($expanded_rewards)
                         <td>
-                            {!! Form::select('character_rewardable_type[]', ['Item' => 'Item', 'Currency' => 'Currency', 'LootTable' => 'Loot Table', 'Exp' => 'Exp', 'Points' => 'Points'], null, [
+                            {!! Form::select('character_rewardable_type[]', ['Item' => 'Item', 'Currency' => 'Currency', 'LootTable' => 'Loot Table', 'Exp' => 'Exp', 'Points' => 'Stat Points'], null, [
                                 'class' => 'form-control character-rewardable-type',
                                 'placeholder' => 'Select Reward Type',
                             ]) !!}

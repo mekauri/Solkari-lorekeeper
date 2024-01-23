@@ -13,6 +13,8 @@ use App\Models\Gallery\GalleryFavorite;
 use App\Models\Gallery\GallerySubmission;
 use App\Models\Item\Item;
 use App\Models\Item\ItemLog;
+use App\Models\Claymore\Gear;
+use App\Models\Claymore\Weapon;
 use App\Models\Claymore\GearLog;
 use App\Models\Claymore\WeaponLog;
 use App\Models\Level\LevelLog;
@@ -118,7 +120,7 @@ class User extends Authenticatable implements MustVerifyEmail {
      * Get user settings.
      */
     public function level() {
-        return $this->hasOne('App\Models\Level\UserLevel');
+        return $this->hasOne(UserLevel::class);
     }
 
     /**
@@ -205,15 +207,16 @@ class User extends Authenticatable implements MustVerifyEmail {
      * Get the user's weapons.
      */
     public function weapons() {
-        return $this->belongsToMany('App\Models\Claymore\Weapon', 'user_weapons')->withPivot('data', 'updated_at', 'id', 'character_id', 'has_image')->whereNull('user_weapons.deleted_at');
+        return $this->belongsToMany(Weapon::class, 'user_weapons')->withPivot('data', 'updated_at', 'id', 'character_id', 'has_image')->whereNull('user_weapons.deleted_at');
     }
 
     /**
-     * Get the user's gears.
+     * Get the user's gears
      */
     public function gears() {
-        return $this->belongsToMany('App\Models\Claymore\Gear', 'user_gears')->withPivot('data', 'updated_at', 'id', 'character_id', 'has_image')->whereNull('user_gears.deleted_at');
+        return $this->belongsToMany(Gear::class, 'user_gears')->withPivot('data', 'updated_at', 'id', 'character_id', 'has_image')->whereNull('user_gears.deleted_at');
     }
+
 
     /**
      * Get all of the user's character bookmarks.

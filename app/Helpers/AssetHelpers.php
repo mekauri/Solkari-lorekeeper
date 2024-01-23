@@ -230,7 +230,7 @@ function addAsset(&$array, $asset, $quantity = 1) {
     if (!$asset) {
         return;
     }
-    if ($asset == 'Exp' || $asset == 'Points') {
+    if ($asset == 'Exp' || ($asset == 'Points' && !$asset->id)) {
         $asset = strtolower($asset);
         if (isset($array[$asset]['quantity'])) {
             $array[$asset]['quantity'] += $quantity;

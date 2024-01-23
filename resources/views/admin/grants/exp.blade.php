@@ -13,8 +13,8 @@
 
     <h3>Basic Information</h3>
     <div class="form-group">
-        {!! Form::label('names[]', 'Username(s)') !!} {!! add_help('You can select up to 10 users at once.') !!}
-        {!! Form::select('names[]', $users, null, ['id' => 'usernameList', 'class' => 'form-control', 'multiple']) !!}
+        {!! Form::label('names[]', 'Username(s) / Slug(s)') !!} {!! add_help('You can select up to 10 users at once.') !!}
+        {!! Form::select('names[]', $options, null, ['id' => 'usernameList', 'class' => 'form-control', 'multiple']) !!}
     </div>
 
     <div class="form-group">

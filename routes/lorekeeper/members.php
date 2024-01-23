@@ -85,29 +85,19 @@ Route::group(['prefix' => 'pets', 'namespace' => 'Users'], function () {
     Route::post('view/{id}/edit', 'PetController@postEditPetProfile')->where('id', '[0-9]+');
 });
 
-Route::group(['prefix' => 'gears', 'namespace' => 'Users'], function () {
-    Route::get('/', 'GearController@getIndex');
-    Route::post('transfer/{id}', 'GearController@postTransfer');
-    Route::post('delete/{id}', 'GearController@postDelete');
-    Route::post('name/{id}', 'GearController@postName');
-    Route::post('attach/{id}', 'GearController@postAttach');
-    Route::post('detach/{id}', 'GearController@postDetach');
-    Route::post('upgrade/{id}', 'GearController@postUpgrade');
+Route::group(['prefix' => 'armoury', 'namespace' => 'Users'], function () {
+    Route::get('/', 'ArmouryController@getArmoury');
+    Route::get('{type}/{id}', 'ArmouryController@getStack');
 
-    Route::get('selector', 'GearController@getSelector');
-});
+    Route::post('{type}/transfer/{id}', 'ArmouryController@postTransfer');
+    Route::post('{type}/delete/{id}', 'ArmouryController@postDelete');
+    Route::post('{type}/name/{id}', 'ArmouryController@postName');
+    Route::post('{type}/attach/{id}', 'ArmouryController@postAttach');
+    Route::post('{type}/detach/{id}', 'ArmouryController@postDetach');
+    Route::post('{type}/upgrade/{id}', 'ArmouryController@postUpgrade');
+    Route::post('{type}/image/{id}', 'ArmouryController@postImage');
 
-Route::group(['prefix' => 'weapons', 'namespace' => 'Users'], function () {
-    Route::get('/', 'WeaponController@getIndex');
-    Route::post('transfer/{id}', 'WeaponController@postTransfer');
-    Route::post('delete/{id}', 'WeaponController@postDelete');
-    Route::post('name/{id}', 'WeaponController@postName');
-    Route::post('attach/{id}', 'WeaponController@postAttach');
-    Route::post('detach/{id}', 'WeaponController@postDetach');
-    Route::post('upgrade/{id}', 'WeaponController@postUpgrade');
-    Route::post('image/{id}', 'WeaponController@postImage');
-
-    Route::get('selector', 'WeaponController@getSelector');
+    Route::get('{type}/selector', 'ArmouryController@getSelector');
 });
 
 Route::group(['prefix' => 'characters', 'namespace' => 'Users'], function () {
@@ -129,10 +119,10 @@ Route::group(['prefix' => 'bank', 'namespace' => 'Users'], function () {
     Route::post('transfer', 'BankController@postTransfer');
 });
 
-Route::group(['prefix' => 'level', 'namespace' => 'Users'], function () {
-    Route::get('/', 'LevelController@getIndex');
-    Route::post('up', 'LevelController@postLevel');
-    Route::post('transfer', 'LevelController@postTransfer');
+Route::group(['prefix' => 'stats', 'namespace' => 'Users'], function () {
+    Route::get('/', 'UserStatController@getIndex');
+    Route::post('level', 'UserStatController@postLevel');
+    Route::post('transfer', 'UserStatController@postTransfer');
 });
 
 Route::group(['prefix' => 'trades', 'namespace' => 'Users'], function () {
@@ -167,18 +157,16 @@ Route::group(['prefix' => 'character', 'namespace' => 'Characters'], function ()
 
     Route::post('{slug}/approval', 'CharacterController@postCharacterApproval');
     Route::get('{slug}/approval', 'CharacterController@getCharacterApproval');
-    Route::get('{slug}/level-area', 'LevelController@getIndex');
-    Route::get('{slug}/stats-area', 'LevelController@getStatsIndex');
-    Route::post('{slug}/level-area/up', 'LevelController@postLevel');
-    Route::post('{slug}/stats-area/{id}', 'LevelController@postStat');
-    Route::post('{slug}/stats-area/admin/{id}', 'LevelController@postAdminStat');
-    Route::post('{slug}/stats-area/edit/{id}', 'LevelController@postEditStat');
-    Route::post('{slug}/stats-area/edit/base/{id}', 'LevelController@postEditBaseStat');
+    Route::get('{slug}/stats', 'CharacterStatController@getStats');
+    Route::get('{slug}/stats/{id}', 'CharacterStatController@getStat');
+    Route::post('{slug}/stats/{id}/level', 'CharacterStatController@postLevelStat'); // stat level up
+    Route::post('{slug}/stats/{id}/count', 'CharacterStatController@postEditStatCurrentCount');
+    Route::post('{slug}/stats/{id}/base', 'CharacterStatController@postEditBaseStat');
 
-    // EXP
-    Route::post('{slug}/level-area/exp-grant', 'LevelController@postExpGrant');
-    Route::post('{slug}/level-area/stat-grant', 'LevelController@postStatGrant');
+    Route::get('{slug}/stats/logs', 'CharacterStatController@getStatLogs');
+    Route::post('{slug}/stats/level', 'CharacterStatController@postLevel'); // level up
 });
+
 Route::group(['prefix' => 'myo', 'namespace' => 'Characters'], function () {
     Route::get('{id}/profile/edit', 'MyoController@getEditCharacterProfile');
     Route::post('{id}/profile/edit', 'MyoController@postEditCharacterProfile');
@@ -191,8 +179,8 @@ Route::group(['prefix' => 'myo', 'namespace' => 'Characters'], function () {
     Route::get('{id}/approval', 'MyoController@getCharacterApproval');
 });
 
-Route::group(['prefix' => 'level', 'namespace' => 'Users'], function () {
-    Route::get('/', 'LevelController@getIndex');
+Route::group(['prefix' => 'stats', 'namespace' => 'Users'], function () {
+    Route::get('/', 'UserStatController@getIndex');
 });
 
 /**************************************************************************************************

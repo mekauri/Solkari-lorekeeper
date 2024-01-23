@@ -29,7 +29,7 @@ class WeaponCategory extends Model {
     public static $createRules = [
         'name'        => 'required|unique:weapon_categories|between:3,25',
         'description' => 'nullable',
-        'image'       => 'mimes:png',
+        'image'       => 'mimes:png,webp',
     ];
 
     /**
@@ -42,6 +42,19 @@ class WeaponCategory extends Model {
         'description' => 'nullable',
         'image'       => 'mimes:png',
     ];
+
+    /**********************************************************************************************
+
+        RELATIONSHIPS
+
+    **********************************************************************************************/
+    
+    /**
+     * gets all weapons of this category
+     */
+    public function weapons() {
+        return $this->hasMany(Weapon::class, 'weapon_category_id');
+    }
 
     /**********************************************************************************************
 

@@ -124,10 +124,17 @@
                                         <tbody>
                                             @foreach (parseAssetData($character->data) as $key => $type)
                                                 @foreach ($type as $asset)
-                                                    <tr>
-                                                        <td>{!! $asset['asset']->displayName !!} ({!! ucfirst($key) !!})</td>
-                                                        <td>{{ $asset['quantity'] }}</td>
-                                                    </tr>
+                                                    @if($key == 'exp' || $key == 'points')
+                                                        <tr>
+                                                            <td>{!! ucfirst($key) !!}</td>
+                                                            <td>{{ $type['quantity'] }}</td>
+                                                        </tr>
+                                                    @else
+                                                        <tr>
+                                                            <td>{!! $asset['asset']->displayName !!} ({!! ucfirst($key) !!})</td>
+                                                            <td>{{ $asset['quantity'] }}</td>
+                                                        </tr>
+                                                    @endif
                                                 @endforeach
                                             @endforeach
 
@@ -165,7 +172,7 @@
 </div>
 
 
-(isset($inventory['user_items']) && array_filter($inventory['user_items']))
+@if (isset($inventory['user_items']) && array_filter($inventory['user_items']))
     <div class="card mb-3">
         <div class="card-header h2">Add-Ons</div>
         <div class="card-body">

@@ -299,23 +299,6 @@ class CharacterController extends Controller {
     }
 
     /**
-     * Shows a character's levels.
-     *
-     * @param string $name
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-    public function getCharacterLevel($name) {
-        return view('character.stats.level', [
-            'character' => $this->character,
-            'exps'      => $this->character->getExpLogs(),
-            'levels'    => $this->character->getLevelLogs(),
-            'stats'     => $this->character->getStatLogs(),
-            'counts'    => $this->character->getCountLogs(),
-        ]);
-    }
-
-    /**
      * Transfers currency between the user and character.
      *
      * @param App\Services\CharacterManager $service
@@ -426,9 +409,9 @@ class CharacterController extends Controller {
         $character = $this->character;
 
         return view('character.stats.exp_logs', [
-            'character' => $this->character,
-            'extPrevAndNextBtnsUrl' => '/exp-logs',
             'logs'      => $this->character->getExpLogs(0),
+            'character' => $this->character,
+            'extPrevAndNextBtnsUrl' => '/stats/logs/exp',
         ]);
     }
 
@@ -457,10 +440,29 @@ class CharacterController extends Controller {
     public function getCharacterStatLogs($slug) {
         $character = $this->character;
 
-        return view('character.stats.stat_logs', [
+        return view('character.stats.character_stat_logs', [
+            'levels'      => $this->character->getStatLevelLogs(0),
             'character' => $this->character,
-            'extPrevAndNextBtnsUrl' => '/stat-logs',
-            'logs'      => $this->character->getStatLogs(0),
+            'transfers'  => $this->character->getStatTransferLogs(0),
+            'extPrevAndNextBtnsUrl' => '/stats/logs',
+        ]);
+    }
+
+    /**
+     * Shows a user's stat logs.
+     *
+     * @param mixed $slug
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getCharacterStatPointLogs($slug) {
+        $character = $this->character;
+
+        return view('character.stats.stat_logs', [
+            'levels'      => $this->character->getStatLevelLogs(0),
+            'character' => $this->character,
+            'transfers'  => $this->character->getStatTransferLogs(0),
+            'extPrevAndNextBtnsUrl' => '/stats/logs',
         ]);
     }
 
@@ -476,7 +478,7 @@ class CharacterController extends Controller {
 
         return view('character.stats.level_logs', [
             'character' => $this->character,
-            'extPrevAndNextBtnsUrl' => '/level-logs',
+            'extPrevAndNextBtnsUrl' => '/stats/logs/level',
             'logs'      => $this->character->getLevelLogs(0),
         ]);
     }
@@ -493,7 +495,7 @@ class CharacterController extends Controller {
 
         return view('character.stats.count_logs', [
             'character' => $this->character,
-            'extPrevAndNextBtnsUrl' => '/count-logs',
+            'extPrevAndNextBtnsUrl' => '/stats/logs/count',
             'logs'      => $this->character->getCountLogs(0),
         ]);
     }

@@ -27,6 +27,9 @@
                                 </div>
                                 <div>
                                     <a href="#" class="inventory-gear inventory-gear-name">{{ $stack->name }}</a>
+                                    @if ($stack->pivot->character_id)
+                                        <p class="small mb-0">Attached to {!! getDisplayName(\App\Models\Character\Character::class, $stack->pivot->character_id) !!}</p>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach

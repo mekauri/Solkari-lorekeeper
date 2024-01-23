@@ -9,7 +9,7 @@
 
     <h1>Stats</h1>
 
-    <p>This is a list of stats in the game. Stats ONLY affect characters.</p>
+    <p>This is a list of stats in the game. Stats ONLY apply to characters.</p>
 
     <div class="text-right mb-3">
         <a class="btn btn-primary" href="{{ url('admin/stats/create') }}"><i class="fas fa-plus"></i> Create New Stat</a>
@@ -35,32 +35,27 @@
             <thead>
                 <tr>
                     <th>Name</th>
-                    <th>Abbreviation</th>
-                    <th>Default</th>
-                    <th>Step</th>
+                    <th>Base Stat</th>
+                    <th>Increment</th>
                     <th>Multiplier</th>
+                    <th>Species / Subtype Restrictions</th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($stats as $stat)
                     <tr class="sort-item" data-id="{{ $stat->id }}">
-                        <td>{{ $stat->name }}</td>
-                        <td>{{ $stat->abbreviation }}</td>
+                        <td>{{ $stat->name }} ({{ $stat->abbreviation }})</td>
+                        <td></td>
                         <td>{{ $stat->base }}</td>
                         <td>
-                            @if ($stat->step)
-                                {{ $stat->step }}
-                            @else
-                                No Step
-                            @endif
+                            {{ $stat->increment ?? 'No Increment' }}
                         </td>
                         <td>
-                            @if ($stat->multiplier)
-                                {{ $stat->multiplier }}
-                            @else
-                                No Multiplier
-                            @endif
+                            {{ $stat->multiplier ?? 'No Multiplier' }}
+                        </td>
+                        <td>
+                            {!! $stat->displayLimits() ?? 'No Species / Subtype Restrictions' !!}
                         </td>
                         <td class="text-right">
                             <a href="{{ url('admin/stats/edit/' . $stat->id) }}" class="btn btn-primary">Edit</a>

@@ -19,147 +19,34 @@ use Carbon\Carbon;
 use DB;
 
 class LevelManager extends Service {
-    public function userLevel($user) {
-        DB::beginTransaction();
-
-        try {
-            $service = new ExperienceManager;
-
-            $level = $user->level;
-
-            // getting the next level
-            $check = $user->level->current_level + 1;
-            $next = Level::where('level', $check)->where('level_type', 'User')->first();
-
-            // validation
-            if (!$next) {
-                throw new \Exception('You are at the max level!');
-            }
-            if ($user->level->current_exp < $next->required_exp) {
-                throw new \Exception('You do not have enough exp to level up!');
-            }
-
-            if (!$service->debitExp($user, 'Level Up', 'Used EXP in level up.', $level, $next->exp_required)) {
-                throw new \Exception('Error debiting exp.');
-            }
-
-            // give stat points
-            $service = new StatManager;
-            if ($next->stat_points != 0) {
-                if (!$service->creditUserStat($user, 'Level Up Reward', 'Rewards for levelling up to .'.$next->level.'.', $next)) {
-                    throw new \Exception('Error granting stat points.');
-                }
-            }
-            ////////////////////////////////////////////////////// LEVEL REWARDS
-            $levelRewards = createAssetsArray();
-
-            foreach ($next->rewards as $reward) {
-                addAsset($levelRewards, $reward->reward, $reward->quantity);
-            }
-
-            // Logging data
-            $levelLogType = 'Level Rewards';
-            $levelData = [
-                'data' => 'Received rewards for level up to level '.$next->level.'.',
-            ];
-
-            // Distribute user rewards
-            if (!$levelRewards = fillUserAssets($levelRewards, null, $user, $levelLogType, $levelData)) {
-                throw new \Exception('Failed to distribute rewards to user.');
-            }
-            /////////////////////////////////////////////////
-
-            foreach ($next->limits as $limit) {
-                $rewardType = $limit->limit_type;
-                $check = null;
-                switch ($rewardType) {
-                    case 'Item':
-                        $check = UserItem::where('item_id', $limit->reward->id)->where('user_id', Auth::user()->id)->where('count', '>=', $limit->quantity)->first();
-                        break;
-                    case 'Currency':
-                        $check = UserCurrency::where('currency_id', $limit->reward->id)->where('user_id', Auth::user()->id)->where('quantity', '>=', $limit->quantity)->first();
-                        break;
-                        //case 'Recipe':
-                        //    $check = UserRecipe::where('recipe_id', $limit->reward->id)->where('user_id', auth::user()->id)->first();
-                        //    break;
-                }
-
-                if (!$check) {
-                    throw new \Exception('You require '.$limit->reward->name.' x '.$limit->quantity.' to level up.');
-                }
-            }
-
-            // create log
-            if ($this->createlog($user, 'User', $user->level->current_level, $next->level)) {
-                $level->current_level += 1;
-                $level->save();
-            } else {
-                throw new \Exception('Could not create log :(');
-            }
-
-            return $this->commitReturn(true);
-        } catch (\Exception $e) {
-            $this->setError('error', $e->getMessage());
-        }
-
-        return $this->rollbackReturn(false);
-    }
 
     /**
-     * Levels up a character.
+     * Levels up a character / user.
      *
      * @param mixed $character
      */
-    public function characterLevel($character) {
+    public function level($recipient) {
         DB::beginTransaction();
 
         try {
             $service = new ExperienceManager;
 
-            $level = $character->level;
+            $level = $recipient->level;
 
             // getting the next level
-            $check = $character->level->current_level + 1;
-            $next = Level::where('level', $check)->where('level_type', 'Character')->first();
+            $next = Level::where('level', $level->current_level + 1)->where('level_type', $recipient->logType)->first();
 
             // validation
             if (!$next) {
                 throw new \Exception('You are at the max level!');
             }
-            if ($character->level->current_exp < $next->required_exp) {
+            if ($level->current_exp < $next->required_exp) {
                 throw new \Exception('You do not have enough exp to level up!');
             }
 
-            if (!$service->debitExp($character, 'Level Up', 'Used EXP in level up.', $level, $next->exp_required)) {
+            if (!$service->debitExp($recipient, 'Level Up', 'Used EXP in level up.', $level, $next->exp_required)) {
                 throw new \Exception('Error debiting exp.');
             }
-
-            // give stat points
-            $service = new StatManager;
-            if ($next->stat_points != 0) {
-                if (!$service->creditCharaStat($character, 'Level Up Reward', 'Rewards for levelling up.', $next)) {
-                    throw new \Exception('Error granting stat points.');
-                }
-            }
-
-            ////////////////////////////////////////////////////// LEVEL REWARDS
-            $levelRewards = createAssetsArray();
-
-            foreach ($next->rewards as $reward) {
-                addAsset($levelRewards, $reward->reward, $reward->quantity);
-            }
-
-            // Logging data
-            $levelLogType = 'Level Rewards';
-            $levelData = [
-                'data' => 'Received rewards for level up to level '.$next->level.'.',
-            ];
-
-            // Distribute user rewards
-            if (!$levelRewards = fillCharacterAssets($levelRewards, null, $character, $levelLogType, $levelData)) {
-                throw new \Exception('Failed to distribute rewards to user.');
-            }
-            /////////////////////////////////////////////////
 
             foreach ($next->limits as $limit) {
                 $rewardType = $limit->limit_type;
@@ -171,9 +58,6 @@ class LevelManager extends Service {
                     case 'Currency':
                         $check = CharacterCurrency::where('currency_id', $limit->reward->id)->where('character_id', $character->id)->where('count', '>', 0)->first();
                         break;
-                        //case 'Recipe':
-                        //    $check = UserRecipe::where('recipe_id', $limit->reward->id)->where('user_id', auth::user()->id)->first();
-                        //    break;
                 }
 
                 if (!$check) {
@@ -181,8 +65,29 @@ class LevelManager extends Service {
                 }
             }
 
+            ////////////////////////////////////////////////////// LEVEL REWARDS
+            $levelRewards = $this->processRewards($next);
+
+            // Logging data
+            $levelLogType = 'Level Rewards';
+            $levelData = [
+                'data' => 'Received rewards for level up to level '.$next->level.'.',
+            ];
+
+            // Distribute rewards
+            if ($recipient->logType == 'User') {
+                if (!$levelRewards = fillUserAssets($levelRewards, null, $recipient, $levelLogType, $levelData)) {
+                    throw new \Exception('Failed to distribute rewards to user.');
+                }
+            } else {
+                if (!$levelRewards = fillCharacterAssets($levelRewards, null, $recipient, $levelLogType, $levelData)) {
+                    throw new \Exception('Failed to distribute rewards to user.');
+                }
+            }
+            /////////////////////////////////////////////////
+
             // create log
-            if ($this->createlog($character, 'Character', $character->level->current_level, $next->level)) {
+            if ($this->createlog($recipient, $recipient->logType, $level->current_level, $next->level)) {
                 $level->current_level += 1;
                 $level->save();
             } else {
@@ -224,61 +129,28 @@ class LevelManager extends Service {
      * @param array $data
      * @param bool  $isCharacter
      * @param bool  $isStaff
+     * @param bool  $isClaim
      *
      * @return array
      */
-    private function processRewards($data, $isCharacter, $isStaff = false) {
-        if ($isCharacter) {
-            $assets = createAssetsArray(true);
-            if (isset($data['character_currency_id'][$data['character_id']]) && isset($data['character_quantity'][$data['character_id']])) {
-                foreach ($data['character_currency_id'][$data['character_id']] as $key => $currency) {
-                    if ($data['character_quantity'][$data['character_id']][$key]) {
-                        addAsset($assets, $data['currencies'][$currency], $data['character_quantity'][$data['character_id']][$key]);
-                    }
-                }
-            }
-
-            return $assets;
-        }
-
+    private function processRewards($level) {
         $assets = createAssetsArray(false);
         // Process the additional rewards
-        if (isset($data['rewardable_type']) && $data['rewardable_type']) {
-            foreach ($data['rewardable_type'] as $key => $type) {
-                $reward = null;
-                switch ($type) {
-                    case 'Item':
-                        $reward = Item::find($data['rewardable_id'][$key]);
-                        break;
-                    case 'Currency':
-                        $reward = Currency::find($data['rewardable_id'][$key]);
-                        if (!$reward->is_user_owned) {
-                            throw new \Exception('Invalid currency selected.');
-                        }
-                        break;
-                    case 'LootTable':
-                        if (!$isStaff) {
-                            break;
-                        }
-                        $reward = LootTable::find($data['rewardable_id'][$key]);
-                        break;
-                    case 'Raffle':
-                        if (!$isStaff) {
-                            break;
-                        }
-                        $reward = Raffle::find($data['rewardable_id'][$key]);
-                        break;
-                }
-                if (!$reward) {
-                    continue;
-                }
-                addAsset($assets, $reward, $data['quantity'][$key]);
+        foreach ($level->rewards as $reward) {
+            if ($reward->rewardable_type == 'Exp' || $reward->rewardable_type == 'Points') {
+                addAsset($assets, $reward->rewardable_type, $reward->quantity);
+            }
+            else {
+                addAsset($assets, $reward->reward, $reward->quantity);
             }
         }
 
         return $assets;
     }
 
+    /**
+     * Processes the reward data into a consumable array.
+     */
     private function processData($levelRewards) {
         $rewards = [];
         foreach ($levelRewards as $type => $a) {

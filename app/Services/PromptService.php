@@ -389,6 +389,9 @@ class PromptService extends Service {
 
         if (isset($data['rewardable_type'])) {
             foreach ($data['rewardable_type'] as $key => $type) {
+                if ($data['rewardable_id'][$key] == 'none') {
+                    $data['rewardable_id'][$key] = null;
+                }
                 PromptReward::create([
                     'prompt_id'       => $prompt->id,
                     'rewardable_type' => $type,

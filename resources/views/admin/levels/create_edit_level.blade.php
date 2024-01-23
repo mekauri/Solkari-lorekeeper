@@ -5,7 +5,9 @@
 @endsection
 
 @section('admin-content')
-    {!! breadcrumbs(['Admin Panel' => 'admin', 'Levels' => 'admin/levels/character', ($level->id ? 'Edit' : 'Create') . ' Level' => $level->id ? 'admin/levels/character/edit/' . $level->id : 'admin/levels/character/create']) !!}
+    {!! breadcrumbs(['Admin Panel' => 'admin', ucfirst($type) . ' Levels' => 'admin/levels/'.$type, 
+        ($level->id ? 'Edit' : 'Create ') . ucfirst($type) . ' Level' => $level->id ? 'admin/levels/' . $type . '/edit/' . $level->id : 'admin/levels/' . $type . '/create']) 
+    !!}
 
     <h1>{{ $level->id ? 'Edit' : 'Create' }} Level
         @if ($level->id)
@@ -13,10 +15,10 @@
         @endif
     </h1>
 
-    {!! Form::open(['url' => $level->id ? 'admin/levels/character/edit/' . $level->id : 'admin/levels/character/create']) !!}
+    {!! Form::open(['url' => $level->id ? 'admin/levels/'.$type.'/edit/' . $level->id : 'admin/levels/'.$type.'/create']) !!}
 
     <h3>Basic Information</h3>
-    <p>All characters start at level one</p>
+    <p>All {{$type}}s start at level one</p>
     <div class="row">
         <div class="col-md">
             <div class="form-group">
@@ -33,11 +35,6 @@
     </div>
 
     <div class="form-group">
-        {!! Form::label('Stat Points Award (optional, input 0 for no reward)') !!} {!! add_help('Points awarded to User for levelling up.') !!}
-        {!! Form::number('stat_points', $level->stat_points, ['class' => 'form-control', 'min' => 0]) !!}
-    </div>
-
-    <div class="form-group">
         {!! Form::label('Description') !!}
         {!! Form::text('description', $level->description, ['class' => 'form-control wysiwyg']) !!}
     </div>
@@ -46,8 +43,13 @@
     @include('widgets._level_limit_select', ['loots' => $level->limits])
     <br>
     <h3>Rewards</h3>
-    <p>Rewards are awarded when the user levels up</p>
-    @include('widgets._loot_select', ['loots' => $level->rewards, 'showLootTables' => false, 'showRaffles' => false])
+    <p>
+        Rewards are awarded when the {{$type}} levels up.
+        @if($type == 'character')
+            Character rewards are currently set to be awarded to {{ config('lorekeeper.extensions.character_reward_expansion.default_recipient') ? 'the character' : 'the user' }}.
+        @endif
+    </p>
+    @include('widgets._loot_select', ['loots' => $level->rewards, 'showLootTables' => true, 'showRaffles' => true])
 
     <div class="text-right">
         {!! Form::submit($level->id ? 'Edit' : 'Create', ['class' => 'btn btn-primary']) !!}
@@ -55,24 +57,20 @@
 
     {!! Form::close() !!}
 
-    @include('widgets._loot_select_row', ['showLootTables' => false, 'showRaffles' => false])
+    @include('widgets._loot_select_row', ['showLootTables' => true, 'showRaffles' => true])
     @include('widgets._level_limit_row')
 @endsection
 
 @section('scripts')
     @parent
-    @include('js._loot_js', ['showLootTables' => false, 'showRaffles' => false])
+    @include('js._loot_js', ['showLootTables' => true, 'showRaffles' => true])
     @include('js._level_limit_js')
-@endsection
-
-@section('scripts')
-    @parent
     <script>
         $(document).ready(function() {
 
             $('.delete-level-button').on('click', function(e) {
                 e.preventDefault();
-                loadModal("{{ url('admin/levels/character/delete') }}/{{ $level->id }}", 'Delete Level');
+                loadModal("{{ url('admin/levels/delete') }}/{{ $level->id }}", 'Delete Level');
             });
         });
     </script>

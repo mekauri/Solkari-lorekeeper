@@ -379,8 +379,15 @@ return [
     // EXP GRANT
     245 => [
         'name'    => 'EXP Grant',
-        'message' => 'You have received a staff grant of {quantity} EXP from <a href="{sender_url}">{sender_name}</a>. (<a href="{url}">View Level Area</a>)',
-        'url'     => 'level',
+        'message' => 'You have received a staff grant of {quantity} EXP from <a href="{sender_url}">{sender_name}</a>. (<a href="{stat_url}">View Stat Information</a>)',
+        'url'     => '',
+    ],
+
+    // STAT GRANT
+    246 => [
+        'name'    => 'Stat Grant',
+        'message' => 'You have received a staff grant of stat points from <a href="{sender_url}">{sender_name}</a>. (<a href="{stat_url}">View Stat Information</a>)',
+        'url'     => '',
     ],
 
     // GEAR GRANT

@@ -11,7 +11,12 @@ use Auth;
 use Illuminate\Http\Request;
 
 class StatController extends Controller {
-    // index for stats
+    
+    /**
+     * Gets the stats index page.
+     * 
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
     public function getIndex(Request $request) {
         $query = Stat::query();
         $data = $request->only(['name']);
@@ -19,16 +24,18 @@ class StatController extends Controller {
             $query->where('name', 'LIKE', '%'.$data['name'].'%');
         }
 
-        return view('admin.stats.character.stats', [
+        return view('admin.stats.stats', [
             'stats' => $query->paginate(20)->appends($request->query()),
         ]);
     }
 
     /**
      * Shows the create stat page.
+     * 
+     * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getCreateStat() {
-        return view('admin.stats.character.create_edit_stat', [
+        return view('admin.stats.create_edit_stat', [
             'stat' => new Stat,
         ]);
     }
@@ -37,6 +44,7 @@ class StatController extends Controller {
      * Shows the edit stat page.
      *
      * @param mixed $id
+     * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getEditStat($id) {
         $stat = Stat::find($id);
@@ -44,10 +52,16 @@ class StatController extends Controller {
             abort(404);
         }
 
-        return view('admin.stats.character.create_edit_stat', [
+        $subtypes = Subtype::orderBy('sort', 'DESC')->get()->keyBy(function ($subtype) {
+            return $subtype->id;
+        })->map(function ($subtype) {
+            return $subtype->name.' ('.$subtype->species->name.')';
+        })->toArray();        
+
+        return view('admin.stats.create_edit_stat', [
             'stat'      => $stat,
             'specieses' => Species::orderBy('specieses.sort', 'DESC')->pluck('name', 'id')->toArray(),
-            'subtypes'  => Subtype::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
+            'subtypes'  => $subtypes,
         ]);
     }
 
@@ -55,11 +69,12 @@ class StatController extends Controller {
      * Creates or edits an stat.
      *
      * @param mixed|null $id
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function postCreateEditStat(Request $request, StatService $service, $id = null) {
         $id ? $request->validate(Stat::$updateRules) : $request->validate(Stat::$createRules);
         $data = $request->only([
-            'name', 'abbreviation', 'base', 'step', 'multiplier', 'max_level', 'types', 'type_ids',
+            'name', 'abbreviation', 'base', 'increment', 'multiplier', 'max_level', 'types', 'type_ids', 'colour',
         ]);
         if ($id && $service->updateStat(Stat::find($id), $data)) {
             flash('Stat updated successfully.')->success();
@@ -80,11 +95,12 @@ class StatController extends Controller {
      * Gets the stat deletion modal.
      *
      * @param mixed $id
+     * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getDeleteStat($id) {
         $stat = Stat::find($id);
 
-        return view('admin.stats.character._delete_stat', [
+        return view('admin.stats._delete_stat', [
             'stat' => $stat,
         ]);
     }
@@ -93,6 +109,7 @@ class StatController extends Controller {
      * Creates or edits an stat.
      *
      * @param mixed $id
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function postDeleteStat(Request $request, StatService $service, $id) {
         if ($id && $service->deleteStat(Stat::find($id))) {

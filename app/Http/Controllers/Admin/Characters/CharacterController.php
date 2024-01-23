@@ -91,25 +91,19 @@ class CharacterController extends Controller {
     }
 
     /**
-     * Shows the edit image subtype portion of the modal.
+     * Gets the stats that are available for a specific species/subtype.
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getCreateCharacterMyoStats(Request $request) {
-        $species = $request->input('species');
-        $subtype = $request->input('subtype');
-        if ($species == 0) {
-            $species = null;
-        }
-        if ($subtype == 0) {
-            $subtype = null;
-        }
+        $species = $request->input('species') ?? null;
+        $subtype = $request->input('subtype') ?? null;
 
-        $stats = Stat::whereHas('species', function ($query) use ($species) {
+        $stats = Stat::whereHas('limits', function ($query) use ($species) {
             $query->where('species_id', $species)->where('is_subtype', 0);
-        })->orWhereHas('species', function ($query) use ($subtype) {
+        })->orWhereHas('limits', function ($query) use ($subtype) {
             $query->where('species_id', $subtype)->where('is_subtype', 1);
-        })->orWhereDoesntHave('species')->orderBy('name', 'ASC')->get();
+        })->orWhereDoesntHave('limits')->orderBy('name', 'ASC')->get();
 
         return view('admin.masterlist._create_character_stats', [
             'stats' => $stats,

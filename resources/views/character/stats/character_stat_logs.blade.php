@@ -1,23 +1,19 @@
 @extends('character.layout', ['isMyo' => $character->is_myo_slot])
 
 @section('profile-title')
-    {{ $character->slug }}'s Level
+    {{ $character->fullName }}'s Stat Logs
 @endsection
 
 @section('profile-content')
-    {!! breadcrumbs(['Characters' => 'characters', $character->slug => $character->url, 'Level' => $character->url . '/level']) !!}
+    {!! breadcrumbs([
+        $character->category->masterlist_sub_id ? $character->category->sublist->name . ' Masterlist' : 'Character masterlist' => $character->category->masterlist_sub_id ? 'sublist/' . $character->category->sublist->key : 'masterlist',
+        $character->fullName => $character->url,
+        'Stat Information' => $character->url . '/stats', 'Stat Logs' => $character->url . '/stats/logs',
+    ]) !!}
 
     <h1>
-        {!! $character->displayName !!}'s Level Logs
+        {!! $character->displayName !!}'s Stat Logs
     </h1>
-
-    <div class="mb-4 text-center">
-        <div class="card text-center">
-            <div class="m-4"><strong>Level:</strong> <br>{{ $character->level->current_level }}</div>
-            <div class="m-4"><strong>Current EXP:</strong> <br>{{ $character->level->current_exp }} </div>
-            <div class="m-4"><strong>Current Available Stat Points:</strong> <br>{{ $character->level->current_points }}</div>
-        </div>
-    </div>
 
     <h3>Latest EXP Activity</h3>
     <table class="table table-sm">
@@ -34,10 +30,11 @@
         </tbody>
     </table>
     <div class="text-right">
-        <a href="{{ url($character->url . '/exp-logs') }}">View all...</a>
+        <a href="{{ url($character->url . '/stats/logs/exp') }}">View all...</a>
     </div>
 
-    <h3>Latest Stat Transfer Activity</h3>
+    <h3>Latest Stat Activity</h3>
+    <h5>Transfers</h5>
     <table class="table table-sm">
         <thead>
             <th>Sender</th>
@@ -47,13 +44,27 @@
             <th>Date</th>
         </thead>
         <tbody>
-            @foreach ($stats as $stat)
-                @include('character.stats._stat_log_row', ['exp' => $stat, 'owner' => $character])
+            @foreach ($stat_transfers as $stat)
+                @include('character.stats._stat_transfer_log_row', ['stat' => $stat, 'owner' => $character])
+            @endforeach
+        </tbody>
+    </table>
+    <h5>Level Ups</h5>
+    <table class="table table-sm">
+        <thead>
+            <th></th>
+            <th>Stat</th>
+            <th>Level</th>
+            <th>Date</th>
+        </thead>
+        <tbody>
+            @foreach ($stat_levels as $level)
+                @include('character.stats._stat_level_log_row', ['stat' => $level, 'owner' => $character])
             @endforeach
         </tbody>
     </table>
     <div class="text-right">
-        <a href="{{ url($character->url . '/stat-logs') }}">View all...</a>
+        <a href="{{ url($character->url . '/stats/logs/points') }}">View all...</a>
     </div>
 
     <h3>Latest Level-Up Activity</h3>
@@ -71,10 +82,10 @@
         </tbody>
     </table>
     <div class="text-right">
-        <a href="{{ url($character->url . '/level-logs') }}">View all...</a>
+        <a href="{{ url($character->url . '/stats/logs/level') }}">View all...</a>
     </div>
 
-    <h3>Latest Current Count Activity</h3>
+    <h3>Latest Stat Value Adjustments</h3>
     <table class="table table-sm">
         <thead>
             <th>Sender</th>
@@ -90,6 +101,7 @@
         </tbody>
     </table>
     <div class="text-right">
-        <a href="{{ url($character->url . '/count-logs') }}">View all...</a>
+        <a href="{{ url($character->url . '/stats/logs/count') }}">View all...</a>
     </div>
+
 @endsection

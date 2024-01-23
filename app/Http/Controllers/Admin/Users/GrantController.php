@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterDesignUpdate;
 use App\Models\Character\CharacterItem;
+use App\Models\Stat\Stat;
 use App\Models\Claymore\Gear;
 use App\Models\Claymore\Weapon;
 use App\Models\Currency\Currency;
@@ -22,6 +23,7 @@ use App\Services\CurrencyManager;
 use App\Services\InventoryManager;
 use App\Services\PetManager;
 use App\Services\SkillManager;
+use App\Services\Stat\StatManager;
 use App\Services\Stat\ExperienceManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -93,21 +95,72 @@ class GrantController extends Controller {
 
     /**
      * Grants or removes exp (show).
+     * 
+     * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getExp() {
+        $options = [
+            'Users' => User::orderBy('id')->pluck('name', 'id')->mapWithKeys(function ($item, $key) {
+                return ['user-' . $key => $item];
+            })->toArray(),
+            'Characters' => Character::orderBy('name')->get()->pluck('fullName', 'id')->mapWithKeys(function ($item, $key) {
+                return ['character-' . $key => $item];
+            })->toArray(),
+        ];
+
         return view('admin.grants.exp', [
-            'users' => User::orderBy('id')->pluck('name', 'id'),
-            'users' => User::orderBy('id')->pluck('name', 'id'),
+            'options' => $options,
         ]);
     }
 
     /**
      * Grants or removes exp.
+     * 
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function postExp(Request $request, ExperienceManager $service) {
         $data = $request->only(['names', 'quantity', 'data']);
         if ($service->grantExp($data, Auth::user())) {
             flash('EXP granted successfully.')->success();
+        } else {
+            foreach ($service->errors()->getMessages()['error'] as $error) {
+                flash($error)->error();
+            }
+        }
+
+        return redirect()->back();
+    }
+
+    /**
+     * Grants or removes stat points
+     * 
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getPoints() {
+        $options = [
+            'Users' => User::orderBy('id')->pluck('name', 'id')->mapWithKeys(function ($item, $key) {
+                return ['user-' . $key => $item];
+            })->toArray(),
+            'Characters' => Character::orderBy('name')->get()->pluck('fullName', 'id')->mapWithKeys(function ($item, $key) {
+                return ['character-' . $key => $item];
+            })->toArray(),
+        ];
+
+        return view('admin.grants.points', [
+            'stats'   => ['none' => 'General Point'] + Stat::orderBy('name')->pluck('name', 'id')->toArray(),
+            'options' => $options,
+        ]);
+    }
+
+    /**
+     * Grants or removes points.
+     * 
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function postPoints(Request $request, StatManager $service) {
+        $data = $request->only(['names', 'stat_ids', 'quantity', 'data']);
+        if ($service->grantStats($data, Auth::user())) {
+            flash('Stat points granted successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();

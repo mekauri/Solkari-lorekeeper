@@ -117,7 +117,7 @@ class PotionService extends Service {
 
                         $quantity = eval('return '.$characterStat->current_count.$operators[$stack->item->tag($data['tag'])->getData()['type']].$stack->item->tag($data['tag'])->getData()['value'].';');
 
-                        if (!(new StatManager)->setStat($user, $characterStat, $quantity, 'Potion Used', $stack->item->name.' used')) {
+                        if (!(new StatManager)->editCharacterStatCurrentCount($user, $characterStat, $quantity, 'Potion Used', $stack->item->name.' used')) {
                             throw new \Exception('Error updating stat.');
                         }
                     }

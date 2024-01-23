@@ -449,34 +449,32 @@ class WorldController extends Controller {
     }
 
     /**
-     * ID view.
-     *
-     * @param mixed $type
-     * @param mixed $level
+     * Shows the stats page.
+     * 
+     * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getSingleLevel($type, $level) {
-        if ($type == 'user') {
-            $levels = Level::where('level', $level)->where('level_type', 'User')->first();
-        } elseif ($type == 'character') {
-            $levels = Level::where('level', $level)->where('level_type', 'Character')->first();
-        } else {
-            abort(404);
+    public function getStats(Request $request) {
+        $query = Stat::query();
+
+        if ($request->has('name')) {
+            $squery->where('name', 'LIKE', '%'.$request->get('name').'%');
         }
 
-        return view('world.level_single', [
-            'level' => $levels,
-            'type'  => $type,
+        return view('world.stats', [
+            'stats' => $query->paginate(20)->appends($request->query()),
         ]);
     }
 
     /**
-     * STATS.
+     * Shows an individual stat's page.
+     * 
+     * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function getStats() {
-        $stats = Stat::all();
+    public function getStat($abbreviation) {
+        $stat = Stat::where('abbreviation', $abbreviation)->first();
 
-        return view('world.stats', [
-            'stats' => $stats,
+        return view('world.stat', [
+            'stat' => $stat,
         ]);
     }
 

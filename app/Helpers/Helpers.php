@@ -448,3 +448,10 @@ function prettyProfileName($url) {
         return $url;
     }
 }
+
+/**
+ * Gets the displayName attribute from a given model.
+ */
+function getDisplayName($model, $id) {
+    return $model::find($id)?->displayName;
+}

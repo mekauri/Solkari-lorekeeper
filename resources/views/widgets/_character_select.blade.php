@@ -59,7 +59,7 @@
 
             @if ($expanded_rewards)
                 <td>
-                    {!! Form::select('character_rewardable_type[]', ['Item' => 'Item', 'Currency' => 'Currency', 'Exp' => 'Exp', 'Points' => 'Points'] + (isset($showLootTables) && $showLootTables ? ['LootTable' => 'Loot Table'] : []), null, [
+                    {!! Form::select('character_rewardable_type[]', ['Item' => 'Item', 'Currency' => 'Currency', 'Exp' => 'Exp', 'Points' => 'Stat Points'] + (isset($showLootTables) && $showLootTables ? ['LootTable' => 'Loot Table'] : []), null, [
                         'class' => 'form-control character-rewardable-type',
                         'placeholder' => 'Select Reward Type',
                     ]) !!}

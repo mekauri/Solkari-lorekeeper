@@ -4,6 +4,8 @@ namespace App\Models\Prompt;
 
 use App\Models\Currency\Currency;
 use App\Models\Item\Item;
+use App\Models\Pet\Pet;
+use App\Models\Stat\Stat;
 use App\Models\Loot\LootTable;
 use App\Models\Model;
 use App\Models\Raffle\Raffle;
@@ -67,12 +69,15 @@ class PromptReward extends Model {
                 return $this->belongsTo(LootTable::class, 'rewardable_id');
                 break;
             case 'Pet':
-                return $this->belongsTo('App\Models\Pet\Pet', 'rewardable_id');
+                return $this->belongsTo(Pet::class, 'rewardable_id');
                 break;
             case 'Raffle':
                 return $this->belongsTo(Raffle::class, 'rewardable_id');
                 break;
-            case 'Exp': case 'Point':
+            case 'Points':
+                return $this->belongsTo(Stat::class, 'rewardable_id');
+                break;
+            case 'Exp':
                 // Laravel requires a relationship instance to be returned (cannot return null), so returning one that doesn't exist here.
                 return $this->belongsTo('App\Models\Loot\Loot', 'rewardable_id', 'loot_table_id')->whereNull('loot_table_id');
                 break;
