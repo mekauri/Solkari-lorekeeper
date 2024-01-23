@@ -11,10 +11,9 @@ use Auth;
 use Illuminate\Http\Request;
 
 class StatController extends Controller {
-    
     /**
      * Gets the stats index page.
-     * 
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getIndex(Request $request) {
@@ -31,7 +30,7 @@ class StatController extends Controller {
 
     /**
      * Shows the create stat page.
-     * 
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getCreateStat() {
@@ -44,6 +43,7 @@ class StatController extends Controller {
      * Shows the edit stat page.
      *
      * @param mixed $id
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getEditStat($id) {
@@ -56,7 +56,7 @@ class StatController extends Controller {
             return $subtype->id;
         })->map(function ($subtype) {
             return $subtype->name.' ('.$subtype->species->name.')';
-        })->toArray();        
+        })->toArray();
 
         return view('admin.stats.create_edit_stat', [
             'stat'      => $stat,
@@ -69,6 +69,7 @@ class StatController extends Controller {
      * Creates or edits an stat.
      *
      * @param mixed|null $id
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postCreateEditStat(Request $request, StatService $service, $id = null) {
@@ -95,6 +96,7 @@ class StatController extends Controller {
      * Gets the stat deletion modal.
      *
      * @param mixed $id
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getDeleteStat($id) {
@@ -109,6 +111,7 @@ class StatController extends Controller {
      * Creates or edits an stat.
      *
      * @param mixed $id
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postDeleteStat(Request $request, StatService $service, $id) {

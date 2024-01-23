@@ -8,14 +8,14 @@ use App\Models\Currency\CurrencyLog;
 use App\Models\Gallery\GalleryCharacter;
 use App\Models\Item\Item;
 use App\Models\Item\ItemLog;
+use App\Models\Level\LevelLog;
 use App\Models\Model;
 use App\Models\Rarity;
-use App\Models\Stat\Stat;
 use App\Models\Stat\CountLog;
 use App\Models\Stat\ExpLog;
+use App\Models\Stat\Stat;
 use App\Models\Stat\StatLog;
 use App\Models\Stat\StatTransferLog;
-use App\Models\Level\LevelLog;
 use App\Models\Submission\Submission;
 use App\Models\Submission\SubmissionCharacter;
 use App\Models\Trade;
@@ -755,7 +755,7 @@ class Character extends Model {
         })->orWhereHas('limits', function ($query) use ($character) {
             $query->where('species_id', $character->image->subtype_id)->where('is_subtype', 1);
         })->orWhereDoesntHave('limits')->orderBy('name', 'ASC')->get();
-    
+
         // prevents running it when unneeded. if there's an error idk lol
         if ($this->stats()->pluck('stat_id')->toArray() != $stats->pluck('id')->toArray()) {
             // we need to do this each time in case a new stat is made. It slows it down but -\(-v-)/-
@@ -822,6 +822,8 @@ class Character extends Model {
 
     /**
      * Gets the equipment that affects a stat.
+     *
+     * @param mixed $stat_id
      */
     public function getStatEquipment($stat_id) {
         return $this->equipment()->filter(function ($equipment) use ($stat_id) {

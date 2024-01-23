@@ -5,6 +5,10 @@ namespace App\Models\User;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterBookmark;
 use App\Models\Character\CharacterImageCreator;
+use App\Models\Claymore\Gear;
+use App\Models\Claymore\GearLog;
+use App\Models\Claymore\Weapon;
+use App\Models\Claymore\WeaponLog;
 use App\Models\Comment\CommentLike;
 use App\Models\Currency\Currency;
 use App\Models\Currency\CurrencyLog;
@@ -13,18 +17,14 @@ use App\Models\Gallery\GalleryFavorite;
 use App\Models\Gallery\GallerySubmission;
 use App\Models\Item\Item;
 use App\Models\Item\ItemLog;
-use App\Models\Claymore\Gear;
-use App\Models\Claymore\Weapon;
-use App\Models\Claymore\GearLog;
-use App\Models\Claymore\WeaponLog;
 use App\Models\Level\LevelLog;
-use App\Models\Pet\PetLog;
-use App\Models\Stat\ExpLog;
-use App\Models\Stat\StatTransferLog;
 use App\Models\Notification;
+use App\Models\Pet\PetLog;
 use App\Models\Rank\Rank;
 use App\Models\Rank\RankPower;
 use App\Models\Shop\ShopLog;
+use App\Models\Stat\ExpLog;
+use App\Models\Stat\StatTransferLog;
 use App\Models\Submission\Submission;
 use App\Traits\Commenter;
 use Carbon\Carbon;
@@ -211,12 +211,11 @@ class User extends Authenticatable implements MustVerifyEmail {
     }
 
     /**
-     * Get the user's gears
+     * Get the user's gears.
      */
     public function gears() {
         return $this->belongsToMany(Gear::class, 'user_gears')->withPivot('data', 'updated_at', 'id', 'character_id', 'has_image')->whereNull('user_gears.deleted_at');
     }
-
 
     /**
      * Get all of the user's character bookmarks.
@@ -484,7 +483,7 @@ class User extends Authenticatable implements MustVerifyEmail {
      */
     public function getcheckBirthdayAttribute() {
         $bday = $this->birthday;
-        if (!$bday || $bday->diffInYears(carbon::now()) < 13) {
+        if (!$bday || $bday->diffInYears(Carbon::now()) < 13) {
             return false;
         } else {
             return true;
@@ -829,7 +828,7 @@ class User extends Authenticatable implements MustVerifyEmail {
      *
      * @param mixed $character
      *
-     * @return \App\Models\Character\CharacterBookmark
+     * @return CharacterBookmark
      */
     public function hasBookmarked($character) {
         return CharacterBookmark::where('user_id', $this->id)->where('character_id', $character->id)->first();

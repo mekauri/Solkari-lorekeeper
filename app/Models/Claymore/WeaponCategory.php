@@ -48,9 +48,9 @@ class WeaponCategory extends Model {
         RELATIONSHIPS
 
     **********************************************************************************************/
-    
+
     /**
-     * gets all weapons of this category
+     * gets all weapons of this category.
      */
     public function weapons() {
         return $this->hasMany(Weapon::class, 'weapon_category_id');

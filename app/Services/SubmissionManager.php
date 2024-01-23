@@ -31,10 +31,10 @@ class SubmissionManager extends Service {
     /**
      * Creates a new submission.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
-     * @param bool                  $isClaim
-     * @param mixed                 $isDraft
+     * @param array $data
+     * @param User  $user
+     * @param bool  $isClaim
+     * @param mixed $isDraft
      *
      * @return mixed
      */
@@ -110,11 +110,11 @@ class SubmissionManager extends Service {
     /**
      * Edits an existing submission.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
-     * @param bool                  $isClaim
-     * @param mixed                 $submission
-     * @param mixed                 $isSubmit
+     * @param array $data
+     * @param User  $user
+     * @param bool  $isClaim
+     * @param mixed $submission
+     * @param mixed $isSubmit
      *
      * @return mixed
      */
@@ -256,8 +256,8 @@ class SubmissionManager extends Service {
     /**
      * Rejects a submission.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param array $data
+     * @param User  $user
      *
      * @return mixed
      */
@@ -319,8 +319,8 @@ class SubmissionManager extends Service {
     /**
      * Approves a submission.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param array $data
+     * @param User  $user
      *
      * @return mixed
      */

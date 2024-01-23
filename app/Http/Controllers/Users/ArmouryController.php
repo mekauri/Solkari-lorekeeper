@@ -4,9 +4,7 @@ namespace App\Http\Controllers\Users;
 
 use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
-use App\Models\Claymore\Gear;
 use App\Models\Claymore\GearCategory;
-use App\Models\Claymore\Weapon;
 use App\Models\Claymore\WeaponCategory;
 use App\Models\User\User;
 use App\Models\User\UserGear;
@@ -16,7 +14,6 @@ use Auth;
 use Illuminate\Http\Request;
 
 class ArmouryController extends Controller {
-
     /*
     |--------------------------------------------------------------------------
     | Armoury Controller
@@ -51,7 +48,8 @@ class ArmouryController extends Controller {
     /**
      * Shows the equipment stack modal.
      *
-     * @param int $id
+     * @param int   $id
+     * @param mixed $type
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
@@ -79,14 +77,16 @@ class ArmouryController extends Controller {
     /**
      * Transfers an equipment stack to another user.
      *
-     * @param App\Services\GearManager $service
-     * @param int                      $id
+     * @param int   $id
+     * @param mixed $type
      *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postTransfer(Request $request, $type, $id) {
         $service = ($type == 'gear' ? new GearManager : new WeaponManager);
-        if ($service->transferStack(Auth::user(), User::visible()->where('id', $request->get('user_id'))->first(),
+        if ($service->transferStack(
+            Auth::user(),
+            User::visible()->where('id', $request->get('user_id'))->first(),
             $type == 'gear' ? UserGear::find($id) : UserWeapon::find($id)
         )) {
             flash('Gear transferred successfully.')->success();
@@ -102,14 +102,15 @@ class ArmouryController extends Controller {
     /**
      * Deletes an equipment stack.
      *
-     * @param App\Services\GearManager $service
-     * @param int                      $id
+     * @param int   $id
+     * @param mixed $type
      *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postDelete(Request $request, $type, $id) {
         $service = ($type == 'gear' ? new GearManager : new WeaponManager);
-        if ($service->deleteStack(Auth::user(), 
+        if ($service->deleteStack(
+            Auth::user(),
             $type == 'gear' ? UserGear::find($id) : UserWeapon::find($id)
         )) {
             flash('Gear deleted successfully.')->success();
@@ -125,17 +126,18 @@ class ArmouryController extends Controller {
     /**
      * Attaches an equipment.
      *
-     * @param App\Services\CharacterManager $service
-     * @param mixed                         $id
+     * @param mixed $id
+     * @param mixed $type
      *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postAttach(Request $request, $type, $id) {
         $service = ($type == 'gear' ? new GearManager : new WeaponManager);
         if ($service->attachStack(
-            $type == 'gear' ? UserGear::find($id) : UserWeapon::find($id), $request->get('id')
+            $type == 'gear' ? UserGear::find($id) : UserWeapon::find($id),
+            $request->get('id')
         )) {
-            flash(ucfirst($type == 'weapons' ? 'weapon' : 'gear') . ' attached successfully.')->success();
+            flash(ucfirst($type == 'weapons' ? 'weapon' : 'gear').' attached successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -148,15 +150,15 @@ class ArmouryController extends Controller {
     /**
      * Detaches an equipment.
      *
-     * @param App\Services\CharacterManager $service
-     * @param mixed                         $id
+     * @param mixed $id
+     * @param mixed $type
      *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postDetach(Request $request, $type, $id) {
         $service = ($type == 'gear' ? new GearManager : new WeaponManager);
         if ($service->detachStack($type == 'gear' ? UserGear::find($id) : UserWeapon::find($id))) {
-            flash(ucfirst($type == 'weapons' ? 'weapon' : 'gear') . ' detached successfully.')->success();
+            flash(ucfirst($type == 'weapons' ? 'weapon' : 'gear').' detached successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -182,7 +184,7 @@ class ArmouryController extends Controller {
 
         $service = ($type == 'gear' ? new GearManager : new WeaponManager);
         if ($service->upgrade($equipment, $isStaff)) {
-            flash(ucfirst($type == 'weapons' ? 'weapon' : $type) . ' upgraded successfully.')->success();
+            flash(ucfirst($type == 'weapons' ? 'weapon' : $type).' upgraded successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();
@@ -196,6 +198,7 @@ class ArmouryController extends Controller {
      * Adds a unique image to an equipment.
      *
      * @param mixed $id
+     * @param mixed $type
      */
     public function postImage(Request $request, $type, $id) {
         $equipment = ($type == 'gear' ? UserGear::find($id) : UserWeapon::find($id));
@@ -207,7 +210,7 @@ class ArmouryController extends Controller {
 
         $service = ($type == 'gear' ? new GearManager : new WeaponManager);
         if ($service->addImage($equipment, $data)) {
-            flash(ucfirst($type == 'weapons' ? 'weapon' : $type) . ' image updated successfully.')->success();
+            flash(ucfirst($type == 'weapons' ? 'weapon' : $type).' image updated successfully.')->success();
         } else {
             foreach ($service->errors()->getMessages()['error'] as $error) {
                 flash($error)->error();

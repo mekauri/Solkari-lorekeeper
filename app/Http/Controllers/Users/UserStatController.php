@@ -3,16 +3,12 @@
 namespace App\Http\Controllers\Users;
 
 use App\Http\Controllers\Controller;
-use App\Models\Character\Character;
 use App\Models\Level\Level;
 use App\Models\User\User;
 use App\Services\Stat\LevelManager;
-use App\Services\Stat\StatManager;
 use Auth;
-use Illuminate\Http\Request;
 
 class UserStatController extends Controller {
-
     /**
      * Shows the user's level page.
      *
@@ -35,8 +31,7 @@ class UserStatController extends Controller {
 
     /**
      * Level up the user.
-     * 
-     * @param LevelManager $service
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postLevel(LevelManager $service) {

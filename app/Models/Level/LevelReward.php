@@ -5,14 +5,13 @@ namespace App\Models\Level;
 use App\Models\Model;
 
 class LevelReward extends Model {
-
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'level_id', 'rewardable_type', 'rewardable_id', 'quantity'
+        'level_id', 'rewardable_type', 'rewardable_id', 'quantity',
     ];
 
     /**

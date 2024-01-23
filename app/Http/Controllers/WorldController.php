@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Character\CharacterCategory;
 use App\Models\Character\CharacterClass;
 use App\Models\Claymore\Gear;
 use App\Models\Claymore\GearCategory;
 use App\Models\Claymore\Weapon;
 use App\Models\Claymore\WeaponCategory;
-use App\Models\Character\CharacterCategory;
 use App\Models\Currency\Currency;
 use App\Models\Feature\Feature;
 use App\Models\Feature\FeatureCategory;
@@ -450,7 +450,7 @@ class WorldController extends Controller {
 
     /**
      * Shows the stats page.
-     * 
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getStats(Request $request) {
@@ -467,7 +467,9 @@ class WorldController extends Controller {
 
     /**
      * Shows an individual stat's page.
-     * 
+     *
+     * @param mixed $abbreviation
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getStat($abbreviation) {

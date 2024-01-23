@@ -4,10 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Currency\Currency;
 use App\Models\Item\Item;
-use App\Models\Item\ItemCategory;
 use App\Models\Item\ItemTag;
 use App\Models\Pet\Pet;
-use App\Models\Pet\PetCategory;
 use App\Models\Shop\Shop;
 use App\Models\Shop\ShopLog;
 use App\Models\Shop\ShopStock;
@@ -45,8 +43,6 @@ class ShopController extends Controller {
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getShop($id) {
-        $categories = ItemCategory::orderBy('sort', 'DESC')->get();
-        $petCategories = PetCategory::orderBy('sort', 'DESC')->get();
         $shop = Shop::where('id', $id)->where('is_active', 1)->first();
 
         if (!$shop) {
@@ -106,7 +102,8 @@ class ShopController extends Controller {
                 $stocks[$type] = $stock;
                 continue; // If the category model doesn't exist, skip it
             }
-            if ($type != 'gear' && $type != 'weapon') {
+            // check if visible method exists on the category model
+            if (method_exists($model.'Category', 'visible')) {
                 $stock_category = ($model.'Category')::visible(Auth::check() ? Auth::user() : null)->orderBy('sort', 'DESC')->get();
             } else {
                 $stock_category = ($model.'Category')::orderBy('sort', 'DESC')->get();

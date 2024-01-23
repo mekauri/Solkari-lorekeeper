@@ -2,12 +2,10 @@
 
 namespace App\Models\Character;
 
-use App\Models\Model;
-use App\Models\Character\Character;
 use App\Models\Level\Level;
+use App\Models\Model;
 
 class CharacterLevel extends Model {
-
     /**
      * The attributes that are mass assignable.
      *
@@ -34,11 +32,11 @@ class CharacterLevel extends Model {
      * Get the shop stock.
      */
     public function character() {
-        return $this->belongsTo(character::class);
+        return $this->belongsTo(Character::class);
     }
 
     /**
-     * Get the current level for the character
+     * Get the current level for the character.
      */
     public function level() {
         return $this->belongsTo(Level::class, 'current_level', 'level')->where('level_type', 'User');
@@ -50,8 +48,8 @@ class CharacterLevel extends Model {
 
     **********************************************************************************************/
 
-    /** 
-     * get the next level
+    /**
+     * get the next level.
      */
     public function getNextLevelAttribute() {
         return Level::where('level_type', 'Character')->where('level', $this->current_level + 1)->first();

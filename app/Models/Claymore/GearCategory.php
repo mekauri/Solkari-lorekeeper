@@ -3,7 +3,6 @@
 namespace App\Models\Claymore;
 
 use App\Models\Model;
-use App\Models\Claymore\Gear;
 
 class GearCategory extends Model {
     /**
@@ -51,7 +50,7 @@ class GearCategory extends Model {
     **********************************************************************************************/
 
     /**
-     * gets all gears of this category
+     * gets all gears of this category.
      */
     public function gears() {
         return $this->hasMany(Gear::class, 'gear_category_id');

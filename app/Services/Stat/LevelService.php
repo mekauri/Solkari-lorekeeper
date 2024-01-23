@@ -10,17 +10,17 @@ use DB;
 use Illuminate\Support\Arr;
 
 class LevelService extends Service {
-
     /**
      * Creates a new level.
      *
      * @param mixed $data
+     * @param mixed $type
+     * @param mixed $user
      */
     public function createLevel($data, $type, $user) {
         DB::beginTransaction();
 
         try {
-
             $level = Level::create([
                 'level'        => $data['level'],
                 'level_type'   => $type,
@@ -102,8 +102,8 @@ class LevelService extends Service {
     /**
      * Processes user input for creating/updating level rewards.
      *
-     * @param array                   $data
-     * @param \App\Models\Level\Level $level
+     * @param array $data
+     * @param Level $level
      */
     private function populateRewards($data, $level) {
         // Clear the old rewards...
@@ -122,9 +122,9 @@ class LevelService extends Service {
 
     /**
      * Processes user input for creating/updating level requirements.
-     * 
-     * @param array                   $data
-     * @param \App\Models\Level\Level $level
+     *
+     * @param array $data
+     * @param Level $level
      */
     private function populateLimits($level, $data) {
         $level->limits()->delete();

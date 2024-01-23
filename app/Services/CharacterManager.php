@@ -6,14 +6,14 @@ use App\Facades\Notifications;
 use App\Facades\Settings;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterBookmark;
-use App\Models\Character\CharacterClass;
 use App\Models\Character\CharacterCategory;
+use App\Models\Character\CharacterClass;
 use App\Models\Character\CharacterCurrency;
 use App\Models\Character\CharacterDesignUpdate;
 use App\Models\Character\CharacterFeature;
 use App\Models\Character\CharacterImage;
-use App\Models\Character\CharacterTransfer;
 use App\Models\Character\CharacterStat;
+use App\Models\Character\CharacterTransfer;
 use App\Models\Sales\SalesCharacter;
 use App\Models\Species\Subtype;
 use App\Models\User\User;
@@ -73,9 +73,9 @@ class CharacterManager extends Service {
     /**
      * Creates a new character or MYO slot.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
-     * @param bool                  $isMyo
+     * @param array $data
+     * @param User  $user
+     * @param bool  $isMyo
      *
      * @return \App\Models\Character\Character|bool
      */
@@ -200,7 +200,7 @@ class CharacterManager extends Service {
     /**
      * Trims and optionally resizes and watermarks an image.
      *
-     * @param \App\Models\Character\CharacterImage $characterImage
+     * @param CharacterImage $characterImage
      */
     public function processImage($characterImage) {
         $imageProperties = getimagesize($characterImage->imagePath.'/'.$characterImage->imageFileName);
@@ -344,9 +344,9 @@ class CharacterManager extends Service {
     /**
      * Crops a thumbnail for the given image.
      *
-     * @param array                                $points
-     * @param \App\Models\Character\CharacterImage $characterImage
-     * @param mixed                                $isMyo
+     * @param array          $points
+     * @param CharacterImage $characterImage
+     * @param mixed          $isMyo
      */
     public function cropThumbnail($points, $characterImage, $isMyo = false) {
         $imageProperties = getimagesize($characterImage->imagePath.'/'.$characterImage->imageFileName);
@@ -546,9 +546,9 @@ class CharacterManager extends Service {
     /**
      * Creates a character image.
      *
-     * @param array                           $data
-     * @param \App\Models\Character\Character $character
-     * @param \App\Models\User\User           $user
+     * @param array     $data
+     * @param Character $character
+     * @param User      $user
      *
      * @return \App\Models\Character\Character|bool
      */
@@ -621,9 +621,9 @@ class CharacterManager extends Service {
     /**
      * Updates a character image.
      *
-     * @param array                                $data
-     * @param \App\Models\Character\CharacterImage $image
-     * @param \App\Models\User\User                $user
+     * @param array          $data
+     * @param CharacterImage $image
+     * @param User           $user
      *
      * @return bool
      */
@@ -694,9 +694,9 @@ class CharacterManager extends Service {
     /**
      * Updates image data.
      *
-     * @param array                                $data
-     * @param \App\Models\Character\CharacterImage $image
-     * @param \App\Models\User\User                $user
+     * @param array          $data
+     * @param CharacterImage $image
+     * @param User           $user
      *
      * @return bool
      */
@@ -730,9 +730,9 @@ class CharacterManager extends Service {
     /**
      * Updates image credits.
      *
-     * @param array                                $data
-     * @param \App\Models\Character\CharacterImage $image
-     * @param \App\Models\User\User                $user
+     * @param array          $data
+     * @param CharacterImage $image
+     * @param User           $user
      *
      * @return bool
      */
@@ -822,9 +822,9 @@ class CharacterManager extends Service {
     /**
      * Reuploads an image.
      *
-     * @param array                                $data
-     * @param \App\Models\Character\CharacterImage $image
-     * @param \App\Models\User\User                $user
+     * @param array          $data
+     * @param CharacterImage $image
+     * @param User           $user
      *
      * @return bool
      */
@@ -890,9 +890,9 @@ class CharacterManager extends Service {
     /**
      * Deletes an image.
      *
-     * @param \App\Models\Character\CharacterImage $image
-     * @param \App\Models\User\User                $user
-     * @param bool                                 $forceDelete
+     * @param CharacterImage $image
+     * @param User           $user
+     * @param bool           $forceDelete
      *
      * @return bool
      */
@@ -940,9 +940,9 @@ class CharacterManager extends Service {
     /**
      * Updates image settings.
      *
-     * @param array                                $data
-     * @param \App\Models\Character\CharacterImage $image
-     * @param \App\Models\User\User                $user
+     * @param array          $data
+     * @param CharacterImage $image
+     * @param User           $user
      *
      * @return bool
      */
@@ -977,8 +977,8 @@ class CharacterManager extends Service {
     /**
      * Updates a character's active image.
      *
-     * @param \App\Models\Character\CharacterImage $image
-     * @param \App\Models\User\User                $user
+     * @param CharacterImage $image
+     * @param User           $user
      *
      * @return bool
      */
@@ -1015,9 +1015,9 @@ class CharacterManager extends Service {
     /**
      * Sorts a character's images.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
-     * @param mixed                 $character
+     * @param array $data
+     * @param User  $user
+     * @param mixed $character
      *
      * @return bool
      */
@@ -1063,8 +1063,8 @@ class CharacterManager extends Service {
     /**
      * Sorts a user's characters.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param array $data
+     * @param User  $user
      *
      * @return bool
      */
@@ -1097,9 +1097,9 @@ class CharacterManager extends Service {
     /**
      * Updates a character's stats.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
-     * @param mixed                 $character
+     * @param array $data
+     * @param User  $user
+     * @param mixed $character
      *
      * @return bool
      */
@@ -1200,9 +1200,9 @@ class CharacterManager extends Service {
     /**
      * Updates a character's description.
      *
-     * @param array                           $data
-     * @param \App\Models\Character\Character $character
-     * @param \App\Models\User\User           $user
+     * @param array     $data
+     * @param Character $character
+     * @param User      $user
      *
      * @return bool
      */
@@ -1236,9 +1236,9 @@ class CharacterManager extends Service {
     /**
      * Updates a character's settings.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
-     * @param mixed                 $character
+     * @param array $data
+     * @param User  $user
+     * @param mixed $character
      *
      * @return bool
      */
@@ -1270,10 +1270,10 @@ class CharacterManager extends Service {
     /**
      * Updates a character's profile.
      *
-     * @param array                           $data
-     * @param \App\Models\Character\Character $character
-     * @param \App\Models\User\User           $user
-     * @param bool                            $isAdmin
+     * @param array     $data
+     * @param Character $character
+     * @param User      $user
+     * @param bool      $isAdmin
      *
      * @return bool
      */
@@ -1357,8 +1357,8 @@ class CharacterManager extends Service {
     /**
      * Deletes a character.
      *
-     * @param \App\Models\Character\Character $character
-     * @param \App\Models\User\User           $user
+     * @param Character $character
+     * @param User      $user
      *
      * @return bool
      */
@@ -1409,9 +1409,9 @@ class CharacterManager extends Service {
     /**
      * Creates a character transfer.
      *
-     * @param array                           $data
-     * @param \App\Models\Character\Character $character
-     * @param \App\Models\User\User           $user
+     * @param array     $data
+     * @param Character $character
+     * @param User      $user
      *
      * @return bool
      */
@@ -1495,9 +1495,9 @@ class CharacterManager extends Service {
     /**
      * Forces an admin transfer of a character.
      *
-     * @param array                           $data
-     * @param \App\Models\Character\Character $character
-     * @param \App\Models\User\User           $user
+     * @param array     $data
+     * @param Character $character
+     * @param User      $user
      *
      * @return bool
      */
@@ -1587,8 +1587,8 @@ class CharacterManager extends Service {
     /**
      * Processes a character transfer.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param array $data
+     * @param User  $user
      *
      * @return bool
      */
@@ -1655,8 +1655,8 @@ class CharacterManager extends Service {
     /**
      * Cancels a character transfer.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param array $data
+     * @param User  $user
      *
      * @return bool
      */
@@ -1691,8 +1691,8 @@ class CharacterManager extends Service {
     /**
      * Processes a character transfer in the approvals queue.
      *
-     * @param array                 $data
-     * @param \App\Models\User\User $user
+     * @param array $data
+     * @param User  $user
      *
      * @return bool
      */
@@ -1787,11 +1787,11 @@ class CharacterManager extends Service {
     /**
      * Moves a character from one user to another.
      *
-     * @param \App\Models\Character\Character $character
-     * @param \App\Models\User\User           $recipient
-     * @param string                          $data
-     * @param int                             $cooldown
-     * @param string                          $logType
+     * @param Character $character
+     * @param User      $recipient
+     * @param string    $data
+     * @param int       $cooldown
+     * @param string    $logType
      */
     public function moveCharacter($character, $recipient, $data, $cooldown = -1, $logType = null) {
         $sender = $character->user;
@@ -1869,6 +1869,51 @@ class CharacterManager extends Service {
         );
     }
 
+    /*************************************************************************************
+     * CLAYMORE
+     *************************************************************************************/
+
+    /**
+     * Edits a character's class.
+     *
+     * @param array     $data
+     * @param Character $character
+     * @param User      $user
+     *
+     * @return bool
+     */
+    public function editClass($data, $character, $user) {
+        DB::beginTransaction();
+
+        try {
+            if ($data['class_id'] != 'none') {
+                $class = CharacterClass::find($data['class_id']);
+                if (!$class) {
+                    throw new \Exception('Invalid class.');
+                }
+                $character->class_id = $class->id;
+                $character->save();
+
+                if (!$this->createLog($user->id, null, $character->user_id, ($character->user_id ? null : $character->owner_url), $character->id, 'Character Class Updated', '['.$class->displayName.']', 'character')) {
+                    throw new \Exception('Failed to create log.');
+                }
+            } else {
+                $character->class_id = null;
+                $character->save();
+
+                if (!$this->createLog($user->id, null, $character->user_id, ($character->user_id ? null : $character->owner_url), $character->id, 'Character Class Removed', '[None]', 'character')) {
+                    throw new \Exception('Failed to create log.');
+                }
+            }
+
+            return $this->commitReturn(true);
+        } catch (\Exception $e) {
+            $this->setError('error', $e->getMessage());
+
+            return $this->rollbackReturn(false);
+        }
+    }
+
     /**
      * Handles character data.
      *
@@ -1929,7 +1974,7 @@ class CharacterManager extends Service {
      * @param bool  $isMyo
      * @param mixed $character
      *
-     * @return \App\Models\Character\Character           $character
+     * @return Character                                 $character
      * @return \App\Models\Character\CharacterImage|bool
      */
     private function handleCharacterImage($data, $character, $isMyo = false) {
@@ -2057,7 +2102,7 @@ class CharacterManager extends Service {
     /**
      * Generates a list of features for displaying.
      *
-     * @param \App\Models\Character\CharacterImage $image
+     * @param CharacterImage $image
      *
      * @return string
      */
@@ -2073,7 +2118,7 @@ class CharacterManager extends Service {
     /**
      * Generates a list of image credits for displaying.
      *
-     * @param \App\Models\Character\CharacterImage $image
+     * @param CharacterImage $image
      *
      * @return string
      */
@@ -2087,48 +2132,5 @@ class CharacterManager extends Service {
         }
 
         return $result;
-    }
-
-    /*************************************************************************************
-     * CLAYMORE
-     *************************************************************************************/
-
-    /**
-     * Edits a character's class
-     * @param  array $data
-     * @param  \App\Models\Character\Character $character
-     * @param  \App\Models\User\User $user
-     * @return bool
-     */
-    public function editClass($data, $character, $user) {
-        DB::beginTransaction();
-
-        try {
-            if ($data['class_id'] != 'none') {
-                $class = CharacterClass::find($data['class_id']);
-                if (!$class) {
-                    throw new \Exception('Invalid class.');
-                }
-                $character->class_id = $class->id;
-                $character->save();
-
-                if (!$this->createLog($user->id, null, $character->user_id, ($character->user_id ? null : $character->owner_url), $character->id, 'Character Class Updated', '['.$class->displayName.']', 'character')) {
-                    throw new \Exception('Failed to create log.');
-                }
-            } else {
-                $character->class_id = null;
-                $character->save();
-
-                if (!$this->createLog($user->id, null, $character->user_id, ($character->user_id ? null : $character->owner_url), $character->id, 'Character Class Removed', '[None]', 'character')) {
-                    throw new \Exception('Failed to create log.');
-                }
-            }
-
-            return $this->commitReturn(true);
-        } catch (\Exception $e) {
-            $this->setError('error', $e->getMessage());
-
-            return $this->rollbackReturn(false);
-        }
     }
 }

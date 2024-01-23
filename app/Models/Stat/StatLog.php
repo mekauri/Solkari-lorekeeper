@@ -11,7 +11,7 @@ class StatLog extends Model {
      * @var array
      */
     protected $fillable = [
-        'recipient_id', 'stat_id', 'previous_level', 'new_level', 'leveller_type'
+        'recipient_id', 'stat_id', 'previous_level', 'new_level', 'leveller_type',
     ];
 
     /**

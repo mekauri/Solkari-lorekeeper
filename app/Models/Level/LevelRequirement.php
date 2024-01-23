@@ -6,7 +6,6 @@ use App;
 use App\Models\Model;
 
 class LevelRequirement extends Model {
-
     /**
      * The attributes that are mass assignable.
      *

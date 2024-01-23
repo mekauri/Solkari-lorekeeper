@@ -2,15 +2,12 @@
 
 namespace App\Models\Stat;
 
-use App\Models\Model;
 use App\Models\Claymore\Gear;
-use App\Models\Claymore\GearStat;
 use App\Models\Claymore\Weapon;
-use App\Models\Claymore\WeaponStat;
+use App\Models\Model;
 use App\Models\Species\SpeciesLimit;
 
 class Stat extends Model {
-
     /**
      * The attributes that are mass assignable.
      *
@@ -33,7 +30,7 @@ class Stat extends Model {
      * @var array
      */
     public static $createRules = [
-        'name' => 'required|unique:stats|between:3,25',
+        'name'         => 'required|unique:stats|between:3,25',
         'abbreviation' => 'required|unique:stats|between:1,10',
     ];
 
@@ -43,7 +40,7 @@ class Stat extends Model {
      * @var array
      */
     public static $updateRules = [
-        'name' => 'required|between:3,25',
+        'name'         => 'required|between:3,25',
         'abbreviation' => 'required|between:1,10',
     ];
 
@@ -125,17 +122,22 @@ class Stat extends Model {
 
     /**
      * Displays the species and subtype restrictions for the stat.
+     *
+     * @param mixed $is_flat
      */
     public function displayLimits($is_flat = false) {
-        if (!count($this->limits)) return null;
+        if (!count($this->limits)) {
+            return null;
+        }
 
         $species = $this->limits->where('is_subtype', 0)->map(function ($limit) {
             return $limit->limit->displayName;
         })->toArray();
 
         $subtypes = $this->limits->where('is_subtype', 1)->map(function ($limit) {
-            return $limit->limit->displayName . ' (' . $limit->limit->species->name . ')';
+            return $limit->limit->displayName.' ('.$limit->limit->species->name.')';
         })->toArray();
-        return "<b>Species:</b> ".($species ? implode(', ', $species) : 'None') . ($is_flat ? ', ' : "<br>") . "<b>Subtypes:</b> ".($subtypes ? implode(', ', $subtypes) : 'None');
+
+        return '<b>Species:</b> '.($species ? implode(', ', $species) : 'None').($is_flat ? ', ' : '<br>').'<b>Subtypes:</b> '.($subtypes ? implode(', ', $subtypes) : 'None');
     }
 }

@@ -5,7 +5,6 @@ namespace App\Models\Claymore;
 use App\Models\Model;
 use App\Models\User\User;
 use App\Models\User\UserWeapon;
-use DB;
 
 class Weapon extends Model {
     /**
@@ -254,7 +253,7 @@ class Weapon extends Model {
      */
     public function displayWithStats() {
         $stats = $this->stats->sortByDesc('count')->map(function ($stat) {
-            return $stat->stat->name . ' + ' . $stat->count;
+            return $stat->stat->name.' + '.$stat->count;
         })->implode('<br />');
 
         return $this->name.($stats ? '<br />'.$stats : '');
@@ -262,6 +261,8 @@ class Weapon extends Model {
 
     /**
      * Gets the imageurl of the user's stack of this gear.
+     *
+     * @param mixed $id
      */
     public function getStackImageUrl($id) {
         return UserWeapon::find($id)->imageUrl;

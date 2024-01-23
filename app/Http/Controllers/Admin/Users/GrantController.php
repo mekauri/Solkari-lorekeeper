@@ -6,13 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterDesignUpdate;
 use App\Models\Character\CharacterItem;
-use App\Models\Stat\Stat;
 use App\Models\Claymore\Gear;
 use App\Models\Claymore\Weapon;
 use App\Models\Currency\Currency;
 use App\Models\Item\Item;
 use App\Models\Pet\Pet;
 use App\Models\Skill\Skill;
+use App\Models\Stat\Stat;
 use App\Models\Submission\Submission;
 use App\Models\Trade;
 use App\Models\User\User;
@@ -23,8 +23,8 @@ use App\Services\CurrencyManager;
 use App\Services\InventoryManager;
 use App\Services\PetManager;
 use App\Services\SkillManager;
-use App\Services\Stat\StatManager;
 use App\Services\Stat\ExperienceManager;
+use App\Services\Stat\StatManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -95,16 +95,16 @@ class GrantController extends Controller {
 
     /**
      * Grants or removes exp (show).
-     * 
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getExp() {
         $options = [
             'Users' => User::orderBy('id')->pluck('name', 'id')->mapWithKeys(function ($item, $key) {
-                return ['user-' . $key => $item];
+                return ['user-'.$key => $item];
             })->toArray(),
             'Characters' => Character::orderBy('name')->get()->pluck('fullName', 'id')->mapWithKeys(function ($item, $key) {
-                return ['character-' . $key => $item];
+                return ['character-'.$key => $item];
             })->toArray(),
         ];
 
@@ -115,7 +115,7 @@ class GrantController extends Controller {
 
     /**
      * Grants or removes exp.
-     * 
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postExp(Request $request, ExperienceManager $service) {
@@ -132,17 +132,17 @@ class GrantController extends Controller {
     }
 
     /**
-     * Grants or removes stat points
-     * 
+     * Grants or removes stat points.
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getPoints() {
         $options = [
             'Users' => User::orderBy('id')->pluck('name', 'id')->mapWithKeys(function ($item, $key) {
-                return ['user-' . $key => $item];
+                return ['user-'.$key => $item];
             })->toArray(),
             'Characters' => Character::orderBy('name')->get()->pluck('fullName', 'id')->mapWithKeys(function ($item, $key) {
-                return ['character-' . $key => $item];
+                return ['character-'.$key => $item];
             })->toArray(),
         ];
 
@@ -154,7 +154,7 @@ class GrantController extends Controller {
 
     /**
      * Grants or removes points.
-     * 
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postPoints(Request $request, StatManager $service) {

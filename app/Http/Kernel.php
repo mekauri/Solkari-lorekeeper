@@ -50,16 +50,16 @@ class Kernel extends HttpKernel {
      * @var array
      */
     protected $routeMiddleware = [
-        'auth'          => \App\Http\Middleware\Authenticate::class,
+        'auth'          => Middleware\Authenticate::class,
         'auth.basic'    => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'bindings'      => \Illuminate\Routing\Middleware\SubstituteBindings::class,
         'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
         'can'           => \Illuminate\Auth\Middleware\Authorize::class,
-        'alias'         => \App\Http\Middleware\CheckAlias::class,
-        'power'         => \App\Http\Middleware\CheckPower::class,
-        'admin'         => \App\Http\Middleware\CheckAdmin::class,
-        'staff'         => \App\Http\Middleware\CheckStaff::class,
-        'guest'         => \App\Http\Middleware\RedirectIfAuthenticated::class,
+        'alias'         => Middleware\CheckAlias::class,
+        'power'         => Middleware\CheckPower::class,
+        'admin'         => Middleware\CheckAdmin::class,
+        'staff'         => Middleware\CheckStaff::class,
+        'guest'         => Middleware\RedirectIfAuthenticated::class,
         'signed'        => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle'      => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified'      => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,

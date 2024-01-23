@@ -5,7 +5,6 @@ namespace App\Models\Claymore;
 use App\Models\Model;
 use App\Models\User\User;
 use App\Models\User\UserGear;
-use DB;
 
 class Gear extends Model {
     /**
@@ -268,6 +267,8 @@ class Gear extends Model {
 
     /**
      * Gets the imageurl of the user's stack of this gear.
+     *
+     * @param mixed $id
      */
     public function getStackImageUrl($id) {
         return UserGear::find($id)->imageUrl;

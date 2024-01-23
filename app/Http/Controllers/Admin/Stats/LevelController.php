@@ -17,10 +17,11 @@ use Auth;
 use Illuminate\Http\Request;
 
 class LevelController extends Controller {
-
     /**
      * Gets the levels page.
-     * 
+     *
+     * @param mixed $type
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getLevels(Request $request, $type = 'Character') {
@@ -38,11 +39,12 @@ class LevelController extends Controller {
 
     /**
      * Shows the create level page.
-     * 
+     *
+     * @param mixed $type
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getCreateLevel($type = 'Character') {
-
         if ($type == 'Character') {
             $categories = ItemCategory::where('is_character_owned', '1')->orderBy('sort', 'DESC')->get();
             $itemOptions = Item::whereIn('item_category_id', $categories->pluck('id'));
@@ -68,6 +70,8 @@ class LevelController extends Controller {
      * Shows the edit level page.
      *
      * @param mixed $id
+     * @param mixed $type
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getEditLevel($type, $id) {
@@ -101,6 +105,8 @@ class LevelController extends Controller {
      * Creates or edits an item.
      *
      * @param mixed|null $id
+     * @param mixed      $type
+     *
      * @return \Illuminate\Http\RedirectResponse
      */
     public function postCreateEditLevel(Request $request, LevelService $service, $type = 'Character', $id = null) {

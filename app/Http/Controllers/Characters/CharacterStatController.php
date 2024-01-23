@@ -4,10 +4,9 @@ namespace App\Http\Controllers\Characters;
 
 use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
-use App\Models\Level\Level;
 use App\Models\Character\CharacterStat;
+use App\Models\Level\Level;
 use App\Models\Stat\Stat;
-use App\Services\Stat\ExperienceManager;
 use App\Services\Stat\LevelManager;
 use App\Services\Stat\StatManager;
 use Auth;
@@ -15,7 +14,6 @@ use Illuminate\Http\Request;
 use Route;
 
 class CharacterStatController extends Controller {
-
     /**
      * Create a new controller instance.
      */
@@ -47,6 +45,7 @@ class CharacterStatController extends Controller {
      * Shows the character's stats page, which shows its level and stat information.
      *
      * @param mixed $slug
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getStats($slug) {
@@ -63,6 +62,8 @@ class CharacterStatController extends Controller {
      * Shows a character's specific stat information.
      *
      * @param mixed $slug
+     * @param mixed $id
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getStat($slug, $id) {
@@ -71,33 +72,32 @@ class CharacterStatController extends Controller {
         $stat = CharacterStat::find($id);
 
         return view('character.stats._stat', [
-            'stat'      => $stat,
+            'stat'       => $stat,
             'character'  => $character,
         ]);
     }
 
     /**
      * Shows the character's stats page, which shows its level, exp, stat and count logs.
-     * 
+     *
      * @param mixed $slug
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function getStatLogs($slug) {
         return view('character.stats.character_stat_logs', [
-            'character' => $this->character,
-            'exps'      => $this->character->getExpLogs(),
-            'levels'    => $this->character->getLevelLogs(),
-            'stat_transfers' => $this->character->getStatTransferLogs(),
+            'character'       => $this->character,
+            'exps'            => $this->character->getExpLogs(),
+            'levels'          => $this->character->getLevelLogs(),
+            'stat_transfers'  => $this->character->getStatTransferLogs(),
             'stat_levels'     => $this->character->getStatLevelLogs(),
-            'counts'    => $this->character->getCountLogs(),
+            'counts'          => $this->character->getCountLogs(),
         ]);
     }
 
-
     /**
      * Character level up.
-     * 
-     * @param mixed $slug
+     *
      * @return \Illuminate\Contracts\Support\Renderable
      */
     public function postLevel(LevelManager $service) {
@@ -122,6 +122,9 @@ class CharacterStatController extends Controller {
 
     /**
      * Level up a character's stat.
+     *
+     * @param mixed $slug
+     * @param mixed $stat_id
      */
     public function postLevelStat(StatManager $service, $slug, $stat_id) {
         $character = $this->character;
@@ -142,9 +145,12 @@ class CharacterStatController extends Controller {
     }
 
     /**
-     * edits the stat count (not the base stat)
-     * 
+     * edits the stat count (not the base stat).
+     *
      * Admin only function.
+     *
+     * @param mixed $slug
+     * @param mixed $id
      */
     public function postEditStatCurrentCount(Request $request, StatManager $service, $slug, $id) {
         $character = $this->character;
@@ -163,11 +169,13 @@ class CharacterStatController extends Controller {
         return redirect()->back();
     }
 
-
     /**
-     * edits the base stat value
-     * 
+     * edits the base stat value.
+     *
      * Admin only function.
+     *
+     * @param mixed $slug
+     * @param mixed $id
      */
     public function postEditBaseStat(Request $request, StatManager $service, $slug, $id) {
         $character = $this->character;

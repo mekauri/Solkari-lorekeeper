@@ -59,7 +59,6 @@ class CharacterController extends Controller {
                 ]);
             }
 
-
             if (config('lorekeeper.extensions.previous_and_next_characters.display')) {
                 $query = Character::myo(0);
                 // Get only characters of this category if pull number is limited to category
@@ -409,8 +408,8 @@ class CharacterController extends Controller {
         $character = $this->character;
 
         return view('character.stats.exp_logs', [
-            'logs'      => $this->character->getExpLogs(0),
-            'character' => $this->character,
+            'logs'                  => $this->character->getExpLogs(0),
+            'character'             => $this->character,
             'extPrevAndNextBtnsUrl' => '/stats/logs/exp',
         ]);
     }
@@ -424,9 +423,9 @@ class CharacterController extends Controller {
      */
     public function getCharacterSkillLogs($slug) {
         return view('character.character_skill_logs', [
-            'character' => $this->character,
+            'character'             => $this->character,
             'extPrevAndNextBtnsUrl' => '/skill-logs',
-            'logs'      => $this->character->getCharacterSkillLogs(),
+            'logs'                  => $this->character->getCharacterSkillLogs(),
         ]);
     }
 
@@ -441,9 +440,9 @@ class CharacterController extends Controller {
         $character = $this->character;
 
         return view('character.stats.character_stat_logs', [
-            'levels'      => $this->character->getStatLevelLogs(0),
-            'character' => $this->character,
-            'transfers'  => $this->character->getStatTransferLogs(0),
+            'levels'                => $this->character->getStatLevelLogs(0),
+            'character'             => $this->character,
+            'transfers'             => $this->character->getStatTransferLogs(0),
             'extPrevAndNextBtnsUrl' => '/stats/logs',
         ]);
     }
@@ -459,9 +458,9 @@ class CharacterController extends Controller {
         $character = $this->character;
 
         return view('character.stats.stat_logs', [
-            'levels'      => $this->character->getStatLevelLogs(0),
-            'character' => $this->character,
-            'transfers'  => $this->character->getStatTransferLogs(0),
+            'levels'                => $this->character->getStatLevelLogs(0),
+            'character'             => $this->character,
+            'transfers'             => $this->character->getStatTransferLogs(0),
             'extPrevAndNextBtnsUrl' => '/stats/logs',
         ]);
     }
@@ -477,9 +476,9 @@ class CharacterController extends Controller {
         $character = $this->character;
 
         return view('character.stats.level_logs', [
-            'character' => $this->character,
+            'character'             => $this->character,
             'extPrevAndNextBtnsUrl' => '/stats/logs/level',
-            'logs'      => $this->character->getLevelLogs(0),
+            'logs'                  => $this->character->getLevelLogs(0),
         ]);
     }
 
@@ -494,9 +493,9 @@ class CharacterController extends Controller {
         $character = $this->character;
 
         return view('character.stats.count_logs', [
-            'character' => $this->character,
+            'character'             => $this->character,
             'extPrevAndNextBtnsUrl' => '/stats/logs/count',
-            'logs'      => $this->character->getCountLogs(0),
+            'logs'                  => $this->character->getCountLogs(0),
         ]);
     }
 

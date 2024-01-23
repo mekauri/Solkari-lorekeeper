@@ -2,10 +2,9 @@
 
 namespace App\Models\User;
 
-use App\Models\Model;
-use App\Models\User\User;
 use App\Models\Character\Character;
 use App\Models\Level\Level;
+use App\Models\Model;
 
 class UserLevel extends Model {
     /**
@@ -31,21 +30,21 @@ class UserLevel extends Model {
     **********************************************************************************************/
 
     /**
-     * Get the user
+     * Get the user.
      */
     public function user() {
         return $this->belongsTo(User::class);
     }
 
     /**
-     * Get the attached character
+     * Get the attached character.
      */
     public function character() {
         return $this->belongsTo(Character::class);
     }
 
     /**
-     * Get the current level
+     * Get the current level.
      */
     public function level() {
         return $this->belongsTo(Level::class, 'current_level', 'level')->where('level_type', 'User');
@@ -57,8 +56,8 @@ class UserLevel extends Model {
 
     **********************************************************************************************/
 
-    /** 
-     * get the next level
+    /**
+     * get the next level.
      */
     public function getNextLevelAttribute() {
         return Level::where('level_type', 'User')->where('level', $this->current_level + 1)->first();
@@ -70,7 +69,7 @@ class UserLevel extends Model {
     public function getStaminaProgressAttribute() {
         return ($this->stamina / 15) * 100;
     }
-    
+
     /**
      * Calculates the width of the progress bar for the level.
      */

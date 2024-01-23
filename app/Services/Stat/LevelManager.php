@@ -5,25 +5,17 @@ namespace App\Services\Stat;
 use App\Models\Character\Character;
 use App\Models\Character\CharacterCurrency;
 use App\Models\Character\CharacterItem;
-use App\Models\Currency\Currency;
-use App\Models\Item\Item;
 use App\Models\Level\Level;
-use App\Models\Loot\LootTable;
-use App\Models\Raffle\Raffle;
 use App\Models\User\User;
-use App\Models\User\UserCurrency;
-use App\Models\User\UserItem;
 use App\Services\Service;
-use Auth;
 use Carbon\Carbon;
 use DB;
 
 class LevelManager extends Service {
-
     /**
      * Levels up a character / user.
      *
-     * @param mixed $character
+     * @param mixed $recipient
      */
     public function level($recipient) {
         DB::beginTransaction();
@@ -126,10 +118,7 @@ class LevelManager extends Service {
     /**
      * Processes reward data into a format that can be used for distribution.
      *
-     * @param array $data
-     * @param bool  $isCharacter
-     * @param bool  $isStaff
-     * @param bool  $isClaim
+     * @param mixed $level
      *
      * @return array
      */
@@ -139,8 +128,7 @@ class LevelManager extends Service {
         foreach ($level->rewards as $reward) {
             if ($reward->rewardable_type == 'Exp' || $reward->rewardable_type == 'Points') {
                 addAsset($assets, $reward->rewardable_type, $reward->quantity);
-            }
-            else {
+            } else {
                 addAsset($assets, $reward->reward, $reward->quantity);
             }
         }
@@ -150,6 +138,8 @@ class LevelManager extends Service {
 
     /**
      * Processes the reward data into a consumable array.
+     *
+     * @param mixed $levelRewards
      */
     private function processData($levelRewards) {
         $rewards = [];

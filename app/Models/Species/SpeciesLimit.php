@@ -3,13 +3,10 @@
 namespace App\Models\Species;
 
 use App\Models\Model;
-use App\Models\Species\Species;
-use App\Models\Species\Subtype;
-use App\Models\Stat\Stat;
 use App\Models\Skill\Skill;
+use App\Models\Stat\Stat;
 
 class SpeciesLimit extends Model {
-
     // A generic class that can be used to limit things to certain species / subtypes without having to create a new table for each type of limit.
 
     /**
@@ -41,6 +38,7 @@ class SpeciesLimit extends Model {
         if ($this->is_subtype) {
             return $this->belongsTo(Subtype::class, 'species_id');
         }
+
         return $this->belongsTo(Species::class, 'species_id');
     }
 

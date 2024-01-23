@@ -5,7 +5,6 @@ namespace App\Models\Level;
 use App\Models\Model;
 
 class Level extends Model {
-
     /**
      * The attributes that are mass assignable.
      *
@@ -79,7 +78,7 @@ class Level extends Model {
      * @return string
      */
     public function getAdminUrlAttribute() {
-        return url('admin/levels/' . strtolower($this->level_type) . '/edit/' . $this->id);
+        return url('admin/levels/'.strtolower($this->level_type).'/edit/'.$this->id);
     }
 
     /**

@@ -4,24 +4,21 @@ namespace App\Services\Stat;
 
 use App\Facades\Notifications;
 use App\Models\Character\Character;
-use App\Models\Character\CharacterLevel;
-use App\Models\Character\CharacterStat;
-use App\Models\User\UserLevel;
 use App\Models\Stat\Stat;
 use App\Models\User\User;
+use App\Models\User\UserLevel;
 use App\Services\Service;
 use Auth;
 use Carbon\Carbon;
 use DB;
 
 class StatManager extends Service {
-
     /**
      * Levels up a character's stat. User's do not have stats so this only works for characters.
-     * 
+     *
      * @param mixed $character
-     * @param mixed $stat App\Models\Stat\Stat
-     * @param bool $isStaff
+     * @param mixed $stat      App\Models\Stat\Stat
+     * @param bool  $isStaff
      */
     public function levelCharacterStat($character, $stat, $isStaff = false) {
         DB::beginTransaction();
@@ -34,7 +31,7 @@ class StatManager extends Service {
             // incrementing
             $character_stat->stat_level += 1;
             $character_stat->save();
-            
+
             if ($stat->multiplier || $stat->increment) {
                 // we want to update the current_count too
                 if (!$character_stat->current_count) {
@@ -79,7 +76,6 @@ class StatManager extends Service {
                     $character->user->level->save();
                 }
 
-
                 $type = 'Stat Level Up';
                 $data = 'Point used in stat level up.';
                 if (!$this->createTransferLog($character->id, 'Character', null, null, $type, $data, -1)) {
@@ -99,7 +95,7 @@ class StatManager extends Service {
     }
 
     /**
-     * sets the stat BASE VALUE directly
+     * sets the stat BASE VALUE directly.
      *
      * @param mixed $stat
      * @param mixed $character
@@ -137,11 +133,12 @@ class StatManager extends Service {
     /**
      * Edit the current stat amount. Edits directly unless $set is false, then it increments / decrements.
      * Staff Only function, unless override is true.
-     * 
+     *
      * @param mixed $stat
      * @param mixed $character
      * @param mixed $quantity
-     * @param bool $override
+     * @param bool  $override
+     * @param mixed $set
      */
     public function editCharacterStatCurrentCount($stat, $character, $quantity, $set = true, $override = false) {
         DB::beginTransaction();
@@ -181,13 +178,15 @@ class StatManager extends Service {
     }
 
     /**
-     * Grants / transfers Stat points users or characters
+     * Grants / transfers Stat points users or characters.
+     *
+     * @param mixed $data
+     * @param mixed $staff
      */
     public function grantStats($data, $staff) {
         DB::beginTransaction();
 
         try {
-            
             $usernames = array_filter($data['names'], function ($name) {
                 return substr($name, 0, 5) == 'user-';
             });
@@ -195,13 +194,13 @@ class StatManager extends Service {
                 return substr($name, 0, 10) == 'character-';
             });
 
-            foreach($usernames as $id) {
+            foreach ($usernames as $id) {
                 $user = User::find(substr($id, 5));
                 if (!$user) {
                     throw new \Exception('An invalid user was selected.');
                 }
 
-                foreach($data['stat_ids'] as $key=>$stat_id) {
+                foreach ($data['stat_ids'] as $key=>$stat_id) {
                     $stat = $stat_id == 'none' ? $stat_id : Stat::find($stat_id);
                     if (!$this->creditStat($staff, $user, 'Staff Grant', $data['data'], $stat, $data['quantity'][$key], true)) {
                         throw new \Exception('Failed to credit points to '.$user->name.'.');
@@ -215,13 +214,13 @@ class StatManager extends Service {
                 ]);
             }
 
-            foreach($characters as $id) {
+            foreach ($characters as $id) {
                 $character = Character::find(substr($id, 10));
                 if (!$character) {
                     throw new \Exception('An invalid character was selected.');
                 }
 
-                foreach($data['stat_ids'] as $key=>$stat_id) {
+                foreach ($data['stat_ids'] as $key=>$stat_id) {
                     $stat = $stat_id == 'none' ? $stat_id : Stat::find($stat_id);
                     if (!$this->creditStat($staff, $character, 'Staff Grant', $data['data'], $stat, $data['quantity'][$key], true)) {
                         throw new \Exception('Failed to credit points to '.$character->fullName.'.');
@@ -243,8 +242,15 @@ class StatManager extends Service {
     }
 
     /**
-     * Grants / transfers Stat points (to level up) to one user or character
+     * Grants / transfers Stat points (to level up) to one user or character.
      *
+     * @param mixed $sender
+     * @param mixed $recipient
+     * @param mixed $type
+     * @param mixed $data
+     * @param mixed $stat
+     * @param mixed $quantity
+     * @param mixed $isStaff
      */
     public function creditStat($sender, $recipient, $type, $data, $stat, $quantity, $isStaff = false) {
         DB::beginTransaction();
@@ -252,7 +258,6 @@ class StatManager extends Service {
         try {
             // for user
             if ($recipient->logType == 'User') {
-
                 if (!$recipient->level) {
                     $recipient->level()->create([
                         'user_id' => $recipient->id,
@@ -291,16 +296,16 @@ class StatManager extends Service {
                 } else {
                     // if we are granting a specific stat
                     $character_stat = $recipient->stats()->where('stat_id', $stat->id)->first();
-                    
+
                     if (!$character_stat) {
-                        throw new \Exception('The stat '. $stat->name .' does not exist for the character '. $recipient->fullName .'. Check if the stat is allowed on this character.');
+                        throw new \Exception('The stat '.$stat->name.' does not exist for the character '.$recipient->fullName.'. Check if the stat is allowed on this character.');
                     }
 
                     // we can't just increment the count of the stat, we have to level it up
                     $this->levelCharacterStat($recipient, $character_stat, true);
 
                     if (!$data) {
-                        $data = 'Staff granted stat level up on ' . $stat->name . ' to  lvl' . $character_stat->stat_level + 1 . '.';
+                        $data = 'Staff granted stat level up on '.$stat->name.' to  lvl'.$character_stat->stat_level + 1 .'.';
                     }
 
                     if (!$this->createLevelLog($recipient->id, $stat->id, 'Character', $character_stat->stat_level, $character_stat->stat_level + 1)) {

@@ -43,7 +43,9 @@ class ShopStock extends Model {
      * Get the item being stocked.
      */
     public function item() {
-        return $this->belongsTo(Item::class);
+        $model = getAssetModelString(strtolower($this->stock_type));
+
+        return $this->belongsTo($model);
     }
 
     /**

@@ -65,7 +65,7 @@ class ShopService extends Service {
     /**
      * Updates a shop.
      *
-     * @param \App\Models\Shop\Shop $shop
+     * @param Shop                  $shop
      * @param array                 $data
      * @param \App\Models\User\User $user
      *
@@ -109,7 +109,7 @@ class ShopService extends Service {
     /**
      * Updates shop stock.
      *
-     * @param \App\Models\Shop\Shop $shop
+     * @param Shop                  $shop
      * @param array                 $data
      * @param \App\Models\User\User $user
      *
@@ -318,8 +318,6 @@ class ShopService extends Service {
     private function populateShopData($data, $shop = null) {
         if (isset($data['description']) && $data['description']) {
             $data['parsed_description'] = parse($data['description']);
-        } else {
-            $data['parsed_description'] = null;
         }
         $data['is_active'] = isset($data['is_active']);
         $data['is_staff'] = isset($data['is_staff']);

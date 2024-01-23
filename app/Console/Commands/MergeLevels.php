@@ -4,12 +4,10 @@ namespace App\Console\Commands;
 
 use DB;
 use Illuminate\Console\Command;
-use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 class MergeLevels extends Command {
-
     /**
      * The name and signature of the console command.
      *
@@ -37,9 +35,9 @@ class MergeLevels extends Command {
      * @return int
      */
     public function handle() {
-
         if (Schema::hasTable('level_rewards')) {
             $this->info('Table already exists, command will not run.');
+
             return;
         }
 
@@ -54,7 +52,7 @@ class MergeLevels extends Command {
                 'quantity'        => $reward->quantity,
             ]);
         }
-        
+
         // rename the table user_level_rewards to level_rewards
         Schema::rename('user_level_rewards', 'level_rewards');
 
