@@ -5,13 +5,13 @@
 @endsection
 
 @section('admin-content')
-    {!! breadcrumbs(['Admin Panel' => 'admin', ucfirst($type).' Levels' => 'admin/levels/'.$type]) !!}
-    <h1>{{$type}} Levels</h1>
+    {!! breadcrumbs(['Admin Panel' => 'admin', ucfirst($type) . ' Levels' => 'admin/levels/' . $type]) !!}
+    <h1>{{ $type }} Levels</h1>
 
     <p>This is a list of levels in the game.</p>
 
     <div class="text-right mb-3">
-        <a class="btn btn-primary" href="{{ url('admin/levels/'.$type.'/create') }}"><i class="fas fa-plus"></i> Create New {{ucfirst($type)}} Level</a>
+        <a class="btn btn-primary" href="{{ url('admin/levels/' . $type . '/create') }}"><i class="fas fa-plus"></i> Create New {{ ucfirst($type) }} Level</a>
     </div>
 
     <div>
@@ -45,15 +45,15 @@
                         <td>{{ $level->level }}</td>
                         <td>{{ $level->exp_required }}</td>
                         <td>
-                            {!! $level->rewards->map(function($reward) {
-                                if ($reward->rewardable_type == 'Exp' || $reward->rewardable_type == 'Points') {
-                                    return $reward->rewardable_type . ' (' . $reward->quantity . ')';
-                                }
-                                return $reward->reward->displayName . ' (' . $reward->quantity . ')';
-                            })->implode(', ') !!}
+                            {!! $level->rewards->map(function ($reward) {
+                                    if ($reward->rewardable_type == 'Exp' || $reward->rewardable_type == 'Points') {
+                                        return $reward->rewardable_type . ' (' . $reward->quantity . ')';
+                                    }
+                                    return $reward->reward->displayName . ' (' . $reward->quantity . ')';
+                                })->implode(', ') !!}
                         </td>
                         <td class="text-right">
-                            <a href="{{ url('admin/levels/'.strtolower($level->level_type).'/edit/' . $level->id) }}" class="btn btn-primary">Edit</a>
+                            <a href="{{ url('admin/levels/' . strtolower($level->level_type) . '/edit/' . $level->id) }}" class="btn btn-primary">Edit</a>
                         </td>
                     </tr>
                 @endforeach

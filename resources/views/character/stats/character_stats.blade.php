@@ -12,13 +12,13 @@
     ]) !!}
 
     <h1>
-        <a href="{{$character->url}}">{!! $character->fullName !!}'s</a> Character Stat Profile
+        <a href="{{ $character->url }}">{!! $character->fullName !!}'s</a> Character Stat Profile
     </h1>
     <p>
         Here you can view {!! $character->fullName !!}'s stats and level information.
     </p>
 
-    @include('widgets._level_info', ['level' => $character->level, ])
+    @include('widgets._level_info', ['level' => $character->level])
 
     <div class="card mb-3">
         <div class="card-header h2">
@@ -31,7 +31,7 @@
             @foreach ($character->stats->chunk(4) as $chunk)
                 <div class="row justify-content-center no-gutters">
                     @foreach ($chunk as $stat)
-                        <div class="col-md-2 p-1 m-2 rounded p-2 stat-entry" style="background-color: {{ $stat->stat->colour }};" data-id="{{$stat->id}}">
+                        <div class="col-md-2 p-1 m-2 rounded p-2 stat-entry" style="background-color: {{ $stat->stat->colour }};" data-id="{{ $stat->id }}">
                             <h5 class="text-center">
                                 {{ $stat->stat->name }}
                                 (lvl {{ $stat->stat_level }})
@@ -42,7 +42,7 @@
                                     <u>
                                         <span data-toggle="tooltip" title="Base Stat: {{ $stat->count }}">
                                             {{ $character->totalStatCount($stat->stat->id) . ' (+ ' . $character->totalStatCount($stat->stat->id) - $stat->count . ')' }}
-                                            {!!  $character->totalStatCount($stat->stat->id) - $stat->count > 0 ? add_help('This stat has gained extra points through equipment.') : '' !!}
+                                            {!! $character->totalStatCount($stat->stat->id) - $stat->count > 0 ? add_help('This stat has gained extra points through equipment.') : '' !!}
                                         </span>
                                     </u>
                                     <br />
@@ -78,7 +78,6 @@
     <div class="text-right mb-4">
         <a href="{{ url($character->url . '/stats/logs') }}">View Logs...</a>
     </div>
-
 @endsection
 @section('scripts')
     <script>

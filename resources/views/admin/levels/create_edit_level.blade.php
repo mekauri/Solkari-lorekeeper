@@ -5,9 +5,11 @@
 @endsection
 
 @section('admin-content')
-    {!! breadcrumbs(['Admin Panel' => 'admin', ucfirst($type) . ' Levels' => 'admin/levels/'.$type, 
-        ($level->id ? 'Edit' : 'Create ') . ucfirst($type) . ' Level' => $level->id ? 'admin/levels/' . $type . '/edit/' . $level->id : 'admin/levels/' . $type . '/create']) 
-    !!}
+    {!! breadcrumbs([
+        'Admin Panel' => 'admin',
+        ucfirst($type) . ' Levels' => 'admin/levels/' . $type,
+        ($level->id ? 'Edit' : 'Create ') . ucfirst($type) . ' Level' => $level->id ? 'admin/levels/' . $type . '/edit/' . $level->id : 'admin/levels/' . $type . '/create',
+    ]) !!}
 
     <h1>{{ $level->id ? 'Edit' : 'Create' }} Level
         @if ($level->id)
@@ -15,10 +17,10 @@
         @endif
     </h1>
 
-    {!! Form::open(['url' => $level->id ? 'admin/levels/'.$type.'/edit/' . $level->id : 'admin/levels/'.$type.'/create']) !!}
+    {!! Form::open(['url' => $level->id ? 'admin/levels/' . $type . '/edit/' . $level->id : 'admin/levels/' . $type . '/create']) !!}
 
     <h3>Basic Information</h3>
-    <p>All {{$type}}s start at level one</p>
+    <p>All {{ $type }}s start at level one</p>
     <div class="row">
         <div class="col-md">
             <div class="form-group">
@@ -44,8 +46,8 @@
     <br>
     <h3>Rewards</h3>
     <p>
-        Rewards are awarded when the {{$type}} levels up.
-        @if($type == 'character')
+        Rewards are awarded when the {{ $type }} levels up.
+        @if ($type == 'character')
             Character rewards are currently set to be awarded to {{ config('lorekeeper.extensions.character_reward_expansion.default_recipient') ? 'the character' : 'the user' }}.
         @endif
     </p>

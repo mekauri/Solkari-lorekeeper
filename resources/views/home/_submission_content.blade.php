@@ -124,7 +124,7 @@
                                         <tbody>
                                             @foreach (parseAssetData($character->data) as $key => $type)
                                                 @foreach ($type as $asset)
-                                                    @if($key == 'exp' || $key == 'points')
+                                                    @if ($key == 'exp' || $key == 'points')
                                                         <tr>
                                                             <td>{!! ucfirst($key) !!}</td>
                                                             <td>{{ $type['quantity'] }}</td>

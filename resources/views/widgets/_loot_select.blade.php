@@ -13,7 +13,11 @@
     $pets = \App\Models\Pet\Pet::orderBy('name')->pluck('name', 'id');
     $weapons = \App\Models\Claymore\Weapon::orderBy('name')->pluck('name', 'id');
     $gears = \App\Models\Claymore\Gear::orderBy('name')->pluck('name', 'id');
-    $stats = ['none' => 'General Point'] + \App\Models\Stat\Stat::orderBy('name')->pluck('name', 'id')->toArray();
+    $stats =
+        ['none' => 'General Point'] +
+        \App\Models\Stat\Stat::orderBy('name')
+            ->pluck('name', 'id')
+            ->toArray();
     if ($showLootTables) {
         $tables = \App\Models\Loot\LootTable::orderBy('name')->pluck('name', 'id');
     }

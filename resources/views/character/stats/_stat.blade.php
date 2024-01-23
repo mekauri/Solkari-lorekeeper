@@ -22,22 +22,20 @@
                     @php
                         $increment = $stat->stat->increment ?? 1;
                         $multiplier = $stat->stat->multiplier ?? 1;
-                    if ($increment || $multiplier)  {
+                        if ($increment || $multiplier) {
+                            // Calculate the new stat value
+                            $newStat = ($stat->stat->base + $increment) * $multiplier;
 
-
-                        // Calculate the new stat value
-                        $newStat = ($stat->stat->base + $increment) * $multiplier;
-
-                        // Calculate the percentage increase
-                        $percentageIncrease = (($newStat - $stat->stat->base) / $stat->stat->base) * 100 . '%';
-                    } else {
-                        $percentageIncrease = '1';
-                    }
+                            // Calculate the percentage increase
+                            $percentageIncrease = (($newStat - $stat->stat->base) / $stat->stat->base) * 100 . '%';
+                        } else {
+                            $percentageIncrease = '1';
+                        }
                     @endphp
                     This stat increases by <b>{{ $percentageIncrease }}</b> per level up.
-                    ({{ '('. $stat->stat->base . ' + ' . $increment . ') * ' . $multiplier . ' = ' . $newStat}})
+                    ({{ '(' . $stat->stat->base . ' + ' . $increment . ') * ' . $multiplier . ' = ' . $newStat }})
                 </p>
-                @if(count($stat->stat->limits))
+                @if (count($stat->stat->limits))
                     <hr class="my-3">
                     <h4>Stat Limits</h4>
                     <p>
@@ -60,24 +58,24 @@
                 <h4>Bonuses</h4>
                 <p>
                     Listed are the following equipment that apply a bonus to this stat:
-                    <div class="text-center row">
-                        @foreach ($character->getStatEquipment($stat->stat->id) as $equipment)
-                            <div class="col-md-2">
-                                @if ($equipment->has_image)
-                                    <img class="rounded" src="{{ $equipment->imageUrl }}" data-toggle="tooltip"
-                                        title="{{ $equipment->equipment->name }}<br />+ {{ $equipment->equipment->stats()->where('stat_id', $stat->stat->id)->first()->count }}" style="max-width: 75px;" />
-                                @elseif($equipment->equipment->imageurl)
-                                    <img class="rounded" src="{{ $equipment->equipment->imageUrl }}" data-toggle="tooltip"
-                                        title="{{ $equipment->equipment->name }}<br />+ {{ $equipment->equipment->stats()->where('stat_id', $stat->stat->id)->first()->count }}" style="max-width: 75px;" />
-                                @else
-                                    {!! $equipment->equipment->displayName !!}
-                                    <small>
-                                        {{ $equipment->equipment->name }}<br />+ {{ $equipment->equipment->stats()->where('stat_id', $stat->stat->id)->first()->count }}
-                                    </small>
-                                @endif
-                            </div>
-                        @endforeach
-                    </div>
+                <div class="text-center row">
+                    @foreach ($character->getStatEquipment($stat->stat->id) as $equipment)
+                        <div class="col-md-2">
+                            @if ($equipment->has_image)
+                                <img class="rounded" src="{{ $equipment->imageUrl }}" data-toggle="tooltip" title="{{ $equipment->equipment->name }}<br />+ {{ $equipment->equipment->stats()->where('stat_id', $stat->stat->id)->first()->count }}"
+                                    style="max-width: 75px;" />
+                            @elseif($equipment->equipment->imageurl)
+                                <img class="rounded" src="{{ $equipment->equipment->imageUrl }}" data-toggle="tooltip"
+                                    title="{{ $equipment->equipment->name }}<br />+ {{ $equipment->equipment->stats()->where('stat_id', $stat->stat->id)->first()->count }}" style="max-width: 75px;" />
+                            @else
+                                {!! $equipment->equipment->displayName !!}
+                                <small>
+                                    {{ $equipment->equipment->name }}<br />+ {{ $equipment->equipment->stats()->where('stat_id', $stat->stat->id)->first()->count }}
+                                </small>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
                 </p>
             </div>
         </div>
@@ -90,11 +88,11 @@
             <b>Current Available Points:</b> {{ $character->level->current_points ?? 0 }} + {{ Auth::user()->level->current_points ?? 0 }} = {{ ($character->level->current_points ?? 0) + (Auth::user()->level->current_points ?? 0) }}
         </p>
         @if (Auth::check() && ($character->level->current_points || Auth::user()->level->current_points) && (Auth::user()->id == $character->user_id || Auth::user()->hasPower('edit_claymores')))
-            {!! Form::open(['url' => 'character/'. $character->slug . '/stats/'. $stat->stat->id .'/level']) !!}
+            {!! Form::open(['url' => 'character/' . $character->slug . '/stats/' . $stat->stat->id . '/level']) !!}
 
-                <div class="text-right">
-                    {!! Form::submit('Level Up', ['class' => 'btn btn-primary']) !!}
-                </div>
+            <div class="text-right">
+                {!! Form::submit('Level Up', ['class' => 'btn btn-primary']) !!}
+            </div>
 
             {!! Form::close() !!}
         @endif
@@ -109,33 +107,33 @@
                 <div class="col-md-6">
                     <h5>Edit Base Stat Value</h5>
                     <p>This will edit the base stat value permanently.</p>
-                    {!! Form::open(['url' => 'character/'. $character->slug . '/stats/'. $stat->stat->id .'/base']) !!}
+                    {!! Form::open(['url' => 'character/' . $character->slug . '/stats/' . $stat->stat->id . '/base']) !!}
 
-                        <div class="form-group">
-                            {!! Form::label('count', 'Base Stat') !!}
-                            {!! Form::number('count', $stat->count, ['class' => 'form-control']) !!}
-                        </div>
+                    <div class="form-group">
+                        {!! Form::label('count', 'Base Stat') !!}
+                        {!! Form::number('count', $stat->count, ['class' => 'form-control']) !!}
+                    </div>
 
-                        <div class="text-right">
-                            {!! Form::submit('Edit Stat', ['class' => 'btn btn-primary']) !!}
-                        </div>
-        
+                    <div class="text-right">
+                        {!! Form::submit('Edit Stat', ['class' => 'btn btn-primary']) !!}
+                    </div>
+
                     {!! Form::close() !!}
                 </div>
                 <div class="col-md-6">
                     <h5>Edit Current Stat Value</h5>
                     <p>This will edit the current stat value temporarily.</p>
-                    {!! Form::open(['url' => 'character/'. $character->slug . '/stats/'. $stat->stat->id .'/count']) !!}
+                    {!! Form::open(['url' => 'character/' . $character->slug . '/stats/' . $stat->stat->id . '/count']) !!}
 
-                        <div class="form-group">
-                            {!! Form::label('current_count', 'Current Stat') !!}
-                            {!! Form::number('current_count', $stat->current_count, ['class' => 'form-control']) !!}
-                        </div>
+                    <div class="form-group">
+                        {!! Form::label('current_count', 'Current Stat') !!}
+                        {!! Form::number('current_count', $stat->current_count, ['class' => 'form-control']) !!}
+                    </div>
 
-                        <div class="text-right">
-                            {!! Form::submit('Edit Stat', ['class' => 'btn btn-primary']) !!}
-                        </div>
-        
+                    <div class="text-right">
+                        {!! Form::submit('Edit Stat', ['class' => 'btn btn-primary']) !!}
+                    </div>
+
                     {!! Form::close() !!}
                 </div>
             </div>

@@ -83,16 +83,16 @@
                                 </div>
                             </div>
                         </div>
-                @elseif($stock->use_user_bank)
-                    <p>This item will be paid for using your user account bank.</p>
-                    {!! Form::hidden('bank', 'user') !!}
-                @elseif($stock->use_character_bank)
-                    <p>This item must be paid for using a character's bank. Enter the code of the character whose bank you would like to use to purchase the item.</p>
-                    {!! Form::hidden('bank', 'character') !!}
-                    <div class="form-group">
-                        {!! Form::label('slug', 'Character Code') !!}
-                        {!! Form::text('slug', null, ['class' => 'form-control']) !!}
-                    </div>
+                    @elseif($stock->use_user_bank)
+                        <p>This item will be paid for using your user account bank.</p>
+                        {!! Form::hidden('bank', 'user') !!}
+                    @elseif($stock->use_character_bank)
+                        <p>This item must be paid for using a character's bank. Enter the code of the character whose bank you would like to use to purchase the item.</p>
+                        {!! Form::hidden('bank', 'character') !!}
+                        <div class="form-group">
+                            {!! Form::label('slug', 'Character Code') !!}
+                            {!! Form::text('slug', null, ['class' => 'form-control']) !!}
+                        </div>
                 @endif
                 @if ($stock->shop->use_coupons && $userCoupons !== null)
                     @if (Settings::get('limited_stock_coupon_settings') == 0)

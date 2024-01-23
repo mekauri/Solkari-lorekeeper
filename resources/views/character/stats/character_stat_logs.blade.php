@@ -8,7 +8,8 @@
     {!! breadcrumbs([
         $character->category->masterlist_sub_id ? $character->category->sublist->name . ' Masterlist' : 'Character masterlist' => $character->category->masterlist_sub_id ? 'sublist/' . $character->category->sublist->key : 'masterlist',
         $character->fullName => $character->url,
-        'Stat Information' => $character->url . '/stats', 'Stat Logs' => $character->url . '/stats/logs',
+        'Stat Information' => $character->url . '/stats',
+        'Stat Logs' => $character->url . '/stats/logs',
     ]) !!}
 
     <h1>
@@ -103,5 +104,4 @@
     <div class="text-right">
         <a href="{{ url($character->url . '/stats/logs/count') }}">View all...</a>
     </div>
-
 @endsection

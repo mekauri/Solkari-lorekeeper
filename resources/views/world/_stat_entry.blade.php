@@ -18,9 +18,7 @@
         @php
             $increment = $stat->increment ?? 1;
             $multiplier = $stat->multiplier ?? 1;
-            if ($increment || $multiplier)  {
-
-
+            if ($increment || $multiplier) {
                 // Calculate the new stat value
                 $newStat = ($stat->base + $increment) * $multiplier;
 
@@ -31,9 +29,9 @@
             }
         @endphp
         This stat increases by <b>{{ $percentageIncrease }}</b> per level up.
-        ({{ '('. $stat->base . ' + ' . $increment . ') * ' . $multiplier . ' = ' . $newStat}})
+        ({{ '(' . $stat->base . ' + ' . $increment . ') * ' . $multiplier . ' = ' . $newStat }})
     </p>
-    @if(count($stat->limits))
+    @if (count($stat->limits))
         <hr class="my-3">
         <h4>Stat Limits</h4>
         <p>
@@ -46,7 +44,7 @@
     <h2>Equipment</h2>
     <p>The following equipment modify this stat:</p>
     <div class="row">
-        @foreach($stat->equipment as $equipment)
+        @foreach ($stat->equipment as $equipment)
             <div class="col-md-2 text-center">
                 @if ($equipment->has_image)
                     <img class="img-fluid rounded" src="{{ $equipment->imageUrl }}" data-toggle="tooltip" title="{{ $equipment->displayWithStats() }}" style="max-width: 75px;" />

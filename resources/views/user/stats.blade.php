@@ -11,11 +11,11 @@
         {!! $user->displayName !!}'s Stat Information
     </h1>
 
-    @include('widgets._level_info', ['level' => $user->level, ])
+    @include('widgets._level_info', ['level' => $user->level])
 
     <div class="container mb-3 text-right">
         @if (Auth::check() && Auth::user()->id == $user->id)
-            <a href="{{url('stats')}}">
+            <a href="{{ url('stats') }}">
                 <div class="btn btn-primary mr-0">
                     Go to Personal Stat Page
                 </div>

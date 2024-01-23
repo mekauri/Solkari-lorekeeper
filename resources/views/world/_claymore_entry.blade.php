@@ -25,14 +25,14 @@
                             @if ($item->parent_id && $item->parent)
                                 <div class="col-md">
                                     {!! $item->parent->displayName !!}
-                                    @if ($item->cost && $item->currency_id <= 0) 
+                                    @if ($item->cost && $item->currency_id <= 0)
                                         <small>
-                                            (Upgrade costs {{ $item->cost }} 
+                                            (Upgrade costs {{ $item->cost }}
                                             @if ($item->currency_id != 0)
                                                 <img src="{!! $item->currency->iconurl !!}">
                                                 {!! $item->currency->displayName !!})
                                             @elseif($item->currency_id == 0)
-                                                    stat points.)
+                                                stat points.)
                                             @endif
                                         </small>
                                     @else
@@ -41,7 +41,7 @@
                                 </div>
                             @else
                                 <div class="col-md">No Parent.</div>
-                             @endif
+                            @endif
                         </div>
                     </div>
                     <div class="col-6">

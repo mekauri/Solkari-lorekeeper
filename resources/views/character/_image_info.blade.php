@@ -171,7 +171,7 @@
                             @endforeach
                         </div>
                         <div class="float-right">
-                            <a href="{{ $character->url . '/stats'}}">View All...</a>
+                            <a href="{{ $character->url . '/stats' }}">View All...</a>
                         </div>
                     </div>
                 @endif

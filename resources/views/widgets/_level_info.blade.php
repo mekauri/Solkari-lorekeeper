@@ -1,8 +1,8 @@
 <div class="card mb-3">
     <div class="card-header h2">
         Level Information
-        <span class="badge badge-{{ $level->nextLevel ? 'dark' : 'success' }} text-white mx-1 float-right" data-toggle="tooltip" title="Level {{$level->current_level}}">
-            {{ $level->nextLevel ? 'Current Lvl: '. $level->current_level : 'Max Level' }}
+        <span class="badge badge-{{ $level->nextLevel ? 'dark' : 'success' }} text-white mx-1 float-right" data-toggle="tooltip" title="Level {{ $level->current_level }}">
+            {{ $level->nextLevel ? 'Current Lvl: ' . $level->current_level : 'Max Level' }}
         </span>
     </div>
     <div class="card-body">
@@ -11,7 +11,7 @@
                 <p><b>Next Level:</b> {{ $level->nextLevel->level }}</p>
                 {{ $level->current_exp }}/{{ $level->nextLevel->exp_required }}
                 <div class="progress">
-                    <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="{{ $level->current_exp }}" aria-valuemin="0" aria-valuemax="{{ $level->nextLevel->exp_required }}" 
+                    <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="{{ $level->current_exp }}" aria-valuemin="0" aria-valuemax="{{ $level->nextLevel->exp_required }}"
                         style="width:{{ $level->progressBarWidth }}%">
                         {{ $level->current_exp }}/{{ $level->nextLevel->exp_required }}
                     </div>
@@ -24,7 +24,7 @@
                     </div>
                     {!! Form::open(['url' => $level->user ? '/stats/level' : $level->character->url . '/stats/level']) !!}
 
-                        {!! Form::submit('Level up!', ['class' => 'btn btn-success mb-2']) !!}
+                    {!! Form::submit('Level up!', ['class' => 'btn btn-success mb-2']) !!}
 
                     {!! Form::close() !!}
                 @endif

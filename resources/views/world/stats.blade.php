@@ -21,14 +21,14 @@
         </div>
         {!! Form::close() !!}
     </div>
-    
+
     {!! $stats->render() !!}
-        @foreach ($stats as $stat)
-            <div class="card mb-3">
-                <div class="card-body">
-                    @include('world._stat_entry', ['stat' => $stat])
-                </div>
+    @foreach ($stats as $stat)
+        <div class="card mb-3">
+            <div class="card-body">
+                @include('world._stat_entry', ['stat' => $stat])
             </div>
-        @endforeach
+        </div>
+    @endforeach
     {!! $stats->render() !!}
 @endsection

@@ -3,7 +3,7 @@
 @else
     <div class="text-center">
         <div class="mb-1"><a href="{{ $stack->equipment->url }}">
-            <img src="{{ $stack->imageUrl }}" /></a>
+                <img src="{{ $stack->imageUrl }}" /></a>
         </div>
         <div class="mb-1"><a href="{{ $stack->equipment->url }}">{{ $stack->equipment->name }}</a></div>
     </div>
@@ -41,7 +41,7 @@
                                 [ADMIN]
                             @endif Detach Equipment from Character
                         </a>
-                        {!! Form::open(['url' => 'armoury/'.$type.'/detach/' . $stack->id, 'id' => 'attachForm', 'class' => 'collapse']) !!}
+                        {!! Form::open(['url' => 'armoury/' . $type . '/detach/' . $stack->id, 'id' => 'attachForm', 'class' => 'collapse']) !!}
                         <p>This equipment is currently attached to {!! $stack->character->displayName !!}, do you want to detach them?</p>
                         <div class="text-right">
                             {!! Form::submit('Detach', ['class' => 'btn btn-primary']) !!}
@@ -53,7 +53,7 @@
                                 [ADMIN]
                             @endif Attach Equipment to Character
                         </a>
-                        {!! Form::open(['url' => 'armoury/'.$type.'/attach/' . $stack->id, 'id' => 'attachForm', 'class' => 'collapse']) !!}
+                        {!! Form::open(['url' => 'armoury/' . $type . '/attach/' . $stack->id, 'id' => 'attachForm', 'class' => 'collapse']) !!}
                         <p>Attach this equipment to a character you own! They'll appear on the character's page and any stat bonuses will automatically be applied.</p>
                         <p>Gears can be detached.</p>
                         <div class="form-group">
@@ -75,7 +75,7 @@
                                 [ADMIN]
                             @endif Upgrade Equipment
                         </a>
-                        {!! Form::open(['url' => 'armoury/'.$type.'/upgrade/' . $stack->id, 'id' => 'upgradeForm', 'class' => 'collapse']) !!}
+                        {!! Form::open(['url' => 'armoury/' . $type . '/upgrade/' . $stack->id, 'id' => 'upgradeForm', 'class' => 'collapse']) !!}
                         <p class="alert alert-info my-2">This equipment can be upgraded to {!! $stack->equipment->parent->displayName !!}!</p>
                         <p>Upgrade costs {{ $stack->equipment->cost }}
                             @if ($stack->equipment->currency_id != 0)
@@ -99,7 +99,7 @@
                                     [ADMIN]
                                 @endif Transfer Equipment
                             </a>
-                            {!! Form::open(['url' => 'armoury/'.$type.'/transfer/' . $stack->id, 'id' => 'transferForm', 'class' => 'collapse']) !!}
+                            {!! Form::open(['url' => 'armoury/' . $type . '/transfer/' . $stack->id, 'id' => 'transferForm', 'class' => 'collapse']) !!}
                             @if (!$stack->isTransferrable)
                                 <p class="alert alert-warning my-2">This equipment is account-bound, but your rank allows you to transfer it to another user.</p>
                             @endif
@@ -124,8 +124,8 @@
                 @endif
                 @if (Auth::user()->isStaff)
                     <li class="list-group-item">
-                        <a class="card-title h5 collapse-title" data-toggle="collapse" href="#imageForm"> [ADMIN] Unique Image to {{$displayType}}</a>
-                        {!! Form::open(['url' => 'armoury/'.$type.'/image/' . $stack->id, 'files' => true, 'id' => 'imageForm', 'class' => 'collapse']) !!}
+                        <a class="card-title h5 collapse-title" data-toggle="collapse" href="#imageForm"> [ADMIN] Unique Image to {{ $displayType }}</a>
+                        {!! Form::open(['url' => 'armoury/' . $type . '/image/' . $stack->id, 'files' => true, 'id' => 'imageForm', 'class' => 'collapse']) !!}
                         <p class="alert alert-info my-2">Give this equipment a unique image.</p>
                         <div>{!! Form::file('image') !!}</div>
                         <div class="text-muted">Recommended size: 100px x 100px</div>
@@ -147,7 +147,7 @@
                             [ADMIN]
                         @endif Delete Equipment
                     </a>
-                    {!! Form::open(['url' => 'armoury/'.$type.'/delete/' . $stack->id, 'id' => 'deleteForm', 'class' => 'collapse']) !!}
+                    {!! Form::open(['url' => 'armoury/' . $type . '/delete/' . $stack->id, 'id' => 'deleteForm', 'class' => 'collapse']) !!}
                     <p>This action is not reversible. Are you sure you want to delete this equipment?</p>
                     <div class="text-right">
                         {!! Form::submit('Delete', ['class' => 'btn btn-danger']) !!}
