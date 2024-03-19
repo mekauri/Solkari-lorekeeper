@@ -1,6 +1,6 @@
 @extends('world.layout')
 
-@section('title')
+@section('world-title')
     {{ $species->name }} Traits
 @endsection
 
@@ -27,6 +27,9 @@
                                         </a>
                                     @endif
                                     <p>
+                                        @if (!$feature->first()->is_visible)
+                                            <i class="fas fa-eye-slash mr-1"></i>
+                                        @endif
                                         {!! $feature->first()->displayName !!}
                                         @if ($feature->first()->subtype)
                                             <br />({!! $feature->first()->subtype->displayName !!} Subtype)

@@ -5,6 +5,7 @@ namespace App\Models\Loot;
 use App\Models\Currency\Currency;
 use App\Models\Item\Item;
 use App\Models\Item\ItemCategory;
+use App\Models\Pet\Pet;
 use App\Models\Model;
 use App\Models\Pet\Pet;
 

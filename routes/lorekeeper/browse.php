@@ -103,6 +103,7 @@ Route::group(['prefix' => 'character', 'namespace' => 'Characters'], function ()
     Route::get('{slug}/stats/logs/count', 'CharacterController@getCharacterCountLogs');
 
     Route::get('{slug}/gallery', 'CharacterController@getCharacterGallery');
+    Route::get('{slug}/pets', 'CharacterController@getCharacterPets');
 });
 Route::group(['prefix' => 'myo', 'namespace' => 'Characters'], function () {
     Route::get('{id}', 'MyoController@getCharacter');
