@@ -11,7 +11,7 @@
                 <p><b>Next Level:</b> {{ $level->nextLevel->level }}</p>
                 {{ $level->current_exp }}/{{ $level->nextLevel->exp_required }}
                 <div class="progress">
-                    <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="{{ $level->current_exp }}" aria-valuemin="0" aria-valuemax="{{ $level->nextLevel->exp_required }}"
+                    <div class="progress-bar progress-bar-striped active progress-bar-animated" role="progressbar" aria-valuenow="{{ $level->current_exp }}" aria-valuemin="0" aria-valuemax="{{ $level->nextLevel->exp_required }}"
                         style="width:{{ $level->progressBarWidth }}%">
                         {{ $level->current_exp }}/{{ $level->nextLevel->exp_required }}
                     </div>

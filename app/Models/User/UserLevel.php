@@ -79,10 +79,6 @@ class UserLevel extends Model {
             return 100;
         }
 
-        $currentExp = $this->exp;
-        $nextExp = $nextLevel->exp_required;
-        $width = ($currentExp / $nextExp) * 100;
-
-        return $width;
+        return ($this->current_exp / $nextLevel->exp_required) * 100;
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Models\Claymore;
 
 use App\Models\Model;
+use App\Models\User\User;
 
 class WeaponLog extends Model {
     /**
@@ -40,20 +41,20 @@ class WeaponLog extends Model {
      * Get the user who initiated the logged action.
      */
     public function sender() {
-        return $this->belongsTo('App\Models\User\User', 'sender_id');
+        return $this->belongsTo(User::class, 'sender_id');
     }
 
     /**
      * Get the user who received the logged action.
      */
     public function recipient() {
-        return $this->belongsTo('App\Models\User\User', 'recipient_id');
+        return $this->belongsTo(User::class, 'recipient_id');
     }
 
     /**
      * Get the weapon that is the target of the action.
      */
     public function weapon() {
-        return $this->belongsTo('App\Models\Claymore\Weapon');
+        return $this->belongsTo(Weapon::class);
     }
 }

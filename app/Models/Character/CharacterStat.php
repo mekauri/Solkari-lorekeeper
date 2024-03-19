@@ -3,6 +3,7 @@
 namespace App\Models\Character;
 
 use App\Models\Model;
+use App\Models\Stat\Stat;
 
 class CharacterStat extends Model {
     /**
@@ -28,10 +29,10 @@ class CharacterStat extends Model {
     **********************************************************************************************/
 
     public function character() {
-        return $this->belongsTo('App\Models\Character\Character');
+        return $this->belongsTo(Character::class);
     }
 
     public function stat() {
-        return $this->belongsTo('App\Models\Stat\Stat');
+        return $this->belongsTo(Stat::class);
     }
 }

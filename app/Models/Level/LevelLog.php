@@ -3,6 +3,8 @@
 namespace App\Models\Level;
 
 use App\Models\Model;
+use App\Models\Character\Character;
+use App\Models\User\User;
 
 class LevelLog extends Model {
     /**
@@ -39,9 +41,9 @@ class LevelLog extends Model {
      */
     public function recipient() {
         if ($this->recipient_type == 'User') {
-            return $this->belongsTo('App\Models\User\User', 'leveller_type');
+            return $this->belongsTo(User::class, 'leveller_type');
         }
 
-        return $this->belongsTo('App\Models\Character\Character', 'leveller_type');
+        return $this->belongsTo(Character::class, 'leveller_type');
     }
 }

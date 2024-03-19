@@ -3,6 +3,8 @@
 namespace App\Models\Stat;
 
 use App\Models\Model;
+use App\Models\Character\Character;
+use App\Models\User\User;
 
 class ExpLog extends Model {
     /**
@@ -41,10 +43,10 @@ class ExpLog extends Model {
      */
     public function sender() {
         if ($this->sender_type == 'User') {
-            return $this->belongsTo('App\Models\User\User', 'sender_id');
+            return $this->belongsTo(User::class, 'sender_id');
         }
 
-        return $this->belongsTo('App\Models\Character\Character', 'sender_id');
+        return $this->belongsTo(Character::class, 'sender_id');
     }
 
     /**
@@ -52,9 +54,9 @@ class ExpLog extends Model {
      */
     public function recipient() {
         if ($this->recipient_type == 'User') {
-            return $this->belongsTo('App\Models\User\User', 'recipient_id');
+            return $this->belongsTo(User::class, 'recipient_id');
         }
 
-        return $this->belongsTo('App\Models\Character\Character', 'recipient_id');
+        return $this->belongsTo(Character::class, 'recipient_id');
     }
 }

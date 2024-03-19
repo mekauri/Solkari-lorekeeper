@@ -46,9 +46,9 @@ class StatLog extends Model {
      */
     public function leveller() {
         if ($this->leveller_type == 'User') {
-            return $this->belongsTo('App\Models\User\User', 'recipient_id');
+            return $this->belongsTo(User::class, 'recipient_id');
         }
 
-        return $this->belongsTo('App\Models\Character\Character', 'recipient_id');
+        return $this->belongsTo(Character::class, 'recipient_id');
     }
 }

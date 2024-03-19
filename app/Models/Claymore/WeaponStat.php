@@ -3,6 +3,7 @@
 namespace App\Models\Claymore;
 
 use App\Models\Model;
+use App\Models\Stat\Stat;
 
 class WeaponStat extends Model {
     /**
@@ -28,10 +29,10 @@ class WeaponStat extends Model {
     **********************************************************************************************/
 
     public function weapon() {
-        return $this->belongsTo('App\Models\Claymore\Weapon');
+        return $this->belongsTo(Weapon::class);
     }
 
     public function stat() {
-        return $this->belongsTo('App\Models\Stat\Stat');
+        return $this->belongsTo(Stat::class);
     }
 }

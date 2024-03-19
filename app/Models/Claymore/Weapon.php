@@ -3,6 +3,7 @@
 namespace App\Models\Claymore;
 
 use App\Models\Model;
+use App\Models\Currency\Currency;
 use App\Models\User\User;
 use App\Models\User\UserWeapon;
 
@@ -47,7 +48,7 @@ class Weapon extends Model {
         'weapon_category_id' => 'nullable',
         'name'               => 'required|between:3,100',
         'description'        => 'nullable',
-        'image'              => 'mimes:png',
+        'image'              => 'mimes:png,webp',
     ];
 
     /**********************************************************************************************
@@ -60,29 +61,29 @@ class Weapon extends Model {
      * Get the category the weapon belongs to.
      */
     public function category() {
-        return $this->belongsTo('App\Models\Claymore\WeaponCategory', 'weapon_category_id');
+        return $this->belongsTo(WeaponCategory::class, 'weapon_category_id');
     }
 
     /**
      * Get the parent of the weapon.
      */
     public function parent() {
-        return $this->belongsTo('App\Models\Claymore\Weapon', 'parent_id');
+        return $this->belongsTo(Weapon::class, 'parent_id');
     }
 
     public function children() {
-        return $this->hasMany('App\Models\Claymore\Weapon', 'parent_id');
+        return $this->hasMany(Weapon::class, 'parent_id');
     }
 
     public function stats() {
-        return $this->hasMany('App\Models\Claymore\WeaponStat');
+        return $this->hasMany(WeaponStat::class);
     }
 
     /**
      * Get the currency that the parent costs.
      */
     public function currency() {
-        return $this->belongsTo('App\Models\Currency\Currency');
+        return $this->belongsTo(Currency::class);
     }
 
     /**********************************************************************************************
@@ -252,11 +253,11 @@ class Weapon extends Model {
      * displays the weapon's name, with stats.
      */
     public function displayWithStats() {
-        $stats = $this->stats->sortByDesc('count')->map(function ($stat) {
+        $stats = $this->stats->sortByDesc('value')->map(function ($stat) {
             return $stat->stat->name.' + '.$stat->count;
-        })->implode('<br />');
+        })->implode(', ');
 
-        return $this->name.($stats ? '<br />'.$stats : '');
+        return $this->name.'<br />'.($stats ? ' ('.$stats.')' : '');
     }
 
     /**

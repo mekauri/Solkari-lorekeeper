@@ -3,6 +3,7 @@
 namespace App\Models\Claymore;
 
 use App\Models\Model;
+use App\Models\Currency\Currency;
 use App\Models\User\User;
 use App\Models\User\UserGear;
 
@@ -47,7 +48,7 @@ class Gear extends Model {
         'gear_category_id' => 'nullable',
         'name'             => 'required|between:3,100',
         'description'      => 'nullable',
-        'image'            => 'mimes:png',
+        'image'            => 'mimes:png,webp',
     ];
 
     /**********************************************************************************************
@@ -60,35 +61,35 @@ class Gear extends Model {
      * Get the category the gear belongs to.
      */
     public function category() {
-        return $this->belongsTo('App\Models\Claymore\GearCategory', 'gear_category_id');
+        return $this->belongsTo(GearCategory::class, 'gear_category_id');
     }
 
     /**
      * Get the parent of the gear.
      */
     public function parent() {
-        return $this->belongsTo('App\Models\Claymore\Gear', 'parent_id');
+        return $this->belongsTo(Gear::class, 'parent_id');
     }
 
     /**
      * Get the children of the gear.
      */
     public function children() {
-        return $this->hasMany('App\Models\Claymore\Gear', 'parent_id');
+        return $this->hasMany(Gear::class, 'parent_id');
     }
 
     /**
      * Get the stats of the gear.
      */
     public function stats() {
-        return $this->hasMany('App\Models\Claymore\GearStat');
+        return $this->hasMany(GearStat::class);
     }
 
     /**
      * Get the currency that the parent costs.
      */
     public function currency() {
-        return $this->belongsTo('App\Models\Currency\Currency');
+        return $this->belongsTo(Currency::class);
     }
 
     /**********************************************************************************************
@@ -259,7 +260,7 @@ class Gear extends Model {
      */
     public function displayWithStats() {
         $stats = $this->stats->sortByDesc('value')->map(function ($stat) {
-            return $stat->name;
+            return $stat->stat->name.' + '.$stat->count;
         })->implode(', ');
 
         return $this->name.'<br />'.($stats ? ' ('.$stats.')' : '');

@@ -3,6 +3,7 @@
 namespace App\Models\Claymore;
 
 use App\Models\Model;
+use App\Models\Stat\Stat;
 
 class GearStat extends Model {
     /**
@@ -28,10 +29,10 @@ class GearStat extends Model {
     **********************************************************************************************/
 
     public function gear() {
-        return $this->belongsTo('App\Models\Claymore\Gear');
+        return $this->belongsTo(Gear::class);
     }
 
     public function stat() {
-        return $this->belongsTo('App\Models\Stat\Stat');
+        return $this->belongsTo(Stat::class);
     }
 }

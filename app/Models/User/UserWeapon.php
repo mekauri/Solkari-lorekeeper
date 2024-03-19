@@ -3,6 +3,7 @@
 namespace App\Models\User;
 
 use App\Models\Model;
+use App\Models\Claymore\Weapon;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class UserWeapon extends Model {
@@ -48,28 +49,28 @@ class UserWeapon extends Model {
      * Get the user who owns the stack.
      */
     public function user() {
-        return $this->belongsTo('App\Models\User\User');
+        return $this->belongsTo(User::class);
     }
 
     /**
      * Get the weapon associated with this weapon stack.
      */
     public function weapon() {
-        return $this->belongsTo('App\Models\Claymore\Weapon');
+        return $this->belongsTo(Weapon::class);
     }
 
     /**
      * Get the gear associated with this gear stack, using an alias.
      */
     public function equipment() {
-        return $this->belongsTo('App\Models\Claymore\Weapon', 'weapon_id');
+        return $this->belongsTo(Weapon::class, 'weapon_id');
     }
 
     /**
      * Get the character that this stack is currently attached to.
      */
     public function character() {
-        return $this->belongsTo('App\Models\Character\Character', 'character_id');
+        return $this->belongsTo(Character::class, 'character_id');
     }
 
     /**********************************************************************************************

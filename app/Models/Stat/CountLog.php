@@ -3,6 +3,8 @@
 namespace App\Models\Stat;
 
 use App\Models\Model;
+use App\Models\Character\Character;
+use App\Models\User\User;
 
 class CountLog extends Model {
     /**
@@ -41,16 +43,16 @@ class CountLog extends Model {
      */
     public function sender() {
         if ($this->sender_type == 'User') {
-            return $this->belongsTo('App\Models\User\User', 'sender_id');
+            return $this->belongsTo(User::class, 'sender_id');
         }
 
-        return $this->belongsTo('App\Models\Character\Character', 'sender_id');
+        return $this->belongsTo(Character::class, 'sender_id');
     }
 
     /**
      * Get the stat that the logged action was performed on.
      */
     public function stat() {
-        return $this->belongsTo('App\Models\Stat\Stat', 'stat_id');
+        return $this->belongsTo(Stat::class, 'stat_id');
     }
 }

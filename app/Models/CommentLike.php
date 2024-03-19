@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\User\User;
+
 class CommentLike extends Model {
     /**
      * The attributes that are mass assignable.
@@ -29,13 +31,13 @@ class CommentLike extends Model {
      * Get the comment.
      */
     public function comment() {
-        return $this->belongsTo('App\Models\Comment');
+        return $this->belongsTo(Comment::class);
     }
 
     /**
      * Get the user who liked the comment.
      */
     public function user() {
-        return $this->belongsTo('App\Models\User\User');
+        return $this->belongsTo(User::class);
     }
 }
