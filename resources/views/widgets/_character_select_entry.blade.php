@@ -51,7 +51,7 @@
                                 <tr class="character-reward-row">
                                     @if ($expanded_rewards)
                                         <td>
-                                            {!! Form::select('character_rewardable_type[' . $character->character_id . '][]', ['Item' => 'Item', 'Currency' => 'Currency', 'LootTable' => 'Loot Table', 'Exp' => 'Exp', 'Points' => 'Stat Points'], $reward->rewardable_type, [
+                                            {!! Form::select('character_rewardable_type[' . $character->character_id . '][]', ['Item' => 'Item', 'Currency' => 'Currency', 'LootTable' => 'Loot Table', 'Exp' => 'Exp', 'Points' => 'Stat Points', 'Element' => 'Element'], $reward->rewardable_type, [
                                                 'class' => 'form-control character-rewardable-type',
                                                 'placeholder' => 'Select Reward Type',
                                             ]) !!}
@@ -67,6 +67,10 @@
                                                 'placeholder' => 'Select Loot Table',
                                             ]) !!}</div>
                                             <div class="character-claymores hide">{!! Form::number('character_rewardable_id[' . $character->character_id . '][]', $reward->rewardable_type == 'Exp' || $reward->rewardable_type == 'Points' ? 1 : null, ['class' => 'form-control character-claymores-id']) !!}</div>
+                                            <div class="character-elements {{ $reward->rewardable_type == 'Element' ? 'show' : 'hide' }}">{!! Form::select('character_rewardable_id[' . $character->character_id . '][]', $elements, $reward->rewardable_type == 'Element' ? $reward->rewardable_id : null, [
+                                                'class' => 'form-control character-element-id',
+                                                'placeholder' => 'Select Element',
+                                            ]) !!}</div>
                                         </td>
                                     @else
                                         <td class="lootDivs">

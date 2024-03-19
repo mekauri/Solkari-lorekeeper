@@ -249,6 +249,10 @@ return [
                 'name' => 'User Levels',
                 'url'  => 'admin/levels/user',
             ],
+            [
+                'name' => 'Elements',
+                'url'  => 'admin/data/elements',
+            ],
         ],
     ],
     'Raffles'    => [

@@ -106,6 +106,8 @@
             {!! Form::close() !!}
         @endif
 
+        @include('widgets._add_typing', ['object' => $gear, 'info' => 'Typings are used to determine effectiveness in battles.'])
+
         <h3>Preview</h3>
         <div class="card mb-3">
             <div class="card-body">

@@ -109,7 +109,14 @@
                 </div>
             @endif
             @foreach ($submission->characters()->whereRelation('character', 'deleted_at', null)->get() as $character)
-                @include('widgets._character_select_entry', ['characterCurrencies' => $characterCurrencies, 'items' => $items, 'tables' => $tables, 'character' => $character, 'expanded_rewards' => $expanded_rewards])
+                @include('widgets._character_select_entry', [
+                    'characterCurrencies' => $characterCurrencies,
+                    'items' => $items,
+                    'tables' => $tables,
+                    'character' => $character,
+                    'expanded_rewards' => $expanded_rewards,
+                    'elements' => $elements,
+                ])
             @endforeach
         </div>
         <div class="text-right mb-3">
@@ -233,7 +240,7 @@
                 <tr class="character-reward-row">
                     @if ($expanded_rewards)
                         <td>
-                            {!! Form::select('character_rewardable_type[]', ['Item' => 'Item', 'Currency' => 'Currency', 'LootTable' => 'Loot Table', 'Exp' => 'Exp', 'Points' => 'Stat Points'], null, [
+                            {!! Form::select('character_rewardable_type[]', ['Item' => 'Item', 'Currency' => 'Currency', 'LootTable' => 'Loot Table', 'Exp' => 'Exp', 'Points' => 'Stat Points', 'Element' => 'Element'], null, [
                                 'class' => 'form-control character-rewardable-type',
                                 'placeholder' => 'Select Reward Type',
                             ]) !!}
@@ -243,6 +250,7 @@
                             <div class="character-items hide">{!! Form::select('character_rewardable_id[]', $items, 0, ['class' => 'form-control character-item-id', 'placeholder' => 'Select Item']) !!}</div>
                             <div class="character-tables hide">{!! Form::select('character_rewardable_id[]', $tables, 0, ['class' => 'form-control character-table-id', 'placeholder' => 'Select Loot Table']) !!}</div>
                             <div class="character-claymores hide">{!! Form::number('character_claymores_id[]', 1, ['class' => 'form-control character-claymores-id']) !!}</div>
+                            <div class="character-elements hide">{!! Form::select('character_rewardable_id[]', $elements, 0, ['class' => 'form-control character-element-id', 'placeholder' => 'Select Element']) !!}</div>
                         </td>
                     @else
                         <td class="lootDivs">

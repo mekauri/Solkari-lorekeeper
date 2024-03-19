@@ -18,6 +18,7 @@
         </h3>
         <div class="world-entry-text">
             @if ($item)
+                <h5>@include('world._typing', ['object' => $item])</h5>
                 <div class="row">
                     <div class="col-6">
                         <h5>Parent</h5>

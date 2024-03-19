@@ -25,6 +25,7 @@
                     <li class="list-group-item"><a href="{{ url('world/character-classes') }}">Character Classes</a></li>
                     <li class="list-group-item"><a href="{{ url('world/levels') }}">Levels</a></li>
                     <li class="list-group-item"><a href="{{ url('world/stats') }}">Stats</a></li>
+                    <li class="list-group-item"><a href="{{ url('world/elements') }}">All Elements</a></li>
                 </ul>
             </div>
         </div>

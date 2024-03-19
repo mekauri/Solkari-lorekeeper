@@ -330,6 +330,7 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('skills/create', 'SkillController@postCreateEditSkill');
     Route::post('skills/edit/{id?}', 'SkillController@postCreateEditSkill');
     Route::post('skills/delete/{id}', 'SkillController@postDeleteSkill');
+
     // SKILL CATEGORIES
     Route::get('skill-categories', 'SkillController@getCategoryIndex');
     Route::get('skill-categories/create', 'SkillController@getCreateSkillCategory');
@@ -338,6 +339,15 @@ Route::group(['prefix' => 'data', 'namespace' => 'Data', 'middleware' => 'power:
     Route::post('skill-categories/create', 'SkillController@postCreateEditSkillCategory');
     Route::post('skill-categories/edit/{id?}', 'SkillController@postCreateEditSkillCategory');
     Route::post('skill-categories/delete/{id}', 'SkillController@postDeleteSkillCategory');
+
+    // ELEMENTS
+    Route::get('elements', 'ElementController@getIndex');
+    Route::get('elements/create', 'ElementController@getCreateElement');
+    Route::get('elements/edit/{id}', 'ElementController@getEditElement');
+    Route::get('elements/delete/{id}', 'ElementController@getDeleteElement');
+    Route::post('elements/create', 'ElementController@postCreateEditElement');
+    Route::post('elements/edit/{id?}', 'ElementController@postCreateEditElement');
+    Route::post('elements/delete/{id}', 'ElementController@postDeleteElement');
 });
 
 // PAGES
@@ -472,6 +482,9 @@ Route::group(['prefix' => 'character', 'namespace' => 'Characters', 'middleware'
     Route::post('image/{id}/delete', 'CharacterImageController@postImageDelete');
 
     Route::post('{slug}/images/sort', 'CharacterImageController@postSortImages');
+
+    Route::get('{slug}/typing', 'CharacterImageController@getTyping');
+    Route::post('{slug}/typing', 'CharacterImageController@postTyping');
 
     // CHARACTER
     Route::get('{slug}/stats', 'CharacterController@getEditCharacterStats');
@@ -655,4 +668,10 @@ Route::group(['prefix' => 'character-classes', 'namespace' => 'Claymores', 'midd
     Route::post('edit/{id?}', 'CharacterClassController@postCreateEditCharacterClass');
     Route::post('delete/{id}', 'CharacterClassController@postDeleteCharacterClass');
     Route::post('sort', 'CharacterClassController@postSortCharacterClass');
+});
+
+Route::group(['prefix' => 'typing', 'middleware' => 'power:edit_data', 'namespace' => 'Data'], function () {
+    Route::post('/', 'ElementController@postTyping');
+    Route::get('delete/{id}', 'ElementController@getDeleteTyping');
+    Route::post('delete/{id}', 'ElementController@postDeleteTyping');
 });

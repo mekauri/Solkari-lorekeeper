@@ -74,7 +74,7 @@ function getAssetKeys($isCharacter = false) {
     if (!$isCharacter) {
         return ['items', 'currencies', 'pets', 'weapons', 'gears', 'raffle_tickets', 'loot_tables', 'user_items', 'characters', 'exp', 'points'];
     } else {
-        return ['currencies', 'items', 'character_items', 'loot_tables', 'exp', 'points'];
+        return ['currencies', 'items', 'character_items', 'loot_tables', 'elements', 'exp', 'points'];
     }
 }
 
@@ -168,8 +168,14 @@ function getAssetModelString($type, $namespaced = true) {
                 return 'CharacterItem';
             }
             break;
-
-            // these are special cases, as they do not specifically have a unique model
+        case 'elements':
+            if ($namespaced) {
+                return '\App\Models\Element\Element';
+            } else {
+                return 'Element';
+            }
+            break;
+        // these are special cases, as they do not specifically have a unique model
         case 'exp':
             return 'Exp';
             break;
@@ -541,6 +547,13 @@ function fillCharacterAssets($assets, $sender, $recipient, $logType, $data, $sub
             $service = new App\Services\InventoryManager;
             foreach ($contents as $asset) {
                 if (!$service->creditItem($sender, (($asset['asset']->category && $asset['asset']->category->is_character_owned) ? $recipient : $item_recipient), $logType, $data, $asset['asset'], $asset['quantity'])) {
+                    return false;
+                }
+            }
+        } elseif ($key == 'elements' && count($contents)) {
+            $service = new \App\Services\TypingManager;
+            foreach ($contents as $asset) {
+                if (!$service->creditTyping($recipient, $asset['asset'], $sender, $logType)) {
                     return false;
                 }
             }

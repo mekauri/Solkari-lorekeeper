@@ -6,6 +6,7 @@ use App\Facades\Settings;
 use App\Http\Controllers\Controller;
 use App\Models\Character\Character;
 use App\Models\Currency\Currency;
+use App\Models\Element\Element;
 use App\Models\Item\Item;
 use App\Models\Item\ItemCategory;
 use App\Models\Prompt\Prompt;
@@ -100,6 +101,7 @@ class SubmissionController extends Controller {
             'currencies'          => Currency::where('is_user_owned', 1)->orderBy('name')->pluck('name', 'id'),
             'inventory'           => $inventory,
             'page'                => 'submission',
+            'elements'            => Element::orderBy('name')->pluck('name', 'id'),
             'expanded_rewards'    => config('lorekeeper.extensions.character_reward_expansion.expanded'),
         ]));
     }
@@ -133,6 +135,7 @@ class SubmissionController extends Controller {
             'currencies'          => Currency::where('is_user_owned', 1)->orderBy('name')->pluck('name', 'id'),
             'inventory'           => $inventory,
             'page'                => 'submission',
+            'elements'            => Element::orderBy('name')->pluck('name', 'id'),
             'expanded_rewards'    => config('lorekeeper.extensions.character_reward_expansion.expanded'),
             'selectedInventory'   => isset($submission->data['user']) ? parseAssetData($submission->data['user']) : null,
             'count'               => Submission::where('prompt_id', $submission->prompt_id)->where('status', 'Approved')->where('user_id', $submission->user_id)->count(),

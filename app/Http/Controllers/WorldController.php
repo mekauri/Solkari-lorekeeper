@@ -9,6 +9,7 @@ use App\Models\Claymore\GearCategory;
 use App\Models\Claymore\Weapon;
 use App\Models\Claymore\WeaponCategory;
 use App\Models\Currency\Currency;
+use App\Models\Element\Element;
 use App\Models\Feature\Feature;
 use App\Models\Feature\FeatureCategory;
 use App\Models\Item\Item;
@@ -803,6 +804,58 @@ class WorldController extends Controller {
 
         return view('world.character_class', [
             'classes' => $query->orderBy('name', 'DESC')->paginate(20)->appends($request->query()),
+        ]);
+    }
+
+    /**
+     * Shows the elements page.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function getElements(Request $request) {
+        $query = Element::query();
+        $name = $request->get('name');
+        if ($name) {
+            $query->where('name', 'LIKE', '%'.$name.'%');
+        }
+
+        if (isset($data['sort'])) {
+            switch ($data['sort']) {
+                case 'alpha':
+                    $query->sortAlphabetical();
+                    break;
+                case 'alpha-reverse':
+                    $query->sortAlphabetical(true);
+                    break;
+                case 'newest':
+                    $query->sortNewest();
+                    break;
+                case 'oldest':
+                    $query->sortOldest();
+                    break;
+            }
+        } else {
+            $query->sortAlphabetical();
+        }
+
+        return view('world.elements', [
+            'elements' => $query->orderBy('name', 'DESC')->paginate(20)->appends($request->query()),
+        ]);
+    }
+
+    /**
+     * Shows a single element's page.
+     *
+     * @param mixed $id
+     */
+    public function getElement($id) {
+        $element = Element::where('id', $id)->first();
+        if (!$element) {
+            abort(404);
+        }
+
+        return view('world.element_page', [
+            'element' => $element,
         ]);
     }
 }
