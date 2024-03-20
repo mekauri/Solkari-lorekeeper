@@ -863,6 +863,30 @@ class SubmissionManager extends Service {
 
         // Attach characters
         foreach ($characters as $key => $c) {
+            if ($submission->prompt_id) {
+                if (isset($data['character_is_focus']) && $data['character_is_focus'][$c->id]) {
+                    if ($submission->prompt->level_req) {
+                        if (!$c->level || $c->level->current_level < $submission->prompt->level_req) {
+                            throw new \Exception('One or more characters are not high enough level to enter this prompt');
+                        }
+                    }
+                    foreach ($submission->prompt->skills as $skill) {
+                        if ($skill->skill->parent) {
+                            $charaSkill = $c->skills()->where('skill_id', $skill->skill->id)->first();
+                            if (!$charaSkill || $charaSkill->level < $skill->parent_level) {
+                                throw new \Exception('Skill level too low on one or more characters.');
+                            }
+                        }
+                        if ($skill->skill->prerequisite) {
+                            $charaSkill = $c->skills()->where('skill_id', $skill->skill->prerequisite->sid)->first();
+                            if (!$charaSkill) {
+                                throw new \Exception('Skill not unlocked on one or more characters.');
+                            }
+                        }
+                    }
+                }
+            }
+
             // Users might not pass in clean arrays (may contain redundant data) so we need to clean that up
             $assets = $this->processRewards($data + ['character_id' => $c->id, 'currencies' => $currencies, 'items' => $items, 'tables' => $tables], true);
 
