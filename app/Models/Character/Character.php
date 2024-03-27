@@ -754,18 +754,26 @@ class Character extends Model {
             $query->where('species_id', $character->image->species_id)->where('is_subtype', 0);
         })->orWhereHas('limits', function ($query) use ($character) {
             $query->where('species_id', $character->image->subtype_id)->where('is_subtype', 1);
-        })->orWhereDoesntHave('limits')->orderBy('name', 'ASC')->get();
+        })->orWhereDoesntHave('limits')->get();
 
         // prevents running it when unneeded. if there's an error idk lol
         if ($this->stats()->pluck('stat_id')->toArray() != $stats->pluck('id')->toArray()) {
             // we need to do this each time in case a new stat is made. It slows it down but -\(-v-)/-
             foreach ($stats as $stat) {
                 if (!$this->stats->where('stat_id', $stat->id)->first()) {
+                    // check if stat has a base value that is for this character's species or subtype
+                    // subtype takes precedence over species, so check for subtype first
+                    $base = null;
+                    $base = $stat->hasBaseValue('subtype', $this->image->subtype_id);
+                    if (!$base) {
+                        $base = $stat->hasBaseValue('species', $this->image->species_id);
+                    }
+
                     $this->stats()->create([
                         'character_id'  => $this->id,
                         'stat_id'       => $stat->id,
-                        'count'         => $stat->base,
-                        'current_count' => $stat->base,
+                        'count'         => $base ? $base : $stat->base,
+                        'current_count' => $base ? $base : $stat->base,
                     ]);
                 }
             }

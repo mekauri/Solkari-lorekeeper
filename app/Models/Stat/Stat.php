@@ -14,7 +14,7 @@ class Stat extends Model {
      * @var array
      */
     protected $fillable = [
-        'name', 'abbreviation', 'base', 'increment', 'multiplier', 'max_level', 'colour',
+        'name', 'abbreviation', 'base', 'increment', 'multiplier', 'max_level', 'colour', 'data',
     ];
 
     /**
@@ -139,5 +139,27 @@ class Stat extends Model {
         })->toArray();
 
         return '<b>Species:</b> '.($species ? implode(', ', $species) : 'None').($is_flat ? ', ' : '<br>').'<b>Subtypes:</b> '.($subtypes ? implode(', ', $subtypes) : 'None');
+    }
+
+    /**
+     * Gets the stat's data as an object.
+     */
+    public function getDataAttribute() {
+        return json_decode($this->attributes['data'], true);
+    }
+
+    /**
+     * Checks if a certain species / subtype has a different base value.
+     */
+    public function hasBaseValue($type = 'species', $id) {
+        if (!isset($this->data['bases'])) {
+            return false;
+        }
+
+        if (!isset($this->data['bases'][$type]) || !isset($this->data['bases'][$type][$id])) {
+            return false;
+        }
+
+        return $this->data['bases'][$type][$id];
     }
 }

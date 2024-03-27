@@ -55,33 +55,7 @@ class StatService extends Service {
         DB::beginTransaction();
 
         try {
-            // check species_ids
-            $stat->limits()->delete();
-            if (isset($data['types']) && $data['types']) {
-                foreach ($data['types'] as $key=>$type) {
-                    if ($type == 'species') {
-                        if (!isset($data['type_ids'][$key]) || !$data['type_ids'][$key]) {
-                            throw new \Exception('Please select at least one species.');
-                        }
-                        $stat->limits()->create([
-                            'species_id' => $data['type_ids'][$key],
-                            'type'       => 'stat',
-                            'type_id'    => $stat->id,
-                            'is_subtype' => 0,
-                        ]);
-                    } elseif ($type == 'subtype') {
-                        if (!isset($data['type_ids'][$key]) || !$data['type_ids'][$key]) {
-                            throw new \Exception('Please select at least one subtype.');
-                        }
-                        $stat->limits()->create([
-                            'species_id' => $data['type_ids'][$key],
-                            'type'       => 'stat',
-                            'type_id'    => $stat->id,
-                            'is_subtype' => 1,
-                        ]);
-                    }
-                }
-            }
+
             if (!isset($data['name'])) {
                 throw new \Exception('Please provide a name for the stat.');
             }
@@ -100,6 +74,34 @@ class StatService extends Service {
                     }
                 }
             }
+
+            // check species_ids
+            $stat->limits()->delete();
+            if (isset($data['types']) && $data['types']) {
+                foreach ($data['types'] as $key=>$type) {
+                    if (!isset($data['type_ids'][$key]) || !$data['type_ids'][$key]) {
+                        throw new \Exception('Please select at least one ' . $type . '.');
+                    }
+                    $stat->limits()->create([
+                        'species_id' => $data['type_ids'][$key],
+                        'type'       => 'stat',
+                        'type_id'    => $stat->id,
+                        'is_subtype' => $type == 'subtype' ? 1 : 0,
+                    ]);
+                }
+            }
+
+            $base_data = [];
+            if (isset($data['base_type_ids']) && $data['base_type_ids']) {
+                foreach ($data['base_types'] as $key=>$type) {
+                    if (!isset($data['base_type_ids'][$key]) || !$data['base_type_ids'][$key]) {
+                        throw new \Exception('Please select at least one ' . $type . '.');
+                    }
+                    // store the base type data
+                    $base_data[$type][$data['base_type_ids'][$key]] = $data['base_values'][$key];
+                }
+            }
+            $data['data']['bases'] = $base_data;
 
             $stat->update($data);
 

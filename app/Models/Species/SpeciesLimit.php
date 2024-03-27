@@ -46,11 +46,8 @@ class SpeciesLimit extends Model {
      * Get the type of limit.
      */
     public function type() {
-        switch ($this->type) {
-            case 'stat':
-                return $this->belongsTo(Stat::class, 'type_id');
-            case 'skill':
-                return $this->belongsTo(Skill::class, 'type_id');
-        }
+        $model = getAssetModelString(strtolower($this->type));
+
+        return $this->belongsTo($model);
     }
 }

@@ -46,7 +46,6 @@
                 @foreach ($stats as $stat)
                     <tr class="sort-item" data-id="{{ $stat->id }}">
                         <td>{{ $stat->name }} ({{ $stat->abbreviation }})</td>
-                        <td></td>
                         <td>{{ $stat->base }}</td>
                         <td>
                             {{ $stat->increment ?? 'No Increment' }}

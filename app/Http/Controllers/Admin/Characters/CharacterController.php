@@ -107,6 +107,8 @@ class CharacterController extends Controller {
 
         return view('admin.masterlist._create_character_stats', [
             'stats' => $stats,
+            'species_id' => $species,
+            'subtype_id' => $subtype,
         ]);
     }
 
