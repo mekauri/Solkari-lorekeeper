@@ -110,6 +110,9 @@ class LevelService extends Service {
         $level->rewards()->delete();
         if (isset($data['rewardable_type'])) {
             foreach ($data['rewardable_type'] as $key => $type) {
+                if ($data['rewardable_id'][$key] == 'none') {
+                    $data['rewardable_id'][$key] = null;
+                }
                 LevelReward::create([
                     'level_id'        => $level->id,
                     'rewardable_type' => $type,

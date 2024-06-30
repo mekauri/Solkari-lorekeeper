@@ -43,7 +43,7 @@
         </div>
         <div class="col-md">
             <div class="form-group">
-                {!! Form::label('Gear Parent (Optional)') !!} {!! add_help('This should be a number.') !!}
+                {!! Form::label('Gear Parent (Optional)') !!}
                 {!! Form::select('parent_id', $gears, $gear->parent_id, ['class' => 'form-control']) !!}
             </div>
         </div>

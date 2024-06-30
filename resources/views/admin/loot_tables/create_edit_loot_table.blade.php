@@ -70,8 +70,6 @@
                                     {!! Form::select('criteria[]', ['=' => '=', '<' => '<', '>' => '>', '<=' => '<=', '>=' => '>='], isset($loot->data['criteria']) ? $loot->data['criteria'] : null, ['class' => 'form-control', 'placeholder' => 'Criteria']) !!}
                                     {!! Form::select('rarity[]', $rarities, isset($loot->data['rarity']) ? $loot->data['rarity'] : null, ['class' => 'form-control', 'placeholder' => 'Rarity']) !!}
                                 </div>
-                            @elseif($loot->rewardable_type == 'Pet')
-                                {!! Form::select('rewardable_id[]', $pets, $loot->rewardable_id, ['class' => 'form-control currency-select selectize', 'placeholder' => 'Select Pet']) !!}
                             @elseif($loot->rewardable_type == 'Currency')
                                 {!! Form::select('rewardable_id[]', $currencies, $loot->rewardable_id, ['class' => 'form-control currency-select selectize', 'placeholder' => 'Select Currency']) !!}
                             @elseif($loot->rewardable_type == 'Pet')
@@ -131,7 +129,6 @@
             {!! Form::select('criteria[]', ['=' => '=', '<' => '<', '>' => '>', '<=' => '<=', '>=' => '>='], null, ['class' => 'form-control criteria-select', 'placeholder' => 'Criteria']) !!}
             {!! Form::select('rarity[]', $rarities, null, ['class' => 'form-control criteria-select', 'placeholder' => 'Rarity']) !!}
         </div>
-        {!! Form::select('rewardable_id[]', $pets, null, ['class' => 'form-control pet-select', 'placeholder' => 'Select Pet']) !!}
         {!! Form::select('rewardable_id[]', $currencies, null, ['class' => 'form-control currency-select', 'placeholder' => 'Select Currency']) !!}
         {!! Form::select('rewardable_id[]', $pets, null, ['class' => 'form-control pet-select', 'placeholder' => 'Select Pet']) !!}
         {!! Form::select('rewardable_id[]', $tables, null, ['class' => 'form-control table-select', 'placeholder' => 'Select Loot Table']) !!}
@@ -167,7 +164,6 @@
             var $lootTable = $('#lootTableBody');
             var $lootRow = $('#lootRow').find('.loot-row');
             var $itemSelect = $('#lootRowData').find('.item-select');
-            var $petSelect = $('#lootRowData').find('.pet-select');
             var $itemRaritySelect = $('#lootRowData').find('.item-rarity-select');
             var $petSelect = $('#lootRowData').find('.pet-select');
             var $currencySelect = $('#lootRowData').find('.currency-select');

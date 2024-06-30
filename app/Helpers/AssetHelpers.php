@@ -236,7 +236,7 @@ function addAsset(&$array, $asset, $quantity = 1) {
     if (!$asset) {
         return;
     }
-    if ($asset == 'Exp' || ($asset == 'Points' && !$asset->id)) {
+    if ($asset == 'Exp' || $asset == 'Points') {
         $asset = strtolower($asset);
         if (isset($array[$asset]['quantity'])) {
             $array[$asset]['quantity'] += $quantity;
@@ -498,7 +498,8 @@ function fillUserAssets($assets, $sender, $recipient, $logType, $data) {
             }
         } elseif ($key == 'points' && count($contents)) {
             $service = new App\Services\Stat\StatManager;
-            if (!$service->creditStat($sender, $recipient, $logType, $data['data'], $contents['quantity'])) {
+            dd($data, $contents);
+            if (!$service->creditStat($sender, $recipient, $logType, $data['data'], 'none', $contents['quantity'])) {
                 return false;
             }
         }

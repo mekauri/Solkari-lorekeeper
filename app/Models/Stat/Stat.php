@@ -31,7 +31,7 @@ class Stat extends Model {
      */
     public static $createRules = [
         'name'         => 'required|unique:stats|between:3,25',
-        'abbreviation' => 'required|unique:stats|between:1,10',
+        'abbreviation' => 'unique:stats|between:1,10',
     ];
 
     /**
@@ -41,7 +41,7 @@ class Stat extends Model {
      */
     public static $updateRules = [
         'name'         => 'required|between:3,25',
-        'abbreviation' => 'required|between:1,10',
+        'abbreviation' => 'between:1,10',
     ];
 
     /**********************************************************************************************
