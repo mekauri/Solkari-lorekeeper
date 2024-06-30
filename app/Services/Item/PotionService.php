@@ -96,7 +96,7 @@ class PotionService extends Service {
                 }
 
                 // Next, try to delete the tag item. If successful, we can start applying potion effects.
-                if ((new InventoryManager)->debitStack($stack->user, 'Slot Used', ['data' => ''], $stack, $data['quantities'][$key])) {
+                if ((new InventoryManager)->debitStack($stack->user, 'Potion Used', ['data' => ''], $stack, $data['quantities'][$key])) {
                     for ($q = 0; $q < $data['quantities'][$key]; $q++) {
                         // map to map subtract, add etc to ops
                         $operators = [
@@ -117,7 +117,20 @@ class PotionService extends Service {
 
                         $quantity = eval('return '.$characterStat->current_count.$operators[$stack->item->tag($data['tag'])->getData()['type']].$stack->item->tag($data['tag'])->getData()['value'].';');
 
-                        if (!(new StatManager)->editCharacterStatCurrentCount($user, $characterStat, $quantity, 'Potion Used', $stack->item->name.' used')) {
+                        $service = new StatManager;
+                        if (!$service->editCharacterStatCurrentCount(
+                            $characterStat,
+                            $character,
+                            $quantity,
+                            true,
+                            [
+                                'type' => 'Potion Used',
+                                'data' => $stack->item->name.' used on '.$character->name,
+                            ]
+                        )) {
+                            foreach ($service->errors()->getMessages()['error'] as $error) {
+                                flash($error)->error();
+                            }
                             throw new \Exception('Error updating stat.');
                         }
                     }

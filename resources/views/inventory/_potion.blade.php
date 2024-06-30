@@ -9,7 +9,7 @@
             This potion will
             {{ $tag->getData()['type'] == 'multiply' ? 'multiply the character\'s current ' . $stat->name . ' by ' . $tag->getData()['value'] : $tag->getData()['type'] . ' ' . $tag->getData()['value'] . ' to character\'s ' . $stat->name . ' value' }}.
         </div>
-        <div class="alert alert-warning mt-2">
+        <div class="alert alert-danger mt-2">
             All stats are capped at the character's max stat value. Be sure to double check what potion you are using on each character.
         </div>
         <p>This action is not reversible. Are you sure you want to use this item?</p>

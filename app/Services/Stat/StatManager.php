@@ -150,6 +150,10 @@ class StatManager extends Service {
             }
 
             $stat = $character->stats()->where('stat_id', $stat->id)->first();
+            if (!$stat->current_count) {
+                $stat->current_count = $stat->count;
+                $stat->save();
+            }
 
             if ($set) {
                 $stat->current_count = $quantity > $stat->count ? $stat->count : $quantity;
@@ -160,6 +164,8 @@ class StatManager extends Service {
 
             if ($override) {
                 // if different logs are needed
+                $type = $override['type'];
+                $data = $override['data'];
             } else {
                 $type = 'Staff Edit';
                 $data = 'Edited Current Count by Staff';
