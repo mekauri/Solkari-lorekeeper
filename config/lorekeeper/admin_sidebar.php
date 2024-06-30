@@ -225,10 +225,10 @@ return [
                 'name' => 'Weapons',
                 'url'  => 'admin/weapons',
             ],
-            [
-                'name' => 'Attacks',
-                'url'  => 'admin/attacks',
-            ],
+            // [
+            //     'name' => 'Attacks',
+            //     'url'  => 'admin/attacks',
+            // ],
             [
                 'name' => 'Character Classes',
                 'url'  => 'admin/character-classes',

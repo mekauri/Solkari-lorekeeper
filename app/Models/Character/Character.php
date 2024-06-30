@@ -807,9 +807,12 @@ class Character extends Model {
         if ($total < 1) {
             return 0; // prevents, for example, hp bonuses from being applied to a character with 0 hp
         }
-        $total += $this->bonusStatCount($stat_id);
-
-        return $total;
+        $bonusCount = $this->bonusStatCount($stat_id);
+        if ($total + $bonusCount > $stat->count + $bonusCount) {
+            return $stat->count + $bonusCount;
+        } else {
+            return $total + $bonusCount;
+        }
     }
 
     /**

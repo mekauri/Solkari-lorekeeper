@@ -48,7 +48,7 @@ class MergeLevels extends Command {
             DB::table('user_level_rewards')->insert([
                 'level_id'        => $reward->level_id,
                 'rewardable_type' => $reward->rewardable_type,
-                'rewardable_id'   => $reward->character_id,
+                'rewardable_id'   => $reward->rewardable_id,
                 'quantity'        => $reward->quantity,
             ]);
         }

@@ -156,7 +156,10 @@ class StatManager extends Service {
             }
 
             if ($set) {
-                $stat->current_count = $quantity > $stat->count ? $stat->count : $quantity;
+                // check if there are any weapons / gear granting extra to this stat
+                $count = $stat->count;
+                $count += $character->bonusStatCount($stat->id);
+                $stat->current_count = $quantity > $count ? $count : $quantity;
             } else {
                 $stat->current_count += $quantity;
             }

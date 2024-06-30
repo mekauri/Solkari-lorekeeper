@@ -35,14 +35,14 @@
                         $now = Carbon\Carbon::parse($stack->attached_at);
                         $diff = $now->addDays(Settings::get('claymore_cooldown'));
                     @endphp
-                    @if ($stack->character_id != null && $diff < Carbon\Carbon::now())
+                    @if ($stack->character_id && $diff < Carbon\Carbon::now())
                         <a class="card-title h5 collapse-title" data-toggle="collapse" href="#attachForm">
                             @if ($stack->user_id != $user->id)
                                 [ADMIN]
                             @endif Detach Equipment from Character
                         </a>
                         {!! Form::open(['url' => 'armoury/' . $type . '/detach/' . $stack->id, 'id' => 'attachForm', 'class' => 'collapse']) !!}
-                        <p>This equipment is currently attached to {!! $stack->character->displayName !!}, do you want to detach them?</p>
+                        <p>This equipment is currently attached to {!! getDisplayName(\App\Models\Character\Character::class, $stack->character_id) !!}, do you want to detach them?</p>
                         <div class="text-right">
                             {!! Form::submit('Detach', ['class' => 'btn btn-primary']) !!}
                         </div>
