@@ -115,7 +115,8 @@ class PotionService extends Service {
                             throw new \Exception('Character does not have the required stat.');
                         }
 
-                        $quantity = eval('return '.$characterStat->current_count.$operators[$stack->item->tag($data['tag'])->getData()['type']].$stack->item->tag($data['tag'])->getData()['value'].';');
+                        $count = $characterStat->current_count ?? $characterStat->count;
+                        $quantity = eval('return '.$count.$operators[$stack->item->tag($data['tag'])->getData()['type']].$stack->item->tag($data['tag'])->getData()['value'].';');
 
                         $service = new StatManager;
                         if (!$service->editCharacterStatCurrentCount(
