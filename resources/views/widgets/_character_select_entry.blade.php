@@ -6,6 +6,7 @@
         ->pluck('fullName', 'slug')
         ->toArray();
     $tables = \App\Models\Loot\LootTable::orderBy('name')->pluck('name', 'id');
+    $elements = \App\Models\Element\Element::orderBy('name')->pluck('name', 'id');
 @endphp
 
 <div class="submission-character mb-3 card">

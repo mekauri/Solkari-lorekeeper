@@ -240,7 +240,7 @@ class SubmissionController extends Controller {
                 flash($error)->error();
             }
 
-            return redirect()->back()->withInput();
+            return redirect()->back();
         }
 
         return redirect()->to('submissions/view/'.$submission->id);

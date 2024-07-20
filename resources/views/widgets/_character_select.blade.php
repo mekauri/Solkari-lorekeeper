@@ -6,6 +6,7 @@
         ->pluck('fullName', 'slug')
         ->toArray();
     $tables = \App\Models\Loot\LootTable::orderBy('name')->pluck('name', 'id');
+    $elements = \App\Models\Element\Element::orderBy('name')->pluck('name', 'id');
 @endphp
 
 <div id="characterComponents" class="hide">
@@ -59,7 +60,10 @@
 
             @if ($expanded_rewards)
                 <td>
-                    {!! Form::select('character_rewardable_type[]', ['Item' => 'Item', 'Currency' => 'Currency', 'Exp' => 'Exp', 'Points' => 'Stat Points'] + (isset($showLootTables) && $showLootTables ? ['LootTable' => 'Loot Table'] : []), null, [
+                    {!! Form::select('character_rewardable_type[]', ['Item' => 'Item', 'Currency' => 'Currency', 'Exp' => 'Exp', 'Points' => 'Stat Points']
+                        + (isset($showLootTables) && $showLootTables ? ['LootTable' => 'Loot Table'] : [])
+                        + (isset($showElements) && $showElements ? ['Element' => 'Element'] : [])
+                        , null, [
                         'class' => 'form-control character-rewardable-type',
                         'placeholder' => 'Select Reward Type',
                     ]) !!}
@@ -69,10 +73,10 @@
                     <div class="character-items hide">{!! Form::select('character_item_id[]', $items, 0, ['class' => 'form-control character-item-id', 'placeholder' => 'Select Item']) !!}</div>
                     <div class="character-claymores hide">{!! Form::number('character_claymores_id[]', 1, ['class' => 'form-control character-claymores-id']) !!}</div>
                     @if (isset($showLootTables) && $showLootTables)
-                        <div class="character-loots hide">{!! Form::select('character_rewardable_id[]', $tables, 0, ['class' => 'form-control character-table-id', 'placeholder' => 'Select Loot Table']) !!}</div>
+                        <div class="character-loots hide">{!! Form::select('character_table_id[]', $tables, 0, ['class' => 'form-control character-table-id', 'placeholder' => 'Select Loot Table']) !!}</div>
                     @endif
                     @if (isset($showElements) && $showElements)
-                        <div class="character-elements hide">{!! Form::select('character_rewardable_id[]', $elements, 0, ['class' => 'form-control character-element-id', 'placeholder' => 'Select Element']) !!}</div>
+                        <div class="character-elements hide">{!! Form::select('character_element_id[]', $elements, 0, ['class' => 'form-control character-element-id', 'placeholder' => 'Select Element']) !!}</div>
                     @endif
                 </td>
             @else

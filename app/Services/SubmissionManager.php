@@ -629,6 +629,9 @@ class SubmissionManager extends Service {
                 $data['character_rewardable_id'] = array_map([$this, 'innerNull'], $data['character_rewardable_id']);
 
                 foreach ($data['character_rewardable_id'][$data['character_id']] as $key => $reward) {
+                    if (!isset($data['character_rewardable_type'][$data['character_id']][$key])) {
+                        continue;
+                    }
                     switch ($data['character_rewardable_type'][$data['character_id']][$key]) {
                         case 'Currency': if ($data['character_rewardable_quantity'][$data['character_id']][$key]) {
                             addAsset($assets, $data['currencies'][$reward], $data['character_rewardable_quantity'][$data['character_id']][$key]);
@@ -645,7 +648,7 @@ class SubmissionManager extends Service {
                         case 'Points': if ($data['character_rewardable_quantity'][$data['character_id']][$key]) {
                             addAsset($assets, 'Points', $data['character_rewardable_quantity'][$data['character_id']][$key]);
                         } break;
-                        case 'Element': // we don't check for quanity here
+                        case 'Element': // we don't check for quantity here
                             addAsset($assets, $data['elements'][$reward], 1);
                             break;
                     }
@@ -833,6 +836,7 @@ class SubmissionManager extends Service {
         $currencyIds = [];
         $itemIds = [];
         $tableIds = [];
+        $elementIds = [];
         if (isset($data['character_currency_id'])) {
             foreach ($data['character_currency_id'] as $c) {
                 foreach ($c as $currencyId) {
@@ -843,12 +847,17 @@ class SubmissionManager extends Service {
             $data['character_rewardable_id'] = array_map([$this, 'innerNull'], $data['character_rewardable_id']);
             foreach ($data['character_rewardable_id'] as $ckey => $c) {
                 foreach ($c as $key => $id) {
+                    if (!isset($data['character_rewardable_type'][$ckey][$key])) {
+                        continue;
+                    }
                     switch ($data['character_rewardable_type'][$ckey][$key]) {
                         case 'Currency': $currencyIds[] = $id;
                             break;
                         case 'Item': $itemIds[] = $id;
                             break;
                         case 'LootTable': $tableIds[] = $id;
+                            break;
+                        case 'Element': $elementIds[] = $id;
                             break;
                     }
                 }
@@ -857,9 +866,11 @@ class SubmissionManager extends Service {
         array_unique($currencyIds);
         array_unique($itemIds);
         array_unique($tableIds);
+        array_unique($elementIds);
         $currencies = Currency::whereIn('id', $currencyIds)->where('is_character_owned', 1)->get()->keyBy('id');
         $items = Item::whereIn('id', $itemIds)->get()->keyBy('id');
         $tables = LootTable::whereIn('id', $tableIds)->get()->keyBy('id');
+        $elements = Element::whereIn('id', $elementIds)->get()->keyBy('id');
 
         // Attach characters
         foreach ($characters as $key => $c) {
@@ -888,7 +899,7 @@ class SubmissionManager extends Service {
             }
 
             // Users might not pass in clean arrays (may contain redundant data) so we need to clean that up
-            $assets = $this->processRewards($data + ['character_id' => $c->id, 'currencies' => $currencies, 'items' => $items, 'tables' => $tables], true);
+            $assets = $this->processRewards($data + ['character_id' => $c->id, 'currencies' => $currencies, 'items' => $items, 'tables' => $tables, 'elements' => $elements], true);
 
             // Now we have a clean set of assets (redundant data is gone, duplicate entries are merged)
             // so we can attach the character to the submission
