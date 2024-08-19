@@ -5,7 +5,7 @@
 @endsection
 
 @section('home-content')
-    {!! breadcrumbs(['Stats' => 'stats']) !!}
+    {!! breadcrumbs(['Stats' => 'userstats']) !!}
 
     <h1>
         Your Stat Information
