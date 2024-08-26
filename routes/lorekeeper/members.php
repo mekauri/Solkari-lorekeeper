@@ -123,7 +123,7 @@ Route::group(['prefix' => 'bank', 'namespace' => 'Users'], function () {
     Route::post('transfer', 'BankController@postTransfer');
 });
 
-Route::group(['prefix' => 'stats', 'namespace' => 'Users'], function () {
+Route::group(['prefix' => 'userstats', 'namespace' => 'Users'], function () {
     Route::get('/', 'UserStatController@getIndex');
     Route::post('level', 'UserStatController@postLevel');
     Route::post('transfer', 'UserStatController@postTransfer');
@@ -181,10 +181,6 @@ Route::group(['prefix' => 'myo', 'namespace' => 'Characters'], function () {
 
     Route::post('{id}/approval', 'MyoController@postCharacterApproval');
     Route::get('{id}/approval', 'MyoController@getCharacterApproval');
-});
-
-Route::group(['prefix' => 'stats', 'namespace' => 'Users'], function () {
-    Route::get('/', 'UserStatController@getIndex');
 });
 
 /**************************************************************************************************
