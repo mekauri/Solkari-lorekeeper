@@ -78,40 +78,82 @@
 
 </head>
 <body>
-    <div id="app">
-        <div class="site-header-image" id="header" style="background-image: url('{{ asset('images/header.png') }}');"></div>
-        @include('layouts._nav')
-        @if ( View::hasSection('sidebar') )
-			<div class="site-mobile-header bg-secondary"><a href="#" class="btn btn-sm btn-outline-light" id="mobileMenuButton">Menu <i class="fas fa-caret-right ml-1"></i></a></div>
-		@endif
+   <div id="app">
 
-        <main class="container-fluid">
-            <div class="row">
+    <!-- HEADER IMAGE-->
+    <div class="site-header-image" id="header" style="background-image: url('{{ asset('images/header.png') }}');"></div>
+    <!-- HEADER IMAGE END-->
 
-                <div class="sidebar col-lg-2" id="sidebar">
-                    @yield('sidebar')
+    <!-- NAVBAR THAT MATCHES MAIN CONTENT WIDTH -->
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 p-0">
+                @include('layouts._nav')
+            </div>
+        </div>
+    </div>
+    <!-- NAVBAR END -->
+
+    <main class="container-fluid">
+        <div class="row">
+
+            <!-- SIDE BAR-->
+            <div class="sidebar col-lg-2" id="sidebar">
+                @yield('sidebar')
+            </div>
+            <!-- SIDE BAR ENDS-->
+
+            <!-- MAIN CONTENT COLUMN -->
+            <div class="main-content col-lg-8 p-4">
+
+                <!-- MOBILE SIDE MENU-->
+                @if ( View::hasSection('sidebar') )
+                <div class="site-mobile-header bg-secondary">
+                    <a href="#" class="btn btn-sm btn-outline-light" id="mobileMenuButton">Menu <i class="fas fa-caret-right ml-1"></i></a>
                 </div>
-                <div class="main-content col-lg-8 p-4">
-                    <div>
-                        @if(Auth::check() && !Config::get('lorekeeper.extensions.navbar_news_notif'))
-                            @if(Auth::user()->is_news_unread)
-                                <div class="alert alert-info"><a href="{{ url('news') }}">There is a new news post!</a></div>
-                            @endif
-                            @if(Auth::user()->is_sales_unread)
-                                <div class="alert alert-info"><a href="{{ url('sales') }}">There is a new sales post!</a></div>
-                            @endif
-                        @endif
-                        @include('flash::message')
-                        @yield('content')
-                    </div>
+                @endif
+                <!-- MOBILE SIDE MENU END-->
 
-                    <div class="site-footer mt-4" id="footer">
-                            @include('layouts._footer')
-                    </div>
+                <!--MAIN CONTENT-->
+                <div>
+                    @if(Auth::check() && !Config::get('lorekeeper.extensions.navbar_news_notif'))
+                        @if(Auth::user()->is_news_unread)
+                            <div class="alert alert-info"><a href="{{ url('news') }}">There is a new news post!</a></div>
+                        @endif
+                        @if(Auth::user()->is_sales_unread)
+                            <div class="alert alert-info"><a href="{{ url('sales') }}">There is a new adopt post!</a></div>
+                        @endif
+                    @endif
+                    @include('flash::message')
+
+                    <!--PAGE CONTENT-->
+                    @yield('content')
+                    <!--PAGE CONTENT END-->
+
+                </div>
+                <!-- MAIN CONTENT END-->
+
+            </div>
+            <!-- MAIN CONTENT COLUMN ENDS -->
+
+        </div>
+    </main>
+
+    <!-- FOOTER THAT MATCHES MAIN CONTENT WIDTH -->
+    <div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 p-0">
+                <div class="site-footer" id="footer">
+                    @include('layouts._footer')
                 </div>
             </div>
+        </div>
+    </div>
+    <!-- FOOTER END -->
 
-        </main>
+</div>
+
+
 
 
         <div class="modal fade" id="modal" tabindex="-1" role="dialog">
