@@ -1,10 +1,13 @@
 @extends('shops.layout')
 
-@section('shops-title') Shop Index @endsection
+@section('shops-title')
+    Shop Index
+@endsection
 
 @section('shops-content')
-{!! breadcrumbs(['Shops' => 'shops']) !!}
+    {!! breadcrumbs(['Shops' => 'shops']) !!}
 
+<<<<<<< HEAD
 <h1>
     Shops
 </h1>
@@ -29,5 +32,21 @@
         </div>
     </div>
 </div>
+=======
+    <h1>
+        Shops
+    </h1>
+>>>>>>> 0e64f5bf38b88c74c42555e1a3de7429f927474e
 
+    <div class="row shops-row">
+        @foreach ($shops as $shop)
+            @if ($shop->is_staff)
+                @if (Auth::check() && Auth::user()->isstaff)
+                    @include('shops._shop')
+                @endif
+            @else
+                @include('shops._shop')
+            @endif
+        @endforeach
+    </div>
 @endsection
