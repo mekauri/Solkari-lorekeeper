@@ -12,20 +12,18 @@
 /**
  * Returns class name if the current URL corresponds to the given path.
  *
- * @param string $path
- * @param string $class
- *
+ * @param  string  $path
+ * @param  string  $class
  * @return string
  */
 function set_active($path, $class = 'active') {
-    return call_user_func_array('Request::is', (array) $path) ? $class : '';
+    return call_user_func_array('Request::is', (array)$path) ? $class : '';
 }
 
 /**
  * Adds a help icon with a tooltip.
  *
- * @param string $text
- *
+ * @param  string  $text
  * @return string
  */
 function add_help($text) {
@@ -35,29 +33,23 @@ function add_help($text) {
 /**
  * Uses the given array to generate breadcrumb links.
  *
- *
+ * @param  array  $links
  * @return string
  */
 function breadcrumbs($links) {
     $ret = '<nav><ol class="breadcrumb">';
     $count = 0;
     $ret .= '<li class="breadcrumb-item"><a href="'.url('/').'">'.config('lorekeeper.settings.site_name', 'Lorekeeper').'</a></li>';
-    foreach ($links as $key => $link) {
+    foreach($links as $key => $link) {
         $isLast = ($count == count($links) - 1);
 
         $ret .= '<li class="breadcrumb-item ';
-        if ($isLast) {
-            $ret .= 'active';
-        }
+        if($isLast) $ret .= 'active';
         $ret .= '">';
 
-        if (!$isLast) {
-            $ret .= '<a href="'.url($link).'">';
-        }
-        $ret .= $key;
-        if (!$isLast) {
-            $ret .= '</a>';
-        }
+        if(!$isLast) $ret .= '<a href="'.url($link).'">';
+        $ret .=  $key;
+        if(!$isLast) $ret .= '</a>';
 
         $ret .= '</li>';
 
@@ -71,26 +63,22 @@ function breadcrumbs($links) {
 /**
  * Formats the timestamp to a standard format.
  *
- * @param Illuminate\Support\Carbon\Carbon $timestamp
- * @param mixed                            $showTime
- *
+ * @param  \Illuminate\Support\Carbon\Carbon  $timestamp
  * @return string
  */
 function format_date($timestamp, $showTime = true) {
-    return $timestamp->format('j F Y'.($showTime ? ', H:i:s' : '')).($showTime ? ' <abbr data-toggle="tooltip" title="UTC'.$timestamp->timezone->toOffsetName().'">'.strtoupper($timestamp->timezone->getAbbreviatedName($timestamp->isDST())).'</abbr>' : '');
+    return $timestamp->format('j F Y' . ($showTime ? ', H:i:s' : '')) . ($showTime ? ' <abbr data-toggle="tooltip" title="UTC'.$timestamp->timezone->toOffsetName().'">' . strtoupper($timestamp->timezone->getAbbreviatedName($timestamp->isDST())) . '</abbr>' : '');
 }
 
 function pretty_date($timestamp, $showTime = true) {
-    return '<abbr data-toggle="tooltip" title="'.$timestamp->format('F j Y'.($showTime ? ', H:i:s' : '')).' '.strtoupper($timestamp->timezone->getAbbreviatedName($timestamp->isDST())).'">'.$timestamp->diffForHumans().'</abbr>';
+   return '<abbr data-toggle="tooltip" title="' . $timestamp->format('F j Y' . ($showTime ? ', H:i:s' : '')) . ' ' . strtoupper($timestamp->timezone->getAbbreviatedName($timestamp->isDST())).'">' .$timestamp->diffForHumans() . '</abbr>';
 }
 
 /**
  * Formats a number to fit the number of digits given,
  * for generating masterlist numbers.
  *
- * @param mixed $number
- * @param mixed $digits
- *
+ * @param  \Illuminate\Support\Carbon\Carbon  $timestamp
  * @return string
  */
 function format_masterlist_number($number, $digits) {
@@ -100,32 +88,33 @@ function format_masterlist_number($number, $digits) {
 /**
  * Parses a piece of user-entered text for HTML output and optionally gets pings.
  *
- * @param string $text
- * @param array  $pings
- *
+ * @param  string  $text
+ * @param  array   $pings
  * @return string
  */
 function parse($text, &$pings = null) {
-    if (!$text) {
-        return null;
-    }
+    if(!$text) return null;
 
-    require_once base_path().'/vendor/ezyang/htmlpurifier/library/HTMLPurifier.auto.php';
+    require_once(base_path().'/vendor/ezyang/htmlpurifier/library/HTMLPurifier.auto.php');
 
     $config = HTMLPurifier_Config::createDefault();
     $config->set('Attr.EnableID', true);
     $config->set('HTML.DefinitionID', 'include');
     $config->set('HTML.DefinitionRev', 2);
+<<<<<<< HEAD
 
 
     $config->set('Cache.DefinitionImpl', null); // TODO: remove this later!
 
+=======
+>>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
     if ($def = $config->maybeGetRawHTMLDefinition()) {
-        $def->addElement('include', 'Block', 'Empty', 'Common', ['file*' => 'URI', 'height' => 'Text', 'width' => 'Text']);
-        $def->addAttribute('a', 'data-toggle', 'Enum#collapse,tab');
-        $def->addAttribute('a', 'aria-expanded', 'Enum#true,false');
-        $def->addAttribute('a', 'data-target', 'Text');
-        $def->addAttribute('div', 'data-parent', 'Text');
+        $def->addElement('include', 'Block', 'Empty', 'Common', array('file*' => 'URI', 'height' => 'Text', 'width' => 'Text'));
+		$def->addAttribute('a', 'data-toggle', 'Enum#collapse,tab');
+		$def->addAttribute('a', 'aria-expanded', 'Enum#true,false');
+		$def->addAttribute('a', 'data-target', 'Text');
+		$def->addAttribute('div', 'data-parent', 'Text');
+
     }
 
     $purifier = new HTMLPurifier($config);
@@ -133,15 +122,9 @@ function parse($text, &$pings = null) {
 
     $users = $characters = null;
     $text = parseUsers($text, $users);
-    $text = parseUsersAndAvatars($text, $users);
-    $text = parseUserIDs($text, $users);
-    $text = parseUserIDsForAvatars($text, $users);
     $text = parseCharacters($text, $characters);
-    $text = parseCharacterThumbs($text, $characters);
     $text = parseGalleryThumbs($text, $submissions);
-    if ($pings) {
-        $pings = ['users' => $users, 'characters' => $characters];
-    }
+    if($pings) $pings = ['users' => $users, 'characters' => $characters];
 
     return $text;
 }
@@ -150,103 +133,21 @@ function parse($text, &$pings = null) {
  * Parses a piece of user-entered text to match user mentions
  * and replace with a link.
  *
- * @param string $text
- * @param mixed  $users
- *
+ * @param  string  $text
+ * @param  mixed   $users
  * @return string
  */
 function parseUsers($text, &$users) {
     $matches = null;
     $users = [];
     $count = preg_match_all('/\B@([A-Za-z0-9_-]+)/', $text, $matches);
-    if ($count) {
+    if($count) {
         $matches = array_unique($matches[1]);
-        foreach ($matches as $match) {
-            $user = App\Models\User\User::where('name', $match)->first();
-            if ($user) {
+        foreach($matches as $match) {
+            $user = \App\Models\User\User::where('name', $match)->first();
+            if($user) {
                 $users[] = $user;
                 $text = preg_replace('/\B@'.$match.'/', $user->displayName, $text);
-            }
-        }
-    }
-
-    return $text;
-}
-
-/**
- * Parses a piece of user-entered text to match user mentions
- * and replace with a link and avatar.
- *
- * @param string $text
- * @param mixed  $users
- *
- * @return string
- */
-function parseUsersAndAvatars($text, &$users) {
-    $matches = null;
-    $users = [];
-    $count = preg_match_all('/\B%([A-Za-z0-9_-]+)/', $text, $matches);
-    if ($count) {
-        $matches = array_unique($matches[1]);
-        foreach ($matches as $match) {
-            $user = App\Models\User\User::where('name', $match)->first();
-            if ($user) {
-                $users[] = $user;
-                $text = preg_replace('/\B%'.$match.'/', '<a href="'.$user->url.'"><img src="'.$user->avatarUrl.'" style="width:70px; height:70px; border-radius:50%; " alt="'.$user->name.'\'s Avatar"></a>'.$user->displayName, $text);
-            }
-        }
-    }
-
-    return $text;
-}
-
-/**
- * Parses a piece of user-entered text to match userid mentions
- * and replace with a link.
- *
- * @param string $text
- * @param mixed  $users
- *
- * @return string
- */
-function parseUserIDs($text, &$users) {
-    $matches = null;
-    $users = [];
-    $count = preg_match_all('/\[user=([^\[\]&<>?"\']+)\]/', $text, $matches);
-    if ($count) {
-        $matches = array_unique($matches[1]);
-        foreach ($matches as $match) {
-            $user = App\Models\User\User::where('id', $match)->first();
-            if ($user) {
-                $users[] = $user;
-                $text = preg_replace('/\[user='.$match.'\]/', $user->displayName, $text);
-            }
-        }
-    }
-
-    return $text;
-}
-
-/**
- * Parses a piece of user-entered text to match userid mentions
- * and replace with a user avatar.
- *
- * @param string $text
- * @param mixed  $users
- *
- * @return string
- */
-function parseUserIDsForAvatars($text, &$users) {
-    $matches = null;
-    $users = [];
-    $count = preg_match_all('/\[userav=([^\[\]&<>?"\']+)\]/', $text, $matches);
-    if ($count) {
-        $matches = array_unique($matches[1]);
-        foreach ($matches as $match) {
-            $user = App\Models\User\User::where('id', $match)->first();
-            if ($user) {
-                $users[] = $user;
-                $text = preg_replace('/\[userav='.$match.'\]/', '<a href="'.$user->url.'"><img src="'.$user->avatarUrl.'" style="width:70px; height:70px; border-radius:50%; " alt="'.$user->name.'\'s Avatar"></a>', $text);
             }
         }
     }
