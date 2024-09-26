@@ -285,6 +285,16 @@ Route::group(['prefix' => 'grants', 'namespace' => 'Users', 'middleware' => 'pow
     Route::get('item-search', 'GrantController@getItemSearch');
 });
 
+<<<<<<< HEAD
+=======
+# EVENT SETTINGS
+Route::group(['prefix' => 'event-settings', 'middleware' => 'power:edit_inventories'], function() {
+    Route::get('/', 'EventController@getEventSettings');
+    Route::get('clear', 'EventController@getClearEventCurrency');
+    Route::post('clear', 'EventController@postClearEventCurrency');
+    Route::post('teams', 'EventController@postEventTeams');
+});
+>>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
 
 # MASTERLIST
 Route::group(['prefix' => 'masterlist', 'namespace' => 'Characters', 'middleware' => 'power:manage_characters'], function() {

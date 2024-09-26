@@ -18,9 +18,12 @@ class Kernel extends ConsoleKernel
 
     /**
 <<<<<<< HEAD
+<<<<<<< HEAD
      * Define the application's command schedule.*/
     protected function schedule(Schedule $schedule) {
 =======
+=======
+>>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
      * Define the application's command schedule.
      *
      * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
@@ -28,6 +31,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+<<<<<<< HEAD
+>>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
+=======
 >>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
         $schedule->command('check-news')
                 ->everyMinute();
@@ -38,6 +44,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('clean-donations')
             ->everyMinute();
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 
 
@@ -58,6 +65,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('check-pet-drops')
             ->everyMinute();
 
+=======
+>>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
 =======
 >>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
     }

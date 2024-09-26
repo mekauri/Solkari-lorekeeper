@@ -94,6 +94,13 @@ return [
                 'name' => 'Item Grants',
                 'url' => 'admin/grants/items'
             ],
+<<<<<<< HEAD
+=======
+            [
+                'name' => 'Event Settings',
+                'url' => 'admin/event-settings'
+            ],
+>>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
         ]
     ],
     'Masterlist' => [

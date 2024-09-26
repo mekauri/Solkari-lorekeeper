@@ -4,7 +4,11 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 
+<<<<<<< HEAD
 use DB;
+=======
+use Illuminate\Support\Facades\DB;
+>>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
 
 class AddSiteSettings extends Command
 {
@@ -103,6 +107,19 @@ class AddSiteSettings extends Command
 
         $this->addSiteSetting('group_currency', 1, 'ID of the group currency to award from gallery submissions (if enabled).');
 
+<<<<<<< HEAD
+=======
+        $this->addSiteSetting('event_currency', 1, 'ID of the currency used for events.');
+
+        $this->addSiteSetting('event_global_score', 0, '0: Event currency is only tracked individually, 1: A global tally of all event currency is also kept.');
+
+        $this->addSiteSetting('event_global_goal', 0, 'Goal for global event score. Has no effect if global event score is not 1 and/or if set to 0.');
+
+        $this->addSiteSetting('event_teams', 0, '0: Teams are not enabled, even if set. 1: Teams are enabled.');
+
+        $this->addSiteSetting('event_weighting', 0, '0: Score is not weighted depending on number of team members, 1: Score is weighted. Does not impact raw currency amounts.');
+
+>>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
         $this->line("\nSite settings up to date!");
 
     }
