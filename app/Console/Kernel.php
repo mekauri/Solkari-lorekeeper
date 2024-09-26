@@ -16,18 +16,17 @@ class Kernel extends ConsoleKernel {
     ];
 
     /**
-     * Define the application's command schedule.
-     */
+     * Define the application's command schedule.*/
     protected function schedule(Schedule $schedule) {
         $schedule->command('check-news')
             ->everyMinute();
         $schedule->command('check-sales')
-<<<<<<< HEAD
                 ->everyMinute();
         $schedule->command('clean-donations')
             ->everyMinute();
 
-            ->everyMinute();
+
+
         $schedule->command('check-pet-drops')
             ->everyMinute();
         $schedule->command('reset-stamina')
@@ -46,6 +45,9 @@ class Kernel extends ConsoleKernel {
             ->everyMinute();
 
     }
+    protected $routeMiddleware = [
+        'feeds' => \App\Http\Middleware\YourFeedsMiddleware::class,
+    ];
 
     /**
      * Register the commands for the application.

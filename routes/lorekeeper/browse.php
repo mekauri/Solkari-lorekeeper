@@ -61,25 +61,24 @@ Route::group(['prefix' => 'user', 'namespace' => 'Users'], function () {
     Route::get('{name}/pets', 'UserController@getUserPets');
     Route::get('{name}/pets/{id}', 'UserController@getUserPet');
     Route::get('{name}/bank', 'UserController@getUserBank');
-<<<<<<< HEAD
-=======
+
+
     Route::get('{name}/stats', 'UserController@getUserStats');
     Route::get('{name}/stats/logs/level', 'UserController@getUserLevelLogs');
     Route::get('{name}/stats/logs/points', 'UserController@getUserStatLogs');
     Route::get('{name}/stats/logs/exp', 'UserController@getUserExpLogs');
     Route::get('{name}/armoury', 'UserController@getUserArmoury');
->>>>>>> 0e64f5bf38b88c74c42555e1a3de7429f927474e
+
 
     Route::get('{name}/currency-logs', 'UserController@getUserCurrencyLogs');
     Route::get('{name}/item-logs', 'UserController@getUserItemLogs');
     Route::get('{name}/pet-logs', 'UserController@getUserPetLogs');
     Route::get('{name}/ownership', 'UserController@getUserOwnershipLogs');
     Route::get('{name}/submissions', 'UserController@getUserSubmissions');
-<<<<<<< HEAD
-=======
+
+
     Route::get('{name}/gear-logs', 'UserController@getUserGearLogs');
     Route::get('{name}/weapon-logs', 'UserController@getUserWeaponLogs');
->>>>>>> 0e64f5bf38b88c74c42555e1a3de7429f927474e
 });
 
 /**************************************************************************************************
@@ -101,14 +100,14 @@ Route::group(['prefix' => 'character', 'namespace' => 'Characters'], function ()
     Route::get('{slug}/change-log', 'CharacterController@getCharacterLogs');
     Route::get('{slug}/skill-logs', 'CharacterController@getCharacterSkillLogs');
     Route::get('{slug}/submissions', 'CharacterController@getCharacterSubmissions');
-<<<<<<< HEAD
-=======
+
+
     Route::get('{slug}/stats/logs', 'CharacterController@getCharacterStatLogs');
     Route::get('{slug}/stats/logs/points', 'CharacterController@getCharacterStatPointLogs');
     Route::get('{slug}/stats/logs/exp', 'CharacterController@getCharacterExpLogs');
     Route::get('{slug}/stats/logs/level', 'CharacterController@getCharacterLevelLogs');
     Route::get('{slug}/stats/logs/count', 'CharacterController@getCharacterCountLogs');
->>>>>>> 0e64f5bf38b88c74c42555e1a3de7429f927474e
+
 
     Route::get('{slug}/gallery', 'CharacterController@getCharacterGallery');
     Route::get('{slug}/pets', 'CharacterController@getCharacterPets');
@@ -144,8 +143,8 @@ Route::group(['prefix' => 'world'], function () {
     Route::get('prompt-categories', 'WorldController@getPromptCategories');
     Route::get('prompts', 'WorldController@getPrompts');
     Route::get('character-categories', 'WorldController@getCharacterCategories');
-<<<<<<< HEAD
-=======
+
+
     Route::get('levels', 'WorldController@getLevels');
     Route::get('levels/{type}', 'WorldController@getLevelTypes');
     Route::get('stats', 'WorldController@getStats');
@@ -162,7 +161,7 @@ Route::group(['prefix' => 'world'], function () {
     Route::get('skills/{id}', 'WorldController@getSkill');
     Route::get('elements', 'WorldController@getElements');
     Route::get('elements/{id}', 'WorldController@getElement');
->>>>>>> 0e64f5bf38b88c74c42555e1a3de7429f927474e
+
 });
 
 Route::group(['prefix' => 'prompts'], function () {
@@ -236,7 +235,7 @@ Route::group(['prefix' => 'reports', 'namespace' => 'Users'], function () {
     Route::get('/bug-reports', 'ReportController@getBugIndex');
 });
 
-<<<<<<< HEAD
+
 
 /**************************************************************************************************
     Custom
@@ -248,8 +247,8 @@ Route::get('Welcome', 'CustomController@getWelcome');
 Route::get('myo', 'CustomController@getmyo');
 
 Route::get('faq', 'CustomController@getfaq');
-=======
+
 Route::get('time', function () {
     return date('Y-m-d H:i:s');
 });
->>>>>>> 0e64f5bf38b88c74c42555e1a3de7429f927474e
+

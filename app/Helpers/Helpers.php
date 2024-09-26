@@ -117,10 +117,10 @@ function parse($text, &$pings = null) {
     $config->set('Attr.EnableID', true);
     $config->set('HTML.DefinitionID', 'include');
     $config->set('HTML.DefinitionRev', 2);
-<<<<<<< HEAD
-=======
+
+
     $config->set('Cache.DefinitionImpl', null); // TODO: remove this later!
->>>>>>> 0e64f5bf38b88c74c42555e1a3de7429f927474e
+
     if ($def = $config->maybeGetRawHTMLDefinition()) {
         $def->addElement('include', 'Block', 'Empty', 'Common', ['file*' => 'URI', 'height' => 'Text', 'width' => 'Text']);
         $def->addAttribute('a', 'data-toggle', 'Enum#collapse,tab');
