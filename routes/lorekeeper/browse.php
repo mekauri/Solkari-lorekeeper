@@ -177,10 +177,6 @@ Route::group(['prefix' => 'shops'], function() {
     Route::get('donation-shop/{id}', 'ShopController@getDonationShopStock')->where(['id' => '[0-9]+']);
 });
 
-Route::group(['prefix' => 'event-tracking'], function() {
-    Route::get('/', 'EventController@getEventTracking');
-});
-
 /**************************************************************************************************
     Site Pages
 **************************************************************************************************/

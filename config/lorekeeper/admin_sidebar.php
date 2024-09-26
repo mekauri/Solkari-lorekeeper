@@ -94,10 +94,6 @@ return [
                 'name' => 'Item Grants',
                 'url' => 'admin/grants/items'
             ],
-            [
-                'name' => 'Event Settings',
-                'url' => 'admin/event-settings'
-            ],
         ]
     ],
     'Masterlist' => [
