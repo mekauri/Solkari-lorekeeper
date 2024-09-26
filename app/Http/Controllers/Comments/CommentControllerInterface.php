@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Comments;
 
-use App\Models\Comment\Comment;
 use Illuminate\Http\Request;
+use App\Models\Comment;
 
-interface CommentControllerInterface {
+interface CommentControllerInterface
+{
     /**
      * Creates a new comment for given model.
      */

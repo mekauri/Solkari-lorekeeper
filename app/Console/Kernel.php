@@ -5,7 +5,8 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
-class Kernel extends ConsoleKernel {
+class Kernel extends ConsoleKernel
+{
     /**
      * The Artisan commands provided by your application.
      *
@@ -16,15 +17,28 @@ class Kernel extends ConsoleKernel {
     ];
 
     /**
+<<<<<<< HEAD
      * Define the application's command schedule.*/
     protected function schedule(Schedule $schedule) {
+=======
+     * Define the application's command schedule.
+     *
+     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
+     * @return void
+     */
+    protected function schedule(Schedule $schedule)
+    {
+>>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
         $schedule->command('check-news')
-            ->everyMinute();
+                ->everyMinute();
+        $schedule->exec('rm public/images/avatars/*.tmp')
+                ->daily();
         $schedule->command('check-sales')
                 ->everyMinute();
         $schedule->command('clean-donations')
             ->everyMinute();
 
+<<<<<<< HEAD
 
 
         $schedule->command('check-pet-drops')
@@ -44,6 +58,8 @@ class Kernel extends ConsoleKernel {
         $schedule->command('check-pet-drops')
             ->everyMinute();
 
+=======
+>>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
     }
     protected $routeMiddleware = [
         'feeds' => \App\Http\Middleware\YourFeedsMiddleware::class,
@@ -51,8 +67,11 @@ class Kernel extends ConsoleKernel {
 
     /**
      * Register the commands for the application.
+     *
+     * @return void
      */
-    protected function commands() {
+    protected function commands()
+    {
         $this->load(__DIR__.'/Commands');
 
         require base_path('routes/console.php');

@@ -28,7 +28,7 @@
 
                 <!-- NEWS link-->
                 <li class="nav-item">
-                    @if (Auth::check() && Auth::user()->is_news_unread && config('lorekeeper.extensions.navbar_news_notif'))
+                    @if(Auth::check() && Auth::user()->is_news_unread && Config::get('lorekeeper.extensions.navbar_news_notif'))
                         <a class="nav-link d-flex text-warning" href="{{ url('news') }}"><strong>News</strong><i class="fas fa-bell"></i></a>
                     @else
                         <a class="nav-link" href="{{ url('news') }}">News</a>
@@ -37,18 +37,12 @@
 
 <!-- SALES link-->
                 <li class="nav-item">
-<<<<<<< HEAD
                     @if(Auth::check() && Auth::user()->is_sales_unread && Config::get('lorekeeper.extensions.navbar_news_notif'))
                         <a class="nav-link d-flex text-warning" href="{{ url('sales') }}"><strong>Adopts</strong><i class="fas fa-bell"></i></a>
-=======
-                    @if (Auth::check() && Auth::user()->is_sales_unread && config('lorekeeper.extensions.navbar_news_notif'))
-                        <a class="nav-link d-flex text-warning" href="{{ url('sales') }}"><strong>Sales</strong><i class="fas fa-bell"></i></a>
->>>>>>> 0e64f5bf38b88c74c42555e1a3de7429f927474e
                     @else
                         <a class="nav-link" href="{{ url('sales') }}">Adopts</a>
                     @endif
                 </li>
-<<<<<<< HEAD
 
 
 
@@ -56,9 +50,6 @@
 
                 @if(Auth::check())
 
-=======
-                @if (Auth::check())
->>>>>>> 0e64f5bf38b88c74c42555e1a3de7429f927474e
                     <li class="nav-item dropdown">
 
                         <!-- Home dropdown-->
@@ -75,18 +66,11 @@
                             <a class="dropdown-item" href="{{ url('characters/myos') }}">
                                 My MYO Slots
                             </a>
-<<<<<<< HEAD
 
                             <!-- Divider-->
 <div class="dropdown-divider"></div>
 
 <!-- inventory link-->
-=======
-                            <a class="dropdown-item" href="{{ url('pets') }}">
-                                My Pets
-                            </a>
-                            <div class="dropdown-divider"></div>
->>>>>>> 0e64f5bf38b88c74c42555e1a3de7429f927474e
                             <a class="dropdown-item" href="{{ url('inventory') }}">
                                 Inventory
                             </a>
@@ -94,7 +78,6 @@
                             <a class="dropdown-item" href="{{ url('bank') }}">
                                 Bank
                             </a>
-<<<<<<< HEAD
 
                             <!-- Divider-->
 <div class="dropdown-divider"></div>
@@ -106,42 +89,6 @@
 
                         </div> <!-- End of Home dropdown-->
 
-=======
-                            <a class="dropdown-item" href="{{ url('userstats') }}">
-                                Stat Information
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{{ url('comments/liked') }}">
-                                Liked Comments
-                            </a>
-                        </div>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a id="queueDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                            Activity
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="queueDropdown">
-                            <a class="dropdown-item" href="{{ url('submissions') }}">
-                                Prompt Submissions
-                            </a>
-                            <a class="dropdown-item" href="{{ url('claims') }}">
-                                Claims
-                            </a>
-                            <a class="dropdown-item" href="{{ url('reports') }}">
-                                Reports
-                            </a>
-                            <a class="dropdown-item" href="{{ url('designs') }}">
-                                Design Approvals
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="{{ url('characters/transfers/incoming') }}">
-                                Character Transfers
-                            </a>
-                            <a class="dropdown-item" href="{{ url('trades/open') }}">
-                                Trades
-                            </a>
-                        </div>
->>>>>>> 0e64f5bf38b88c74c42555e1a3de7429f927474e
                     </li>
 
 
@@ -234,32 +181,21 @@ Raffles
                         </li>
                     @endif
                 @else
-<<<<<<< HEAD
 
                 <!-- MOD CROWN LINK-->
                     @if(Auth::user()->isStaff)
-=======
-                    @if (Auth::user()->isStaff)
->>>>>>> 0e64f5bf38b88c74c42555e1a3de7429f927474e
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url('admin') }}"><i class="fas fa-crown"></i></a>
                         </li>
                     @endif
-<<<<<<< HEAD
                     <!-- Notification link-->
                     @if(Auth::user()->notifications_unread)
-=======
-                    @if (Auth::user()->notifications_unread)
->>>>>>> 0e64f5bf38b88c74c42555e1a3de7429f927474e
                         <li class="nav-item">
                             <a class="nav-link btn btn-secondary btn-sm" href="{{ url('notifications') }}"><span class="fas fa-envelope"></span> {{ Auth::user()->notifications_unread }}</a>
                         </li>
                     @endif
 
-<<<<<<< HEAD
 <!-- SUBMIT Dropdown start-->
-=======
->>>>>>> 0e64f5bf38b88c74c42555e1a3de7429f927474e
                     <li class="nav-item dropdown">
                         <a id="browseDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                             Submit
@@ -284,13 +220,9 @@ Raffles
                         </div>
                         <!-- End DIV for submit dropdown-->
                     </li>
-<<<<<<< HEAD
 <!-- End Submit list-->
 
 <!-- PROFILE Dropdown start-->
-=======
-
->>>>>>> 0e64f5bf38b88c74c42555e1a3de7429f927474e
                     <li class="nav-item dropdown">
                         <a id="navbarDropdown" class="nav-link dropdown-toggle" href="{{ Auth::user()->url }}" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
                             {{ Auth::user()->name }} <span class="caret"></span>
@@ -315,14 +247,10 @@ Raffles
                             <a class="dropdown-item" href="{{ url('account/settings') }}">
                                 Settings
                             </a>
-<<<<<<< HEAD
 
                             <!-- Logout option-->
                             <a class="dropdown-item" href="{{ route('logout') }}"
                                 onclick="event.preventDefault();
-=======
-                            <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();
->>>>>>> 0e64f5bf38b88c74c42555e1a3de7429f927474e
                                                 document.getElementById('logout-form').submit();">
                                 {{ __('Logout') }}
                             </a>
@@ -330,7 +258,6 @@ Raffles
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                 @csrf
                             </form>
-<<<<<<< HEAD
                         </div> <!-- End DIV for profile dropdown-->
                     </li> <!--end profile list-->
                 @endguest <!-- contains login|Register but also if logged in, the profile|Submit dropdown-->
@@ -338,12 +265,3 @@ Raffles
         </div> <!-- End Collapse Navbar Div-->
     </div> <!-- End Container fluid DIV-->
 </nav> <!-- End of entire Navbar-->
-=======
-                        </div>
-                    </li>
-                @endguest
-            </ul>
-        </div>
-    </div>
-</nav>
->>>>>>> 0e64f5bf38b88c74c42555e1a3de7429f927474e

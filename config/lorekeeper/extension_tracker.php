@@ -1,5 +1,4 @@
 <?php
-
 return [
 
     // FORMAT EXAMPLE.
@@ -13,7 +12,6 @@ return [
     //     'version' => '1.0.0',
     // ],
 
-<<<<<<< HEAD
 <<<<<<< HEAD
     'donation_shop' => [
         'key' => 'donation_shop',
@@ -34,54 +32,4 @@ return [
     ]
 >>>>>>> fcc54f3e420c3457fd8f34098ce5ee4a807a74cb
 
-=======
-    'Levels_&_Stats' => [
-        'key'      => 'Levels_&_Stats',
-        'wiki_key' => 'Levels_%26_Stats',
-        'creators' => json_encode([
-            'Newt' => 'https://github.com/ne-wt/',
-        ]),
-        'version' => '1.0.0',
-    ],
-
-    'Claymores and Companions' => [
-        'key'      => 'Claymores and Companions',
-        'wiki_key' => 'Claymores_and_Companions',
-        'creators' => json_encode([
-            'Newt'    => 'https://github.com/ne-wt/',
-            'Mercury' => 'https://github.com/itinerare/',
-            'Uri'     => 'https://github.com/preimpression/',
-        ]),
-        'version' => '1.1.0',
-    ],
-
-    'character_skills' => [
-        'key'          => 'character_skills',
-        'wiki_key'     => 'Character_Skills',
-        'creators'     => json_encode([
-            'Newt' => 'https://github.com/ne-wt/',
-        ]),
-        'version' => '1.0.0',
-    ],
-
-    'shop_features' => [
-        'key'      => 'shop_features',
-        'wiki_key' => 'Shop_Features',
-        'creators' => json_encode([
-            'Newt' => 'https://github.com/ne-wt/',
-        ]),
-        'version' => '1.0.4',
-    ],
-
-    'pets' => [
-        'wiki_key' => 'Pets',
-        'creators' => json_encode([
-            'Newt'      => 'https://github.com/ne-wt/',
-            'Mercury'   => 'https://github.com/itinerare/',
-            'Uri'       => 'https://github.com/preimpression/',
-            'SUPERCOOL' => 'https://github.com/CH3RVB/',
-        ]),
-        'version' => '2.0.0',
-    ],
->>>>>>> 0e64f5bf38b88c74c42555e1a3de7429f927474e
 ];

@@ -35,7 +35,6 @@ function add_help($text) {
 /**
  * Uses the given array to generate breadcrumb links.
  *
- * @param array $links
  *
  * @return string
  */
@@ -259,49 +258,21 @@ function parseUserIDsForAvatars($text, &$users) {
  * Parses a piece of user-entered text to match character mentions
  * and replace with a link.
  *
- * @param string $text
- * @param mixed  $characters
- *
+ * @param  string  $text
+ * @param  mixed   $characters
  * @return string
  */
 function parseCharacters($text, &$characters) {
     $matches = null;
     $characters = [];
     $count = preg_match_all('/\[character=([^\[\]&<>?"\']+)\]/', $text, $matches);
-    if ($count) {
+    if($count) {
         $matches = array_unique($matches[1]);
-        foreach ($matches as $match) {
-            $character = App\Models\Character\Character::where('slug', $match)->first();
-            if ($character) {
+        foreach($matches as $match) {
+            $character = \App\Models\Character\Character::where('slug', $match)->first();
+            if($character) {
                 $characters[] = $character;
                 $text = preg_replace('/\[character='.$match.'\]/', $character->displayName, $text);
-            }
-        }
-    }
-
-    return $text;
-}
-
-/**
- * Parses a piece of user-entered text to match character mentions
- * and replace with a thumbnail.
- *
- * @param string $text
- * @param mixed  $characters
- *
- * @return string
- */
-function parseCharacterThumbs($text, &$characters) {
-    $matches = null;
-    $characters = [];
-    $count = preg_match_all('/\[charthumb=([^\[\]&<>?"\']+)\]/', $text, $matches);
-    if ($count) {
-        $matches = array_unique($matches[1]);
-        foreach ($matches as $match) {
-            $character = App\Models\Character\Character::where('slug', $match)->first();
-            if ($character) {
-                $characters[] = $character;
-                $text = preg_replace('/\[charthumb='.$match.'\]/', '<a href="'.$character->url.'"><img class="img-thumbnail" alt="Thumbnail of '.$character->fullName.'" data-toggle="tooltip" title="'.$character->fullName.'" src="'.$character->image->thumbnailUrl.'"></a>', $text);
             }
         }
     }
@@ -313,20 +284,19 @@ function parseCharacterThumbs($text, &$characters) {
  * Parses a piece of user-entered text to match gallery submission thumb mentions
  * and replace with a link.
  *
- * @param string $text
- * @param mixed  $submissions
- *
+ * @param  string  $text
+ * @param  mixed   $submissions
  * @return string
  */
 function parseGalleryThumbs($text, &$submissions) {
     $matches = null;
     $submissions = [];
     $count = preg_match_all('/\[thumb=([^\[\]&<>?"\']+)\]/', $text, $matches);
-    if ($count) {
+    if($count) {
         $matches = array_unique($matches[1]);
-        foreach ($matches as $match) {
-            $submission = App\Models\Gallery\GallerySubmission::where('id', $match)->first();
-            if ($submission) {
+        foreach($matches as $match) {
+            $submission = \App\Models\Gallery\GallerySubmission::where('id', $match)->first();
+            if($submission) {
                 $submissions[] = $submission;
                 $text = preg_replace('/\[thumb='.$match.'\]/', '<a href="'.$submission->url.'" data-toggle="tooltip" title="'.$submission->displayTitle.' by '.nl2br(htmlentities($submission->creditsPlain)).(isset($submission->content_warning) ? '<br/><strong>Content Warning:</strong> '.nl2br(htmlentities($submission->content_warning)) : '').'">'.view('widgets._gallery_thumb', ['submission' => $submission]).'</a>', $text);
             }
@@ -339,17 +309,14 @@ function parseGalleryThumbs($text, &$submissions) {
 /**
  * Generates a string of random characters of the specified length.
  *
- * @param int $characters
- *
+ * @param  int  $characters
  * @return string
  */
-function randomString($characters) {
+function randomString($characters)
+{
     $src = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     $code = '';
-    for ($i = 0; $i < $characters; $i++) {
-        $code .= $src[mt_rand(0, strlen($src) - 1)];
-    }
-
+    for ($i = 0; $i < $characters; $i++) $code .= $src[mt_rand(0, strlen($src) - 1)];
     return $code;
 }
 
@@ -357,17 +324,17 @@ function randomString($characters) {
  * Check that a url is from a site used for authentication,
  * and if it belongs to a user.
  *
- * @param string $url
- * @param bool   $failOnError
- *
+ * @param  string                  $url
+ * @param  bool                    $failOnError
  * @return \App\Models\User\User|string
  */
-function checkAlias($url, $failOnError = true) {
-    if ($url) {
+function checkAlias($url, $failOnError = true)
+{
+    if($url) {
         $recipient = null;
         $matches = [];
         // Check to see if url is 1. from a site used for auth
-        foreach (config('lorekeeper.sites') as $key=> $site) {
+        foreach (Config::get('lorekeeper.sites') as $key=> $site) {
             if (isset($site['auth']) && $site['auth']) {
                 preg_match_all($site['regex'], $url, $matches, PREG_SET_ORDER, 0);
                 if ($matches != []) {
@@ -377,17 +344,12 @@ function checkAlias($url, $failOnError = true) {
             }
         }
         if ((!isset($matches[0]) || $matches[0] == []) && $failOnError) {
-            throw new Exception('This URL is from an invalid site. Please provide a URL for a user profile from a site used for authentication.');
+            throw new \Exception('This URL is from an invalid site. Please provide a URL for a user profile from a site used for authentication.');
         }
 
         // and 2. if it contains an alias associated with a user on-site.
-
         if (isset($matches[0]) && $matches[0] != [] && isset($matches[0][1])) {
-            if ($urlSite != 'discord') {
-                $alias = App\Models\User\UserAlias::where('site', $urlSite)->where('alias', $matches[0][1])->first();
-            } else {
-                $alias = App\Models\User\UserAlias::where('site', $urlSite)->where('alias', $matches[0][0])->first();
-            }
+            $alias = App\Models\User\UserAlias::where('site', $urlSite)->where('alias', $matches[0][0])->first();
             if ($alias) {
                 $recipient = $alias->user;
             } else {
@@ -402,62 +364,37 @@ function checkAlias($url, $failOnError = true) {
 /**
  * Prettifies links to user profiles on various sites in a "user@site" format.
  *
- * @param string $url
- *
+ * @param  string  $url
  * @return string
  */
-function prettyProfileLink($url) {
+function prettyProfileLink($url)
+{
     $matches = [];
     // Check different sites and return site if a match is made, plus username (retreived from the URL)
-    foreach (config('lorekeeper.sites') as $siteName=> $siteInfo) {
-        if (preg_match_all($siteInfo['regex'], $url, $matches)) {
-            $site = $siteName;
-            $name = $matches[1][0];
-            $link = $matches[0][0];
-            break;
-        }
+    foreach(Config::get('lorekeeper.sites') as $siteName=>$siteInfo) {
+        if(preg_match_all($siteInfo['regex'], $url, $matches)) {$site = $siteName; $name = $matches[1][0]; $link = $matches[0][0]; break;}
     }
 
     // Return formatted link if possible; failing that, an unformatted link
-    if (isset($name) && isset($site) && isset($link)) {
-        return '<a href="https://'.$link.'">'.$name.'@'.(config('lorekeeper.sites.'.$site.'.display_name') != null ? config('lorekeeper.sites.'.$site.'.display_name') : $site).'</a>';
-    } else {
-        return '<a href="'.$url.'">'.$url.'</a>';
-    }
+    if(isset($name) && isset($site) && isset($link)) return '<a href="https://'.$link.'">'.$name.'@'.(Config::get('lorekeeper.sites.'.$site.'.display_name') != null ? Config::get('lorekeeper.sites.'.$site.'.display_name') : $site).'</a>';
+    else return '<a href="'.$url.'">'.$url.'</a>';
 }
 
 /**
  * Prettifies user profile names for use in various functions.
  *
- * @param string $url
- *
+ * @param  string  $url
  * @return string
  */
-function prettyProfileName($url) {
+function prettyProfileName($url)
+{
     $matches = [];
     // Check different sites and return site if a match is made, plus username (retreived from the URL)
-    foreach (config('lorekeeper.sites') as $siteName=> $siteInfo) {
-        if (preg_match_all($siteInfo['regex'], $url, $matches)) {
-            $site = $siteName;
-            $name = $matches[1][0];
-            break;
-        }
+    foreach(Config::get('lorekeeper.sites') as $siteName=>$siteInfo) {
+        if(preg_match_all($siteInfo['regex'], $url, $matches)) {$site = $siteName; $name = $matches[1][0]; break;}
     }
 
     // Return formatted name if possible; failing that, an unformatted url
-    if (isset($name) && isset($site)) {
-        return $name.'@'.(config('lorekeeper.sites.'.$site.'.display_name') != null ? config('lorekeeper.sites.'.$site.'.display_name') : $site);
-    } else {
-        return $url;
-    }
-}
-
-/**
- * Gets the displayName attribute from a given model.
- *
- * @param mixed $model
- * @param mixed $id
- */
-function getDisplayName($model, $id) {
-    return $model::find($id)?->displayName;
+    if(isset($name) && isset($site)) return $name.'@'.(Config::get('lorekeeper.sites.'.$site.'.display_name') != null ? Config::get('lorekeeper.sites.'.$site.'.display_name') : $site);
+    else return $url;
 }
