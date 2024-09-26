@@ -27,7 +27,6 @@ class Kernel extends ConsoleKernel {
         $schedule->command('clean-donations')
             ->everyMinute();
 
-=======
             ->everyMinute();
         $schedule->command('check-pet-drops')
             ->everyMinute();
@@ -45,7 +44,7 @@ class Kernel extends ConsoleKernel {
             ->everyMinute();
         $schedule->command('check-pet-drops')
             ->everyMinute();
->>>>>>> 0e64f5bf38b88c74c42555e1a3de7429f927474e
+
     }
 
     /**
