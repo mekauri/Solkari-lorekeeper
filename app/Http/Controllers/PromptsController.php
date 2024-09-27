@@ -3,19 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-<<<<<<< HEAD
-
-use App\Models\Currency\Currency;
-use App\Models\Item\ItemCategory;
-use App\Models\Item\Item;
 use App\Models\Prompt\PromptCategory;
 use App\Models\Prompt\Prompt;
 
-=======
-use App\Models\Prompt\PromptCategory;
-use App\Models\Prompt\Prompt;
-
->>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
 class PromptsController extends Controller
 {
     /*
@@ -48,12 +38,11 @@ class PromptsController extends Controller
     {
         $query = PromptCategory::query();
         $name = $request->get('name');
-        if($name) $query->where('name', 'LIKE', '%'.$name.'%');
-<<<<<<< HEAD
-        return view('prompts.prompt_categories', [  
-=======
+        if ($name) {
+            $query->where('name', 'LIKE', '%' . $name . '%');
+        }
+
         return view('prompts.prompt_categories', [
->>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
             'categories' => $query->orderBy('sort', 'DESC')->paginate(20)->appends($request->query()),
         ]);
     }
@@ -68,21 +57,17 @@ class PromptsController extends Controller
     {
         $query = Prompt::active()->with('category');
         $data = $request->only(['prompt_category_id', 'name', 'sort']);
-        if(isset($data['prompt_category_id']) && $data['prompt_category_id'] != 'none') 
+
+        if (isset($data['prompt_category_id']) && $data['prompt_category_id'] != 'none') {
             $query->where('prompt_category_id', $data['prompt_category_id']);
-<<<<<<< HEAD
-        if(isset($data['name'])) 
-            $query->where('name', 'LIKE', '%'.$data['name'].'%');
+        }
 
-        if(isset($data['sort'])) 
-=======
-        if(isset($data['name']))
-            $query->where('name', 'LIKE', '%'.$data['name'].'%');
+        if (isset($data['name'])) {
+            $query->where('name', 'LIKE', '%' . $data['name'] . '%');
+        }
 
-        if(isset($data['sort']))
->>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
-        {
-            switch($data['sort']) {
+        if (isset($data['sort'])) {
+            switch ($data['sort']) {
                 case 'alpha':
                     $query->sortAlphabetical();
                     break;
@@ -111,16 +96,13 @@ class PromptsController extends Controller
                     $query->sortEnd(true);
                     break;
             }
-<<<<<<< HEAD
-        } 
-=======
+        } else {
+            $query->sortCategory();
         }
->>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
-        else $query->sortCategory();
 
         return view('prompts.prompts', [
             'prompts' => $query->paginate(20)->appends($request->query()),
-            'categories' => ['none' => 'Any Category'] + PromptCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray()
+            'categories' => ['none' => 'Any Category'] + PromptCategory::orderBy('sort', 'DESC')->pluck('name', 'id')->toArray(),
         ]);
     }
 }

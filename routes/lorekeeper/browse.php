@@ -56,35 +56,11 @@ Route::group(['prefix' => 'user', 'namespace' => 'Users'], function() {
     Route::get('{name}/myos', 'UserController@getUserMyoSlots');
     Route::get('{name}/inventory', 'UserController@getUserInventory');
     Route::get('{name}/bank', 'UserController@getUserBank');
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-
-    Route::get('{name}/stats', 'UserController@getUserStats');
-    Route::get('{name}/stats/logs/level', 'UserController@getUserLevelLogs');
-    Route::get('{name}/stats/logs/points', 'UserController@getUserStatLogs');
-    Route::get('{name}/stats/logs/exp', 'UserController@getUserExpLogs');
-    Route::get('{name}/armoury', 'UserController@getUserArmoury');
-
-=======
->>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
-=======
->>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
 
     Route::get('{name}/currency-logs', 'UserController@getUserCurrencyLogs');
     Route::get('{name}/item-logs', 'UserController@getUserItemLogs');
     Route::get('{name}/ownership', 'UserController@getUserOwnershipLogs');
     Route::get('{name}/submissions', 'UserController@getUserSubmissions');
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-
-    Route::get('{name}/gear-logs', 'UserController@getUserGearLogs');
-    Route::get('{name}/weapon-logs', 'UserController@getUserWeaponLogs');
-=======
->>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
-=======
->>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
 });
 
 /**************************************************************************************************
@@ -105,20 +81,6 @@ Route::group(['prefix' => 'character', 'namespace' => 'Characters'], function() 
     Route::get('{slug}/ownership', 'CharacterController@getCharacterOwnershipLogs');
     Route::get('{slug}/change-log', 'CharacterController@getCharacterLogs');
     Route::get('{slug}/submissions', 'CharacterController@getCharacterSubmissions');
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-
-    Route::get('{slug}/stats/logs', 'CharacterController@getCharacterStatLogs');
-    Route::get('{slug}/stats/logs/points', 'CharacterController@getCharacterStatPointLogs');
-    Route::get('{slug}/stats/logs/exp', 'CharacterController@getCharacterExpLogs');
-    Route::get('{slug}/stats/logs/level', 'CharacterController@getCharacterLevelLogs');
-    Route::get('{slug}/stats/logs/count', 'CharacterController@getCharacterCountLogs');
-
-=======
->>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
-=======
->>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
 
     Route::get('{slug}/gallery', 'CharacterController@getCharacterGallery');
 });
@@ -148,31 +110,6 @@ Route::group(['prefix' => 'world'], function() {
     Route::get('trait-categories', 'WorldController@getFeatureCategories');
     Route::get('traits', 'WorldController@getFeatures');
     Route::get('character-categories', 'WorldController@getCharacterCategories');
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-
-    Route::get('levels', 'WorldController@getLevels');
-    Route::get('levels/{type}', 'WorldController@getLevelTypes');
-    Route::get('stats', 'WorldController@getStats');
-    Route::get('stats/{abbreviation}', 'WorldController@getStat');
-    Route::get('weapon-categories', 'WorldController@getWeaponCategories');
-    Route::get('weapons', 'WorldController@getWeapons');
-    Route::get('weapons/{id}', 'WorldController@getWeapon');
-    Route::get('gear-categories', 'WorldController@getGearCategories');
-    Route::get('gear', 'WorldController@getGears');
-    Route::get('gear/{id}', 'WorldController@getGear');
-    Route::get('character-classes', 'WorldController@getCharacterClasses');
-    Route::get('skill-categories', 'WorldController@getSkillCategories');
-    Route::get('skills', 'WorldController@getSkills');
-    Route::get('skills/{id}', 'WorldController@getSkill');
-    Route::get('elements', 'WorldController@getElements');
-    Route::get('elements/{id}', 'WorldController@getElement');
-
-=======
->>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
-=======
->>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
 });
 
 Route::group(['prefix' => 'prompts'], function() {
@@ -185,17 +122,8 @@ Route::group(['prefix' => 'shops'], function() {
     Route::get('/', 'ShopController@getIndex');
     Route::get('{id}', 'ShopController@getShop')->where(['id' => '[0-9]+']);
     Route::get('{id}/{stockId}', 'ShopController@getShopStock')->where(['id' => '[0-9]+', 'stockId' => '[0-9]+']);
-    Route::get('donation-shop', 'ShopController@getDonationShop');
-    Route::get('donation-shop/{id}', 'ShopController@getDonationShopStock')->where(['id' => '[0-9]+']);
 });
 
-<<<<<<< HEAD
-=======
-Route::group(['prefix' => 'event-tracking'], function() {
-    Route::get('/', 'EventController@getEventTracking');
-});
-
->>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
 /**************************************************************************************************
     Site Pages
 **************************************************************************************************/
@@ -243,9 +171,6 @@ Route::group(['prefix' => 'reports', 'namespace' => 'Users'], function() {
 });
 
 
-=======
->>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
-
 /**************************************************************************************************
     Custom
 **************************************************************************************************/
@@ -256,14 +181,3 @@ Route::get('Welcome', 'CustomController@getWelcome');
 Route::get('myo', 'CustomController@getmyo');
 
 Route::get('faq', 'CustomController@getfaq');
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-Route::get('time', function () {
-    return date('Y-m-d H:i:s');
-});
-
-=======
->>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
-=======
->>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)

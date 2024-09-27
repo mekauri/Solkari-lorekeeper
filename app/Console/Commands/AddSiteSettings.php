@@ -4,11 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 
-<<<<<<< HEAD
 use DB;
-=======
-use Illuminate\Support\Facades\DB;
->>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
 
 class AddSiteSettings extends Command
 {
@@ -38,10 +34,10 @@ class AddSiteSettings extends Command
 
     /**
      * Add a site setting.
-     * 
+     *
      * Example usage:
      * $this->addSiteSetting("site_setting_key", 1, "0: does nothing. 1: does something.");
-     * 
+     *
      * @param  string  $key
      * @param  int     $value
      * @param  string  $description
@@ -107,8 +103,6 @@ class AddSiteSettings extends Command
 
         $this->addSiteSetting('group_currency', 1, 'ID of the group currency to award from gallery submissions (if enabled).');
 
-<<<<<<< HEAD
-=======
         $this->addSiteSetting('event_currency', 1, 'ID of the currency used for events.');
 
         $this->addSiteSetting('event_global_score', 0, '0: Event currency is only tracked individually, 1: A global tally of all event currency is also kept.');
@@ -119,7 +113,6 @@ class AddSiteSettings extends Command
 
         $this->addSiteSetting('event_weighting', 0, '0: Score is not weighted depending on number of team members, 1: Score is weighted. Does not impact raw currency amounts.');
 
->>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
         $this->line("\nSite settings up to date!");
 
     }
