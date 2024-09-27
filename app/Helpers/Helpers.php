@@ -101,14 +101,11 @@ function parse($text, &$pings = null) {
     $config->set('Attr.EnableID', true);
     $config->set('HTML.DefinitionID', 'include');
     $config->set('HTML.DefinitionRev', 2);
-<<<<<<< HEAD
-<<<<<<< HEAD
+
 
 
     $config->set('Cache.DefinitionImpl', null); // TODO: remove this later!
 
-=======
->>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
 =======
 >>>>>>> parent of fc1f7dde (Merge branch 'extension/claymores-and-companions' of https://github.com/ScuffedNewt/lorekeeper)
     if ($def = $config->maybeGetRawHTMLDefinition()) {
